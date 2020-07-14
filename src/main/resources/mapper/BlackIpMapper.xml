@@ -23,13 +23,22 @@
         where id = #{id}
     </select>
 
-    <insert id="insert" parameterType="BlackIp">
-        insert into blog_blackip(ip, address) values (#{ip,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR})
+    <insert id="insert" parameterType="BlackIp" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        <selectKey keyProperty="id" keyColumn="id" resultType="integer">
+            select last_insert_id()
+        </selectKey>
+        insert into blog_blackip(ip, address, create_at, modify_at)
+        values (#{ip,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR},
+               now(), now())
     </insert>
 
     <delete id="delete" parameterType="integer">
         delete from blog_blackip where id = #{id,jdbcType=INTEGER}
     </delete>
+
+    <select id="findAll" resultMap="BlackIpMap">
+        select id, ip, address, create_at, modify_at from blog_blackip order by create_at desc
+    </select>
 
 
 </mapper>

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -53,8 +54,20 @@ public class BlackIpService implements InitializingBean {
     }
 
 
+    @Transactional(readOnly = true)
+    public List<BlackIp> findAll() {
+        return blackIpMapper.findAll();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void deleteByIp(String ip) throws LogicException {
+        BlackIp blackIp = blackIpMapper.findByIp(ip).orElseThrow(()
+                -> new LogicException("blackIpService.ip.notExists", "黑名单不存在"));
+        blackIpMapper.delete(blackIp.getId());
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        logger.info("BlackIpService afterPropertiesSet()...");
+        logger.info("BlackIpService#afterPropertiesSet()...");
     }
 }

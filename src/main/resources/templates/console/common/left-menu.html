@@ -122,6 +122,14 @@
                         <span class="nav-link-title">内容标签</span>
                     </a>
                 </li>
+                <li class="nav-item" th:classappend="${type == 'blackip' ? 'active' : ''}">
+                    <a class="nav-link" th:href="@{/console/blackips}" >
+                        <span class="nav-link-icon d-md-none d-lg-inline-block">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="9 11 12 14 20 6" /><path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" /></svg>
+                        </span>
+                        <span class="nav-link-title">黑名单管理</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>

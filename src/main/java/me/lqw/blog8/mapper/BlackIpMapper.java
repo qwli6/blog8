@@ -4,6 +4,7 @@ import me.lqw.blog8.model.BlackIp;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 @Mapper
@@ -16,4 +17,6 @@ public interface BlackIpMapper {
     void delete(@Param("id") Integer id);
 
     void insert(BlackIp blackIp);
+
+    List<BlackIp> findAll();
 }
