@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="文章列表">文章列表</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
+    <link href="/static/tabler/dist/css/tabler-buttons.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
+    <style>
+        body{
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+<div th:replace="/console/common/left-menu::leftMenu('article')"></div>
+<div class="page">
+    <div th:replace="/console/common/head-navbar::headnav('article')"></div>
+    <div class="content">
+        <div class="container-xl">
+            <!-- Page title -->
+            <div class="page-header">
+                <div class="row row-sm align-items-center">
+                    <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                        <a th:href="@{/console/article/create}" class="btn btn-blue btn-block">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                            新文章
+                        </a>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                        <a href="javascript:void(0);" data-toggle="modal" data-target="#modal-report" class="btn btn-azure btn-block">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><circle cx="10" cy="10" r="7"></circle><line x1="21" y1="21" x2="15" y2="15"></line></svg>
+                            高级查询
+                        </a>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                        <a href="#" class="btn btn-indigo btn-block">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="3" y1="4" x2="21" y2="4"></line><path d="M4 4v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-10"></path><line x1="12" y1="16" x2="12" y2="20"></line><line x1="9" y1="20" x2="15" y2="20"></line><path d="M8 12l3 -3l2 2l3 -3"></path></svg>
+                            统计
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-deck">
+                <div class="col-sm-6 col-xl-4">
+                    <div class="card d-flex flex-column">
+                        <a href="#">
+                            <img class="card-img-top" src="./static/photos//9f36332564ca271d.jpg" alt="And this isn&#39;t my nose. This is a false one.">
+                        </a>
+                        <div class="card-body d-flex flex-column">
+                            <h3 class="card-title"><a href="#">And this isn't my nose. This is a false one.</a></h3>
+                            <div class="text-muted">Look, my liege! The Knights Who Say Ni demand a sacrifice! …Are you suggesting that coconuts migr...</div>
+                            <div class="d-flex align-items-center pt-5 mt-auto">
+                                <span class="avatar avatar-md" style="background-image: url(/static/tabler/avatars/002m.jpg)"></span>
+                                <div class="ml-3">
+                                    <a href="./profile.html" class="text-body">Dunn Slane</a>
+                                    <small class="d-block text-muted">3 days ago</small>
+                                </div>
+                                <div class="ml-auto">
+                                    <a href="#" class="icon d-none d-md-inline-block ml-3 text-red">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M12 20l-7 -7a4 4 0 0 1 6.5 -6a.9 .9 0 0 0 1 0a4 4 0 0 1 6.5 6l-7 7" /></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-4">
+                    <div class="card d-flex flex-column">
+                        <a href="#">
+                            <img class="card-img-top" src="./static/photos//35b88fc04a518c1b.jpg" alt="Well, I didn&#39;t vote for you.">
+                        </a>
+                        <div class="card-body d-flex flex-column">
+                            <h3 class="card-title"><a href="#">Well, I didn't vote for you.</a></h3>
+                            <div class="text-muted">Well, we did do the nose. Why? Shut up! Will you shut up?! You don't frighten us, English pig-dog...</div>
+                            <div class="d-flex align-items-center pt-5 mt-auto">
+                                <span class="avatar avatar-md" style="background-image: url(/static/tabler/avatars/003m.jpg)"></span>
+                                <div class="ml-3">
+                                    <a href="./profile.html" class="text-body">Emmy Levet</a>
+                                    <small class="d-block text-muted">3 days ago</small>
+                                </div>
+                                <div class="ml-auto">
+                                    <a href="#" class="icon d-none d-md-inline-block ml-3 text-red">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M12 20l-7 -7a4 4 0 0 1 6.5 -6a.9 .9 0 0 0 1 0a4 4 0 0 1 6.5 6l-7 7" /></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-4">
+                    <div class="card d-flex flex-column">
+                        <a href="#">
+                            <img class="card-img-top" src="./static/photos//36e273986ed577b8.jpg" alt="How do you know she is a witch?">
+                        </a>
+                        <div class="card-body d-flex flex-column">
+                            <h3 class="card-title"><a href="#">How do you know she is a witch?</a></h3>
+                            <div class="text-muted">Are you suggesting that coconuts migrate? No, no, no! Yes, yes. A bit. But she's got a wart. You ...</div>
+                            <div class="d-flex align-items-center pt-5 mt-auto">
+                                <span class="avatar avatar-md" style="background-image: url(/static/tabler/avatars/000f.jpg)"></span>
+                                <div class="ml-3">
+                                    <a href="./profile.html" class="text-body">Maryjo Lebarree</a>
+                                    <small class="d-block text-muted">3 days ago</small>
+                                </div>
+                                <div class="ml-auto">
+                                    <a href="#" class="icon d-none d-md-inline-block ml-3 text-red">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M12 20l-7 -7a4 4 0 0 1 6.5 -6a.9 .9 0 0 0 1 0a4 4 0 0 1 6.5 6l-7 7" /></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-4">
+                    <div class="card d-flex flex-column">
+                        <div class="card-body d-flex flex-column">
+                            <h3 class="card-title"><a href="#">Weaseling out of things is important to learn.</a></h3>
+                            <div class="text-muted">Please do not offer my god a peanut. That's why I love elementary school, Edna. The children beli...</div>
+                            <div class="d-flex align-items-center pt-5 mt-auto">
+                                <span class="avatar avatar-md" style="background-image: url(/static/tabler/avatars/004f.jpg)"></span>
+                                <div class="ml-3">
+                                    <a href="./profile.html" class="text-body">Perren Keemar</a>
+                                    <small class="d-block text-muted">3 days ago</small>
+                                </div>
+                                <div class="ml-auto">
+                                    <a href="#" class="icon d-none d-md-inline-block ml-3 text-muted">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M12 20l-7 -7a4 4 0 0 1 6.5 -6a.9 .9 0 0 0 1 0a4 4 0 0 1 6.5 6l-7 7" /></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-4">
+                    <div class="card d-flex flex-column">
+                        <div class="card-body d-flex flex-column">
+                            <h3 class="card-title"><a href="#">You don't like your job, you don't strike.</a></h3>
+                            <div class="text-muted">But, Aquaman, you cannot marry a woman without gills. You're from two different worlds… Oh, I've ...</div>
+                            <div class="d-flex align-items-center pt-5 mt-auto">
+                                <span class="avatar avatar-md" style="background-image: url(/static/tabler/avatars/007m.jpg)"></span>
+                                <div class="ml-3">
+                                    <a href="./profile.html" class="text-body">Sunny Airey</a>
+                                    <small class="d-block text-muted">3 days ago</small>
+                                </div>
+                                <div class="ml-auto">
+                                    <a href="#" class="icon d-none d-md-inline-block ml-3 text-muted">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M12 20l-7 -7a4 4 0 0 1 6.5 -6a.9 .9 0 0 0 1 0a4 4 0 0 1 6.5 6l-7 7" /></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-4">
+                    <div class="card d-flex flex-column">
+                        <div class="card-body d-flex flex-column">
+                            <h3 class="card-title"><a href="#">I hope I didn't brain my damage.</a></h3>
+                            <div class="text-muted">I don't like being outdoors, Smithers. For one thing, there's too many fat children. Oh, loneline...</div>
+                            <div class="d-flex align-items-center pt-5 mt-auto">
+                                <span class="avatar avatar-md">SA</span>
+                                <div class="ml-3">
+                                    <a href="./profile.html" class="text-body">Geoffry Flaunders</a>
+                                    <small class="d-block text-muted">3 days ago</small>
+                                </div>
+                                <div class="ml-auto">
+                                    <a href="#" class="icon d-none d-md-inline-block ml-3 text-muted">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M12 20l-7 -7a4 4 0 0 1 6.5 -6a.9 .9 0 0 0 1 0a4 4 0 0 1 6.5 6l-7 7" /></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <footer class="footer footer-transparent">
+            <div class="container">
+                <div class="row text-center align-items-center flex-row-reverse">
+                    <div class="col-lg-auto ml-lg-auto">
+                        <ul class="list-inline list-inline-dots mb-0">
+                            <li class="list-inline-item"><a href="./docs/index.html" class="link-secondary">Documentation</a></li>
+                            <li class="list-inline-item"><a href="./faq.html" class="link-secondary">FAQ</a></li>
+                            <li class="list-inline-item"><a href="https://github.com/tabler/tabler" target="_blank" class="link-secondary">Source code</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+                        Copyright © 2020
+                        <a href="." class="link-secondary">Tabler</a>.
+                        All rights reserved.
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<!-- CreateModal -->
+<div class="modal fade" id="createStaticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createStaticBackdropLabel">创建</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="name">名称</label>
+                    <input type="text" id="name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="sort">级别</label>
+                    <input type="number" id="sort" value="0" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="show">可见</label>
+                    <input type="checkbox" id="show" checked>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                <button type="button" id="btnSubmit" class="btn btn-primary">创建</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--<script type="text/javascript" th:src="@{/webjars/jquery/3.0.0/jquery.min.js}"></script>-->
+<!-- Libs JS -->
+<script src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Tabler Core -->
+<script src="/static/tabler/dist/js/tabler.min.js"></script>
+<script>
+    document.body.style.display = "block"
+</script>
+<script>
+
+    let rootPath = '[[@{/}]]';
+
+
+
+    function queryArticles() {
+
+        $.ajax({
+            url: rootPath + 'console/article/query',
+            type: 'get',
+            dataType: 'json',
+            contentType: 'application/json;charset=utf8',
+            success: function(data){
+                let html = '';
+                for(let i = 0; i < data.data.length; i++){
+                    let article = data.data[i];
+                    html += '<tr>';
+                    if(article.urlName === null || article.urlName === '') {
+                        html += '<td><a target="_blank" href="/article/' + article.id +'">' + article.title + '</a></td>';
+                    } else {
+                        html += '<td><a target="_blank" href="/article/' + article.urlName +'">' + article.title + '</a></td>';
+                    }
+                    html += '<td>' + article.postAt + '</td>';
+                    html += '<td><a href="javascript:void(0);">' + article.category.name + '</a></td>';
+                    html += '<td></td>';
+                    html += '<td><span class="badge-success badge">' + article.hits + '</span></td>';
+                    html += '<td><span class="badge badge-success">' + article.comments + '</span></td>';
+
+                    if(article.status === 'POSTED'){
+                        html += '<td><span class="badge badge-success">发布</span></td>';
+                    }
+                    if(article.status === 'DRAFT'){
+                        html += '<td><span class="badge badge-warning">草稿</span></td>';
+                    }
+                    if(article.status === 'SCHEDULED'){
+                        html += '<td><span class="badge badge-info">计划</span></td>';
+                    }
+
+                    html += '<td><a href="javascript:void(0);">编辑</a></td>';
+
+                    html += '</tr>';
+                }
+
+                document.getElementById('articleTableBody').innerHTML = html;
+            }
+        })
+
+
+    }
+
+    $(document).ready(function(){
+        $("#btnSubmit").click(function (event) {
+
+            //stop submit the form, we will post it manually.
+            event.preventDefault();
+
+            fire_ajax_submit();
+        });
+
+        queryArticles();
+        // $("#articleTable").DataTable({
+        //     ordering: false,
+        //     searching: false,
+        //     serverSide: true,
+        //     autoWidth: true,
+        //     renderer: "bootstrap",
+        //     ajax: {
+        //         type: 'get',
+        //         dataType: 'json',
+        //         url: '/console/article/query',
+        //         async: false
+        //     },
+        //     columns: [
+        //         {data: 'title', render : function(value, row, index){
+        //                 let html = '<a href="">'+value+'</a>';
+        //                 return html;
+        //         }},
+        //         {data: 'createAt'},
+        //         {data: 'postAt'},
+        //         {data: ''},
+        //         {data: 'hits'},
+        //         {data: 'comments'},
+        //         {
+        //             className: "td-operation text-center",
+        //             data: null,
+        //             defaultContent: "",
+        //             orderable: false,
+        //             width: "160px",
+        //         }
+        //     ],
+        //     createRow : function(row, data, index){
+        //         let $btn = $('<div class="btn-group text-cen">'+
+        //             '<button type="button" class="btn btn-sm btn-primary btn-edit">修改</button>'+
+        //             '<button type="button" class="btn btn-sm btn-danger btn-del">删除</button>'+
+        //             '</div>'+
+        //             '</div>');
+        //         $('td', row).eq(6).append($btn);
+        //     },
+        //     paginate: {
+        //         first: "首页",
+        //         previous: '上页',
+        //         next: '下页',
+        //         last: '末页'
+        //     }
+        // });
+
+       // loadData();
+    });
+
+
+    function fire_ajax_submit() {
+        // Get form
+        $("#btnSubmit").prop("disabled", true);
+
+        let data = {
+            name: document.getElementById('name').value,
+            sort: document.getElementById('sort').value,
+            show: document.getElementById('show').checked
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/console/category/saved",
+            data: JSON.stringify(data),
+            contentType: 'application/json;charset=utf8',
+            dataType: 'json',
+            success: function (data) {
+                $("#btnSubmit").prop("disabled", false);
+                $('#createStaticBackdrop').modal('hide');
+                loadData();
+            },
+            error: function (e) {
+                console.log("ERROR : ", e);
+                $("#btnSubmit").prop("disabled", false);
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

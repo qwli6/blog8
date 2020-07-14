@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.lqw.blog8.mapper.TagMapper">
+
+    <resultMap id="TagMap" type="Tag">
+        <id property="id" column="id" />
+        <result property="tagName" column="name" />
+        <result property="createAt" column="create_at" />
+        <result property="modifyAt" column="modify_at" />
+    </resultMap>
+
+
+    <select id="findByName" parameterType="string" resultMap="TagMap">
+        select id, name from blog_tag where name = #{tagName,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="insert" parameterType="Tag">
+        insert into blog_tag(name)
+            values (#{tagName,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="findById" parameterType="integer" resultMap="TagMap">
+        select id, name, create_at, modify_at from blog_tag where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <update id="update" parameterType="Tag">
+        update blog_tag
+            <set>
+                <if test="tagName != null and tagName != ''">
+                    name = #{tagName,jdbcType=VARCHAR},
+                </if>
+                modify_at = now(),
+            </set>
+
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="count" resultType="int" parameterType="TagQueryParam">
+        select count(id) from blog_tag
+    </select>
+
+    <select id="selectPage" parameterType="TagQueryParam" resultMap="TagMap">
+        select id, name, create_at, modify_at from blog_tag
+        <where>
+            <if test="query != null and query != ''">
+                name = #{query,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by create_at desc
+        limit #{offset,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="integer">
+        delete from blog_tag where id = #{id,jdbcType=INTEGER}
+    </delete>
+</mapper>

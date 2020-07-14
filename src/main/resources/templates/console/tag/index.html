@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="标签列表"></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
+    <link href="/static/tabler/dist/css/tabler-buttons.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
+    <style>
+        body {
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+<div th:replace="/console/common/left-menu::leftMenu('tag')"></div>
+<div class="page">
+    <div th:replace="/console/common/head-navbar::headnav('tag')"></div>
+    <form th:action="@{/console/tags}" id="queryForm" method="get">
+        <div class="content">
+        <div class="container-xl">
+            <!-- Page title -->
+            <div class="page-header">
+                <div class="row row-sm align-items-center">
+                    <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                        <a href="javascript:void(0);" data-toggle="modal" data-target="#modal-team" class="btn btn-blue btn-block">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                            新标签
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table card-table table-vcenter text-nowrap datatable">
+                        <thead>
+                            <tr>
+                                <th>
+                                    ID
+                                </th>
+                                <th>
+                                    标签名称
+                                </th>
+                                <th>
+                                    创建时间
+                                </th>
+                                <th>
+                                    修改时间
+                                </th>
+                                <th class="w-1"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="tag: ${tagPage.data}">
+                                <td th:text="${tag.id}"></td>
+                                <td>
+                                    <a href="javascript:void(0);" th:text="${tag.tagName}"></a>
+                                </td>
+                                <td th:text="${#temporals.format(tag.getCreateAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                <td th:text="${#temporals.format(tag.getModifyAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                <td>
+                                  <div class="btn-list text-right flex-nowrap">
+                                      <a href="javascript:void(0);" class="btn btn-primary">编辑</a>
+                                      <a href="javascript:void(0);" th:onclick="'deleteTag(' + ${tag.id} + ');'" class="btn btn-danger">删除</a>
+                                  </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer d-flex align-items-center">
+                    <p class="m-0 text-muted">显示 <span>1</span> 到 <span th:text="${tagPage.totalPage}">8</span> 页, 共 <span th:text="${tagPage.totalRow}">16</span> 条记录</p>
+                    <ul class="pagination m-0 ml-auto" th:if="${tagPage.totalPage > 0}">
+                        <li class="page-item" th:classappend="${tagPage.currentPage == 1 ? 'disabled' : ''}">
+                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(1);'" tabindex="-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><polyline points="11 7 6 12 11 17"></polyline><polyline points="17 7 12 12 17 17"></polyline></svg>
+                                首页
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${tagPage.currentPage == 1 ? 'disabled' : ''}">
+                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${tagPage.currentPage - 1} + ');'" tabindex="-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18" /></svg>
+                                上一页
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${tagPage.currentPage == item ? 'active' : ''}" th:each="item: ${#numbers.sequence(1, tagPage.totalPage)}">
+                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${item} + ');'" th:text="${item}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${tagPage.currentPage == tagPage.totalPage ? 'disabled' : ''}">
+                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${tagPage.currentPage + 1} + ');'">
+                                下一页 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="9 6 15 12 9 18" /></svg>
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${tagPage.currentPage == tagPage.totalPage ? 'disabled' : ''}">
+                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${tagPage.totalPage} + ');'">
+                                尾页
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><polyline points="7 7 12 12 7 17"></polyline><polyline points="13 7 18 12 13 17"></polyline></svg>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+        <input type="hidden" id="currentPage" name="currentPage" th:value="${tagPage.currentPage}">
+        <input type="hidden" id="pageSize" name="pageSize" th:value="${tagPage.pageSize}">
+    </form>
+
+    <div class="modal modal-blur fade" id="modal-team" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">编辑/新增标签</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3 align-items-end">
+                        <div class="col-auto">
+                            <a href="#" class="avatar avatar-upload rounded">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                                <span class="avatar-upload-text">Add</span>
+                            </a>
+                        </div>
+                        <input type="hidden" name="tagId" id="tagId" value="">
+                        <div class="col">
+                            <label for="tagName" class="form-label">标签名称</label>
+                            <input type="text" id="tagName" name="tagName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Pick your team color</label>
+                        <div class="row row-sm">
+                            <div class="col-auto">
+                                <label class="form-colorinput">
+                                    <input name="color" type="radio" value="dark" class="form-colorinput-input" />
+                                    <span class="form-colorinput-color bg-dark"></span>
+                                </label>
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-colorinput form-colorinput-light">
+                                    <input name="color" type="radio" value="white" class="form-colorinput-input"  checked/>
+                                    <span class="form-colorinput-color bg-white"></span>
+                                </label>
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-colorinput">
+                                    <input name="color" type="radio" value="blue" class="form-colorinput-input" />
+                                    <span class="form-colorinput-color bg-blue"></span>
+                                </label>
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-colorinput">
+                                    <input name="color" type="radio" value="azure" class="form-colorinput-input" />
+                                    <span class="form-colorinput-color bg-azure"></span>
+                                </label>
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-colorinput">
+                                    <input name="color" type="radio" value="indigo" class="form-colorinput-input" />
+                                    <span class="form-colorinput-color bg-indigo"></span>
+                                </label>
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-colorinput">
+                                    <input name="color" type="radio" value="purple" class="form-colorinput-input" />
+                                    <span class="form-colorinput-color bg-purple"></span>
+                                </label>
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-colorinput">
+                                    <input name="color" type="radio" value="pink" class="form-colorinput-input" />
+                                    <span class="form-colorinput-color bg-pink"></span>
+                                </label>
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-colorinput">
+                                    <input name="color" type="radio" value="red" class="form-colorinput-input" />
+                                    <span class="form-colorinput-color bg-red"></span>
+                                </label>
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-colorinput">
+                                    <input name="color" type="radio" value="orange" class="form-colorinput-input" />
+                                    <span class="form-colorinput-color bg-orange"></span>
+                                </label>
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-colorinput">
+                                    <input name="color" type="radio" value="yellow" class="form-colorinput-input" />
+                                    <span class="form-colorinput-color bg-yellow"></span>
+                                </label>
+                            </div>
+                            <div class="col-auto">
+                                <label class="form-colorinput">
+                                    <input name="color" type="radio" value="lime" class="form-colorinput-input" />
+                                    <span class="form-colorinput-color bg-lime"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">Additional info</label>
+                        <textarea class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white mr-auto" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btn-save-tag" data-dismiss="modal">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<script type="text/javascript" th:src="@{/webjars/jquery/3.0.0/jquery.min.js}"></script>
+<!-- Libs JS -->
+<script src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Tabler Core -->
+<script src="/static/tabler/dist/js/tabler.min.js"></script>
+<script>
+    document.body.style.display = "block"
+</script>
+<script>
+    function toPage(i){
+        document.getElementById('currentPage').value = i;
+        document.getElementById('queryForm').submit();
+    }
+    document.getElementById('btn-save-tag').addEventListener('click', function(){
+        let id = document.getElementById('tagId').value;
+        let url = '';
+        if(id == null || id === ''){
+            url = '/console/tag/save';
+        } else {
+            url = '/console/tag/' + id + '/update';
+        }
+
+        let data = {
+            'tagName': document.getElementById('tagName').value,
+        }
+
+        $.ajax({
+            url: url,
+            type: 'post',
+            dataType: 'json',
+            contentType: 'application/json;charset=utf8',
+            data: JSON.stringify(data),
+            success: function(res){
+                window.location.reload();
+                console.log('success');
+            }
+        });
+    });
+
+    function deleteTag(i){
+        $.ajax({
+            url: '/console/tag/' + i + '/delete',
+            type: 'delete',
+            dataType: 'json',
+            success: function(res){
+                window.location.reload();
+            }
+        });
+    }
+</script>
+
+
+<script>
+    $(document).ready(function(){
+        $("#btnSubmit").click(function (event) {
+
+            //stop submit the form, we will post it manually.
+            event.preventDefault();
+
+            fire_ajax_submit();
+        });
+
+       // loadData();
+
+        let tables = $('#example').DataTable({
+            serverSide: true,
+            paging: false,
+            ordering: false,
+            searching: false,
+            ajax: "/console/categories/list",
+            columns:[
+                {"data": "name", "orderable": false},
+                {"data" : "createAt", "orderable": false},
+                {"data": "modifyAt", "orderable": false},
+                {"data": "show", "orderable": false}],
+            columnDefs: [{
+                //指定第四列，从 0 开始，0 表示第一列，1 表示第二列
+                "targets" : 4,
+                "render": function(data, type, row, meta){
+                    let html = "<button type='button' class='btn btn-info btn-sm' data-id="+data+"><i class='fa fa-pencil'></i>Edit</button>";
+                    html += '<button class="btn btn-danger btn-sm" data-id=' + data + '><i class="fa fa-trash-o"></i>Delete</button>'
+                    return html;
+                }
+            }]
+        });
+        $('#example tbody').on( 'click', 'button', function () {
+            let data = tables.row( $(this).parents('tr') ).data();
+            alert( data[0] +"'s salary is: "+ data[ 3 ] );
+        } );
+
+    });
+
+
+    function loadData(){
+        $.get('/console/categories/list', {}, function(data){
+            let html = '';
+            for(let i = 0; i < data.length; i++){
+                let cData = data[i];
+                html += '<tr>';
+                html += '<td>'+ cData.name +'</td>';
+                html += '<td>'+ cData.createAt +'</td>';
+                html += '<td>'+ cData.modifyAt +'</td>';
+                html += '<td>'+ cData.show +'</td>';
+                html += '<td><a href="">上移</a>' +
+                    '<a href="">下移</a> ' +
+                    '<a href="">置顶</a> ' +
+                    '<a href="">置底</a> ' +
+                    '<a href="">编辑</a> ' +
+                    '<a href="javascript:void(0);" onclick="deleteCategory('+cData.id+')">删除</a> ' +
+                    '<a href="">可见</a> ' +
+                    '</td>';
+                html += '</tr>'
+            }
+            $('#categoryPanel').html(html);
+        });
+    }
+
+    function fire_ajax_submit() {
+        // Get form
+        $("#btnSubmit").prop("disabled", true);
+
+        let data = {
+            name: document.getElementById('name').value,
+            sort: document.getElementById('sort').value,
+            show: document.getElementById('show').checked
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/console/category/saved",
+            data: JSON.stringify(data),
+            contentType: 'application/json;charset=utf8',
+            dataType: 'json',
+            success: function (data) {
+                $("#btnSubmit").prop("disabled", false);
+                $('#createStaticBackdrop').modal('hide');
+                loadData();
+            },
+            error: function (e) {
+                console.log("ERROR : ", e);
+                $("#btnSubmit").prop("disabled", false);
+            }
+        });
+    }
+
+    function deleteCategory(id){
+        $.ajax({
+            url: '/console/category/' + id + '/delete',
+            type: 'delete',
+            success: function(res){
+                loadData();
+            }
+        })
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.lqw.blog8.mapper.MomentMapper">
+
+    <resultMap id="MomentPageResult" type="Moment">
+        <id property="id" column="id" />
+        <result property="content" column="content" />
+        <result property="comments" column="comments" />
+        <result property="hits" column="hits" />
+        <result property="allowComment" column="allow_comment" />
+        <result property="createAt" column="create_at" />
+        <result property="modifyAt" column="modify_at" />
+    </resultMap>
+
+    <resultMap id="MomentResult" type="Moment">
+        <id property="id" column="id" />
+        <result property="content" column="content" />
+        <result property="comments" column="comments" />
+        <result property="hits" column="hits" />
+        <result property="allowComment" column="allow_comment" />
+        <result property="createAt" column="create_at" />
+        <result property="modifyAt" column="modify_at" />
+    </resultMap>
+
+    <resultMap id="MomentArchiveResult" type="MomentArchive">
+        <result property="date" column="date" />
+        <collection property="moments" ofType="Moment">
+            <id property="id" column="id" />
+            <result property="content" column="content" />
+            <result property="hits" column="hits" />
+            <result property="comments" column="comments" />
+            <result property="createAt" column="create_at" />
+            <result property="modifyAt" column="modify_at" />
+            <result property="allowComment" column="allow_comment"/>
+        </collection>
+    </resultMap>
+
+    <insert id="insert" parameterType="Moment">
+        insert into blog_moment(content, hits, comments, create_at, modify_at, allow_comment)
+            values(#{content,jdbcType=VARCHAR}, #{hits,jdbcType=INTEGER}, #{comments,jdbcType=INTEGER},
+                   now(),now(), #{allowComment,jdbcType=BOOLEAN})
+    </insert>
+
+
+    <select id="count" resultType="integer" parameterType="MomentQueryParam">
+        select count(1) from blog_moment
+        <where>
+            <if test="query != null and query != ''">
+                content like concat('%', #{query}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPage" resultMap="MomentPageResult" parameterType="MomentQueryParam">
+        select
+        id, content, create_at, modify_at,
+        allow_comment, hits, comments
+        from blog_moment
+        <where>
+            <if test="query != null and query != ''">
+                content like concat('%', #{query}, '%')
+            </if>
+        </where>
+
+        order by create_at desc
+        limit #{offset}, #{pageSize}
+    </select>
+
+    <select id="findById" parameterType="integer" resultMap="MomentResult">
+        select content, hits, allow_comment from blog_moment where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <update id="update" parameterType="Moment">
+        update blog_moment
+            <set>
+                <if test="content != null and content != ''">
+                    content = #{content,jdbcType=VARCHAR},
+                </if>
+                <if test="allowComment != null">
+                    allow_comment = #{allowComment,jdbcType=BOOLEAN}
+                </if>
+            </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectLatestMoments" resultMap="MomentArchiveResult">
+        select bmd.date, bm.id, bm.content, bm.create_at, bm.modify_at, bm.allow_comment, bm.hits, bm.comments
+        from (select date_format(create_at, '%Y-%m-%d') as date from blog_moment group by date order by date desc limit 1) bmd
+                          left join blog_moment bm on bmd.date = date_format(bm.create_at, '%Y-%m-%d')
+        order by bm.create_at desc
+    </select>
+
+
+    <select id="countMomentArchive" resultType="integer">
+        select count(bmd.date) from (select date_format(create_at, '%Y-%m-%d') as date from blog_moment group by date) bmd
+    </select>
+
+    <select id="selectMomentArchivePage" parameterType="MomentQueryParam" resultMap="MomentArchiveResult">
+        select bmd.date, bm.id, bm.content, bm.create_at, bm.modify_at, bm.allow_comment, bm.hits, bm.comments
+        from (select date_format(create_at, '%Y-%m-%d') as date from blog_moment group by date order by date desc limit #{offset,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}) bmd
+        left join blog_moment bm on bmd.date = date_format(bm.create_at, '%Y-%m-%d') order by bm.create_at desc
+    </select>
+
+    <update id="increaseHits">
+        update blog_moment set hits = hits + #{hits} where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+</mapper>

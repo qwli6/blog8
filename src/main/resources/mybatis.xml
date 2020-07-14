@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="useGeneratedKeys" value="true"/>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+
+
+    <typeAliases>
+        <typeAlias type="org.apache.ibatis.type.EnumOrdinalTypeHandler" alias="EnumOrdinalTypeHandler"/>
+        <typeAlias type="me.lqw.blog8.mapper.TagIdsTypeHandler" alias="TagIdsTypeHandler" />
+        <package name="me.lqw.blog8.model"/>
+    </typeAliases>
+
+    <mappers>
+        <mapper resource="mapper/UserMapper.xml" />
+        <mapper resource="mapper/CategoryMapper.xml" />
+        <mapper resource="mapper/ArticleMapper.xml" />
+        <mapper resource="mapper/ArticleTagMapper.xml" />
+        <mapper resource="mapper/TagMapper.xml" />
+        <mapper resource="mapper/MomentMapper.xml" />
+        <mapper resource="mapper/CommentMapper.xml" />
+        <mapper resource="mapper/BlackIpMapper.xml" />
+    </mappers>
+
+</configuration>

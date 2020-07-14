@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.lqw.blog8.mapper.CategoryMapper">
+
+    <resultMap id="CategoryMap" type="Category">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="createAt" column="create_at"/>
+        <result property="modifyAt" column="modify_at"/>
+        <result property="sort" column="sort"/>
+    </resultMap>
+
+    <sql id="full">
+        select id, name, create_at, modify_at, sort, is_show from blog_category
+    </sql>
+
+
+    <insert id="insert" parameterType="Category">
+        insert into  blog_category(name, sort, is_show)
+            values (#{name,jdbcType=VARCHAR},
+                    #{sort,jdbcType=INTEGER},
+                    #{show,jdbcType=BOOLEAN})
+    </insert>
+
+
+    <select id="findAll" resultMap="CategoryMap">
+        <include refid="full" />
+        order by sort desc
+    </select>
+    <select id="findByName" resultMap="CategoryMap" parameterType="string">
+        <include refid="full" />
+        where name = #{name,jdbcType=VARCHAR}
+    </select>
+    <select id="findById" resultMap="CategoryMap" parameterType="integer">
+        <include refid="full" />
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="integer">
+        delete from blog_category where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <update id="update" parameterType="Category">
+        update blog_category
+            <set>
+                <if test="name != null and name != ''">
+                    name = #{name,jdbcType=VARCHAR},
+                </if>
+                modify_at = now(),
+            </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+</mapper>

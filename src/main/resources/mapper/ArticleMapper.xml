@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.lqw.blog8.mapper.ArticleMapper">
+
+    <resultMap id="ArticleMap" type="Article">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="createAt" column="create_at"/>
+        <result property="modifyAt" column="modify_at"/>
+        <result property="urlName" column="url_name"/>
+        <result property="hits" column="hits"/>
+        <result property="comments" column="comments"/>
+        <result property="status" column="status" typeHandler="EnumOrdinalTypeHandler" />
+        <result property="allowComment" column="allow_comment"/>
+    </resultMap>
+    <resultMap id="ArticlePageMap" type="Article">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="createAt" column="create_at"/>
+        <result property="modifyAt" column="modify_at"/>
+        <result property="postAt" column="post_at" />
+        <result property="urlName" column="url_name"/>
+        <result property="digest" column="digest" />
+        <result property="status" column="status" typeHandler="EnumOrdinalTypeHandler" />
+        <result property="hits" column="hits"/>
+        <result property="comments" column="comments"/>
+        <result property="allowComment" column="allow_comment"/>
+        <result property="tags" column="tag_ids" typeHandler="TagIdsTypeHandler" />
+        <association property="category" javaType="me.lqw.blog8.model.Category">
+            <id property="id" column="category_id"/>
+            <result property="name" column="category_name" />
+        </association>
+    </resultMap>
+
+    <sql id="full">
+        select id, title, url_name, content, digest,
+               create_at, modify_at, post_at, hits,
+               comments, status, allow_comment,
+               fk_category_id from blog_article
+    </sql>
+
+    <select id="findByUrlName" parameterType="string" resultMap="ArticleMap">
+        <include refid="full" />
+        where url_name = #{urlName,jdbcType=VARCHAR}
+    </select>
+
+
+
+    <insert id="insert" parameterType="Article">
+        insert into blog_article(title, url_name, content, post_at,
+                                 hits, comments, allow_comment, fk_category_id, create_at, modify_at)
+        VALUES
+            (#{title,jdbcType=VARCHAR}, #{urlName,jdbcType=VARCHAR},
+             #{content,jdbcType=VARCHAR}, #{postAt},
+             #{hits,jdbcType=INTEGER}, #{comments,jdbcType=INTEGER},
+             #{allowComment,jdbcType=BOOLEAN}, #{category.id,jdbcType=INTEGER},
+            now(), now())
+    </insert>
+    <select id="count" parameterType="HandledArticleQueryParam" resultType="integer">
+        select count(ba.id) from blog_article ba
+        <if test="category != null">
+            left join blog_category bc on ba.fk_category_id = bc.id
+        </if>
+        <where>
+            <if test="category != null">
+                and bc.id = #{category.id, jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPage" parameterType="HandledArticleQueryParam" resultMap="ArticlePageMap">
+        select
+            ba.id,
+            ba.title,
+            ba.content,
+            ba.create_at,
+            ba.hits,
+            ba.digest,
+            ba.comments,
+            ba.status,
+            ba.post_at,
+            ba.url_name,
+            ba.allow_comment,
+            bc.id as category_id,
+            bc.name as category_name,
+            (select group_concat(bat.tag_id) from blog_article_tag bat where bat.article_id = ba.id group by bat.article_id) as tag_ids
+        from blog_article ba
+        left join blog_category bc on ba.fk_category_id = bc.id
+        <if test="tag != null">
+            inner join (select article_id from blog_article_tag where tag_id = #{tag.id,jdbcType=INTEGER}) as bat2 on bat2.article_id = ba.id
+        </if>
+        <where>
+            <if test="category != null">
+                and ba.fk_category_id = #{category.id, jdbcType=INTEGER}
+            </if>
+            <if test="begin != null">
+                and ba.create_at between #{begin} and #{end}
+            </if>
+        </where>
+
+        order by create_at desc
+
+        <if test="offset != null">
+            limit #{offset, jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+        </if>
+
+    </select>
+
+    <select id="findById" parameterType="integer" resultMap="ArticleMap">
+        select id, title, url_name, content, digest, create_at, modify_at,
+               post_at, hits, comments, status, allow_comment,
+               fk_category_id
+        from
+            blog_article
+        where
+            id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <update id="increaseHits">
+        update blog_article set hits = hits + #{hits} where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="integer">
+        delete from blog_article where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <select id="countArchive" parameterType="ArticleQueryParam" resultType="int">
+        select date_format(post_at, '%Y-%m-%d') as date from blog_article where status = #{status, typeHandler=EnumOrdinalTypeHandler}
+        group by date order by date desc
+    </select>
+
+
+
+    <resultMap id="ArticleArchiveMap" type="ArticleArchive">
+        <result property="date" column="date" />
+        <collection property="articles" ofType="Article">
+            <id property="id" column="id" />
+            <result property="title" column="title" />
+            <result property="content" column="content" />
+            <result property="createAt" column="create_at"/>
+            <result property="modifyAt" column="modify_at"/>
+            <result property="postAt" column="post_at" />
+            <result property="urlName" column="url_name"/>
+            <result property="status" column="status" typeHandler="EnumOrdinalTypeHandler" />
+            <result property="hits" column="hits"/>
+            <result property="comments" column="comments"/>
+            <result property="allowComment" column="allow_comment"/>
+            <result property="tags" column="tag_str" typeHandler="TagIdsTypeHandler" />
+            <association property="category" javaType="Category">
+                <id property="id" column="category_id"/>
+                <result property="name" column="category_name" />
+            </association>
+        </collection>
+    </resultMap>
+    <select id="selectArchivePage" parameterType="ArticleQueryParam" resultMap="ArticleArchiveMap">
+
+    </select>
+
+    <update id="increaseComments" parameterType="integer">
+        update blog_article set comments = comments + 1 where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+</mapper>

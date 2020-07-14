@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="动态列表">新动态</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
+    <link href="/static/tabler/dist/css/tabler-buttons.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
+    <style>
+        body{
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+<div th:replace="/console/common/left-menu::leftMenu('moment')"></div>
+<div class="page">
+    <div th:replace="/console/common/head-navbar::headnav('moment')"></div>
+    <div class="content">
+        <div class="container-xl">
+            <!-- Page title -->
+            <div class="page-header">
+                <div class="row row-sm align-items-center">
+                    <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                        <a th:href="@{/console/moments}" class="btn btn-blue btn-block">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                            返回
+                        </a>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                        <a href="javascript:void(0);" id="btnSubmit" class="btn btn-indigo btn-block">
+                            发布
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+           <div class="row">
+               <div class="col-12">
+                   <textarea name="content" class="form-control" id="content" cols="30" rows="10"></textarea>
+               </div>
+               <div class="mb-3">
+                   <div class="form-label">评论</div>
+                   <div>
+                       <label class="form-check form-check-inline">
+                           <input id="allowComment" class="form-check-input" type="checkbox" checked>
+                           <span class="form-check-label">开启评论</span>
+                       </label>
+                   </div>
+               </div>
+           </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
+<!-- Libs JS -->
+<script src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Tabler Core -->
+<script src="/static/tabler/dist/js/tabler.min.js"></script>
+<script>
+    document.body.style.display = "block";
+</script>
+<script>
+
+    let rootPath = '[[@{/}]]';
+
+    $(document).ready(function(){
+        $("#btnSubmit").click(function (event) {
+
+            //stop submit the form, we will post it manually.
+            event.preventDefault();
+
+            fire_ajax_submit();
+        });
+
+       // loadData();
+    });
+
+
+    function fire_ajax_submit() {
+        // Get form
+        $("#btnSubmit").prop("disabled", true);
+
+        let data = {
+            content: document.getElementById('content').value,
+            allowComment: document.getElementById('allowComment').checked
+        }
+
+        $.ajax({
+            type: "POST",
+            url: rootPath + "console/moment/save",
+            data: JSON.stringify(data),
+            contentType: 'application/json;charset=utf8',
+            dataType: 'json',
+            success: function (data) {
+                $("#btnSubmit").prop("disabled", false);
+                // $('#createStaticBackdrop').modal('hide');
+                // loadData();
+                window.location.href = rootPath + 'console/moments';
+            },
+            error: function (e) {
+                console.log("ERROR : ", e);
+                $("#btnSubmit").prop("disabled", false);
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

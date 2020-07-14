@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.lqw.blog8.mapper.CommentMapper">
+
+
+    <resultMap id="CommentMap" type="Comment">
+        <id property="id" column="id" />
+        <result property="username" column="username" />
+        <result property="email" column="email" />
+        <result property="content" column="content" />
+        <result property="admin" column="admin" />
+        <result property="avatar" column="avatar" />
+<!--        <result property="check" column="check" />-->
+        <result property="address" column="address" />
+        <result property="ip" column="ip" />
+        <result property="fromClient" column="fromClient" />
+        <result property="createAt" column="create_at" />
+        <result property="modifyAt" column="modify_at" />
+        <result property="path" column="path" />
+        <result property="status" column="status" typeHandler="EnumOrdinalTypeHandler"/>
+        <result property="website" column="website" />
+        <association property="module" javaType="me.lqw.blog8.model.CommentModule">
+            <result property="id" column="module_id" />
+            <result property="name" column="module_name" />
+        </association>
+    </resultMap>
+
+    <insert id="insert" parameterType="Comment">
+        insert into blog_comment (content, email, username, module_name, module_id,
+                                  status, path, fk_parent_id, admin, ip, address,
+                                  from_client, avatar) values
+            (#{content,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},
+            #{username,jdbcType=VARCHAR}, #{module.name,jdbcType=VARCHAR},
+            #{module.id,jdbcType=INTEGER}, #{status, typeHandler=EnumOrdinalTypeHandler},
+            #{path,jdbcType=VARCHAR}, #{parent.id}, #{admin,jdbcType=BOOLEAN}, #{ip,jdbcType=VARCHAR},
+            #{address,jdbcType=VARCHAR}, #{fromClient,jdbcType=VARCHAR},
+            #{avatar,jdbcType=VARCHAR})
+    </insert>
+
+    <delete id="deleteByModule" parameterType="CommentModule">
+        delete from blog_comment where module_id = #{id,jdbcType=INTEGER} and module_name = #{name,jdbcType=VARCHAR}
+    </delete>
+
+    <select id="findById" parameterType="integer" resultMap="CommentMap">
+        select id, content, email, username, module_name, module_id, status, path,
+               fk_parent_id, admin, ip, address, from_client, create_at,
+               modify_at from blog_comment
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="findLastCommentByIp" parameterType="string" resultMap="CommentMap">
+        select id, content, email, username, module_name, module_id, status, path,
+               fk_parent_id, admin, ip, address, from_client,
+               create_at, modify_at from blog_comment
+        where ip = #{ip,jdbcType=VARCHAR} order by create_at desc limit 1
+    </select>
+
+    <select id="findLatestByModuleAndIp" resultMap="CommentMap">
+        select id, content, email, username, module_name, module_id, status, path,
+               fk_parent_id, admin, ip, address, from_client,
+               create_at, modify_at from blog_comment
+        where ip = #{ip,jdbcType=VARCHAR} and module_id = #{module.id,jdbcType=INTEGER}
+        and module_name = #{module.name,jdbcType=VARCHAR} order by create_at desc limit 1
+    </select>
+
+    <delete id="delete" parameterType="integer">
+        delete from blog_comment where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <delete id="deleteChildren" parameterType="integer">
+        delete from blog_comment where fk_parent_id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <select id="countByQueryParam" parameterType="CommentQueryParam" resultType="int">
+        select count(id) from blog_comment
+        <where>
+            <if test="module != null">
+                and module_id = #{module.id,jdbcType=INTEGER}
+                and module_name = #{module.name,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status, typeHandler=EnumOrdinalTypeHandler}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPage" parameterType="CommentQueryParam" resultMap="CommentMap">
+        select id, content, email, username, module_name,
+            module_id, status, path, fk_parent_id, admin, ip,
+            address, from_client, create_at, modify_at, avatar
+        from blog_comment
+        <where>
+            <if test="module != null">
+                and module_id = #{module.id,jdbcType=INTEGER}
+                and module_name = #{module.name,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status, typeHandler=EnumOrdinalTypeHandler}
+            </if>
+        </where>
+
+        order by create_at desc
+        limit #{offset,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+    </select>
+
+    <select id="findParentCommentById" parameterType="integer" resultMap="CommentMap">
+        select id, email, username, avatar from blog_comment
+        where fk_parent_id = #{id,jdbcType=INTEGER}
+    </select>
+</mapper>

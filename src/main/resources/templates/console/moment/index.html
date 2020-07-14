@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="动态列表">动态列表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
+    <link href="/static/tabler/dist/css/tabler-buttons.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
+    <style>
+        body{
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+<div th:replace="/console/common/left-menu::leftMenu('moment')"></div>
+<div class="page">
+    <div th:replace="/console/common/head-navbar::headnav('moment')"></div>
+    <div class="content">
+        <div class="container-xl">
+            <!-- Page title -->
+            <div class="page-header">
+                <div class="row row-sm align-items-center">
+                    <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                        <a th:href="@{/console/moment/create}" class="btn btn-blue btn-block">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                            新动态
+                        </a>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                        <a href="javascript:void(0);" data-toggle="modal" data-target="#modal-report" class="btn btn-azure btn-block">
+                            查询
+                        </a>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                        <a href="#" class="btn btn-indigo btn-block">
+                            统计
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-deck">
+                <div class="col-sm-6 col-xl-4" th:each="moment : ${momentPage.data}">
+                    <div class="card d-flex flex-column">
+                        <a href="#" th:if="!${#strings.isEmpty(moment.featureImage)}">
+                            <img class="card-img-top" src="./static/photos//9f36332564ca271d.jpg" alt="And this isn&#39;t my nose. This is a false one.">
+                        </a>
+                        <div class="card-body d-flex flex-column">
+<!--                            <h3 class="card-title"><a href="#">And this isn't my nose. This is a false one.</a></h3>-->
+                            <div class="text-muted" th:utext="${moment.content}">Look, my liege! The Knights Who Say Ni demand a sacrifice! …Are you suggesting that coconuts migr...</div>
+                            <div class="d-flex align-items-center pt-5 mt-auto">
+                                <div>
+                                    <small class="text-body" th:text="${#temporals.format(moment.createAt, 'yyyy-MM-dd HH:mm:ss')}">2020-07-04 09:21:23</small>
+                                    <small class="d-block text-muted" >
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><circle cx="12" cy="12" r="2"></circle><path d="M2 12l1.5 2a11 11 0 0 0 17 0l1.5 -2"></path><path d="M2 12l1.5 -2a11 11 0 0 1 17 0l1.5 2"></path></svg>
+                                        <small th:text="${moment.hits}" class="mr-2"></small>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><path d="M3 20l1.3 -3.9a9 8 0 1 1 3.4 2.9l-4.7 1"></path><line x1="12" y1="12" x2="12" y2="12.01"></line><line x1="8" y1="12" x2="8" y2="12.01"></line><line x1="16" y1="12" x2="16" y2="12.01"></line></svg>
+                                        <small th:text="${moment.comments}"></small>
+                                    </small>
+                                </div>
+                                <div class="ml-auto">
+                                    <a th:href="@{/console/moment/} + ${moment.id} + '/edit' " class="icon d-none d-md-inline-block ml-3 text-blue">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><path d="M9 7 h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3"></path><path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3"></path><line x1="16" y1="5" x2="19" y2="8"></line></svg>
+                                    </a>
+                                    <a href="#" th:data-momentid="${moment.id}" class="icon d-none d-md-inline-block ml-3 text-red">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="4" y1="7" x2="20" y2="7"></line><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <ul class="pagination justify-content-center m-0 ml-auto" th:if="${momentPage.totalPage > 0}">
+                <li class="page-item" th:classappend="${momentPage.currentPage == 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(1);'" tabindex="-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><polyline points="11 7 6 12 11 17"></polyline><polyline points="17 7 12 12 17 17"></polyline></svg>
+                        首页
+                    </a>
+                </li>
+                <li class="page-item" th:classappend="${momentPage.currentPage == 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${momentPage.currentPage - 1} + ');'" tabindex="-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18" /></svg>
+                        上一页
+                    </a>
+                </li>
+                <li class="page-item" th:classappend="${momentPage.currentPage == item ? 'active' : ''}" th:each="item: ${#numbers.sequence(1, momentPage.totalPage)}">
+                    <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${item} + ');'" th:text="${item}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${momentPage.currentPage == momentPage.totalPage ? 'disabled' : ''}">
+                    <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${momentPage.currentPage + 1} + ');'">
+                        下一页 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="9 6 15 12 9 18" /></svg>
+                    </a>
+                </li>
+                <li class="page-item" th:classappend="${momentPage.currentPage == momentPage.totalPage ? 'disabled' : ''}">
+                    <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${momentPage.totalPage} + ');'">
+                        尾页
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><polyline points="7 7 12 12 7 17"></polyline><polyline points="13 7 18 12 13 17"></polyline></svg>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+    <div class="modal modal-blur fade" id="modal-report" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">高级查询</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                    </button>
+                </div>
+                <form method="get" id="queryForm" th:action="@{/console/moments}">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">关键字</label>
+                            <input type="text" class="form-control" name="query" placeholder="关键字">
+                        </div>
+                        <label class="form-label">查询类型</label>
+                        <div class="form-selectgroup-boxes row mb-3">
+                            <div class="col-lg-4">
+                                <label class="form-selectgroup-item">
+                                    <input type="checkbox" name="report-type" value="1" class="form-selectgroup-input" checked>
+                                    <span class="form-selectgroup-label d-flex align-items-center p-3">
+                                        <span class="mr-3">
+                                          <span class="form-selectgroup-check"></span>
+                                        </span>
+                                        <span class="form-selectgroup-label-content">
+                                          <span class="form-selectgroup-title strong mb-1">发布</span>
+                                          <span class="d-block text-muted">发布状态，前台可见</span>
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="col-lg-4">
+                                <label class="form-selectgroup-item">
+                                    <input type="checkbox" name="report-type" value="1" class="form-selectgroup-input">
+                                    <span class="form-selectgroup-label d-flex align-items-center p-3">
+                                        <span class="mr-3">
+                                          <span class="form-selectgroup-check"></span>
+                                        </span>
+                                        <span class="form-selectgroup-label-content">
+                                          <span class="form-selectgroup-title strong mb-1">草稿</span>
+                                          <span class="d-block text-muted">未发布存草稿</span>
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="col-lg-4">
+                                <label class="form-selectgroup-item">
+                                    <input type="checkbox" name="report-type" value="1" class="form-selectgroup-input">
+                                    <span class="form-selectgroup-label d-flex align-items-center p-3">
+                                        <span class="mr-3">
+                                          <span class="form-selectgroup-check"></span>
+                                        </span>
+                                        <span class="form-selectgroup-label-content">
+                                          <span class="form-selectgroup-title strong mb-1">计划待发布</span>
+                                          <span class="d-block text-muted">未发布的动态</span>
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label class="form-label">开始时间</label>
+                                    <input type="datetime-local" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label class="form-label">结束时间</label>
+                                    <input type="datetime-local" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="currentPage" name="currentPage" th:value="${momentPage.currentPage}">
+                    <input type="hidden" id="pageSize" name="pageSize" th:value="${momentPage.pageSize}">
+                </form>
+
+                <div class="modal-footer">
+                    <a href="javascript:void(0);" class="btn btn-link link-secondary" data-dismiss="modal">
+                        取消
+                    </a>
+                    <a href="javascript:void(0);" class="btn btn-primary ml-auto" data-dismiss="modal">
+                        查询
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<!--<script type="text/javascript" th:src="@{/webjars/jquery/3.0.0/jquery.min.js}"></script>-->
+<!-- Libs JS -->
+<script src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Tabler Core -->
+<script src="/static/tabler/dist/js/tabler.min.js"></script>
+<script>
+    document.body.style.display = "block";
+    function toPage(i){
+        document.getElementById('currentPage').value = i;
+        document.getElementById('queryForm').submit();
+    }
+</script>
+<script>
+
+    let rootPath = '[[@{/}]]';
+
+
+
+    function queryArticles() {
+
+    }
+
+    $(document).ready(function(){
+        $("#btnSubmit").click(function (event) {
+
+            //stop submit the form, we will post it manually.
+            event.preventDefault();
+
+            fire_ajax_submit();
+        });
+
+        queryArticles();
+        // $("#articleTable").DataTable({
+        //     ordering: false,
+        //     searching: false,
+        //     serverSide: true,
+        //     autoWidth: true,
+        //     renderer: "bootstrap",
+        //     ajax: {
+        //         type: 'get',
+        //         dataType: 'json',
+        //         url: '/console/article/query',
+        //         async: false
+        //     },
+        //     columns: [
+        //         {data: 'title', render : function(value, row, index){
+        //                 let html = '<a href="">'+value+'</a>';
+        //                 return html;
+        //         }},
+        //         {data: 'createAt'},
+        //         {data: 'postAt'},
+        //         {data: ''},
+        //         {data: 'hits'},
+        //         {data: 'comments'},
+        //         {
+        //             className: "td-operation text-center",
+        //             data: null,
+        //             defaultContent: "",
+        //             orderable: false,
+        //             width: "160px",
+        //         }
+        //     ],
+        //     createRow : function(row, data, index){
+        //         let $btn = $('<div class="btn-group text-cen">'+
+        //             '<button type="button" class="btn btn-sm btn-primary btn-edit">修改</button>'+
+        //             '<button type="button" class="btn btn-sm btn-danger btn-del">删除</button>'+
+        //             '</div>'+
+        //             '</div>');
+        //         $('td', row).eq(6).append($btn);
+        //     },
+        //     paginate: {
+        //         first: "首页",
+        //         previous: '上页',
+        //         next: '下页',
+        //         last: '末页'
+        //     }
+        // });
+
+       // loadData();
+    });
+
+
+    function fire_ajax_submit() {
+        // Get form
+        $("#btnSubmit").prop("disabled", true);
+
+        let data = {
+            name: document.getElementById('name').value,
+            sort: document.getElementById('sort').value,
+            show: document.getElementById('show').checked
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/console/category/saved",
+            data: JSON.stringify(data),
+            contentType: 'application/json;charset=utf8',
+            dataType: 'json',
+            success: function (data) {
+                $("#btnSubmit").prop("disabled", false);
+                $('#createStaticBackdrop').modal('hide');
+                loadData();
+            },
+            error: function (e) {
+                console.log("ERROR : ", e);
+                $("#btnSubmit").prop("disabled", false);
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

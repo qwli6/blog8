@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.lqw.blog8.mapper.ArticleTagMapper">
+
+
+
+    <select id="deleteByArticle" parameterType="Article">
+        delete from blog_article_tag where article_id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <insert id="insert" parameterType="ArticleTag">
+        insert into blog_article_tag(article_id, tag_id)
+            values(#{article.id,jdbcType=INTEGER}, #{tag.id,jdbcType=INTEGER})
+    </insert>
+
+    <insert id="batchInsert" parameterType="ArticleTag">
+        insert into blog_article_tag(article_id, tag_id)  values
+            <foreach collection="articleTags" item="item" close="" separator="," open="">
+                (#{article.id}, #{tag.id})
+            </foreach>
+    </insert>
+
+    <delete id="deleteByTag" parameterType="Tag">
+        delete from blog_article_tag where tag_id = #{id,jdbcType=INTEGER}
+    </delete>
+
+
+</mapper>

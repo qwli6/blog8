@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.lqw.blog8.mapper.UserMapper">
+
+    <resultMap id="UserMap" type="User">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="avatar" column="avatar"/>
+    </resultMap>
+
+    <sql id="full">
+        select id, username, password, name, email, avatar from blog_user
+    </sql>
+
+    <select id="findByName" parameterType="string" resultMap="UserMap">
+        <include refid="full" />
+        where username = #{username, jdbcType=VARCHAR}
+    </select>
+
+
+    <select id="findUser" resultMap="UserMap">
+        <include refid="full" />
+        where username = #{username, jdbcType=VARCHAR} and password = #{password,jdbcType=VARCHAR}
+    </select>
+    <select id="countUser" resultType="int">
+        select count(id) from blog_user
+    </select>
+
+    <insert id="insert" parameterType="User">
+        insert into blog_user(username, password, name, email, avatar)
+            values(#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+                  #{email,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR})
+    </insert>
+
+
+</mapper>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${article.title}"></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="/static/tabler/dist/css/tabler.min.css" rel="stylesheet"/>
+    <link href="/static/tabler/dist/css/demo.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/tabler/dist/libs/prime/prism.css">
+    <style>
+        body {
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="page">
+        <div th:replace="header::head('index')"></div>
+        <div class="content">
+            <div class="container-xl">
+                <div class="row justify-content-center">
+                    <div class="col-lg-12 col-xl-12">
+                        <h2 th:text="${article.title}"></h2>
+                        <div class="text-muted">
+                            <small th:text="${#temporals.format(article.postAt, 'yyyy-MM-dd HH:mm:ss')}"></small>
+                        </div>
+                        <div th:utext="${article.content}"></div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="list list-row list-hoverable" id="commentContainer">
+<!--                            <div class="list-item">-->
+<!--                                <a href="#">-->
+<!--                                    <span class="avatar" style="background-image: url(/static/tabler/avatars/000m.jpg)"></span>-->
+<!--                                </a>-->
+<!--                                <div class="text-truncate">-->
+<!--                                    <a href="#" class="text-body d-block">Paweł Kuna</a>-->
+<!--                                    <div class="d-block text-muted text-truncate mt-n1">-->
+<!--                                        Change deprecated html tags to text decoration classes (#29604)-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <a href="#" class="list-item-actions show">-->
+<!--                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon text-muted" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M12 17.75l-6.172 3.245 1.179-6.873-4.993-4.867 6.9-1.002L12 2l3.086 6.253 6.9 1.002-4.993 4.867 1.179 6.873z" /></svg>-->
+<!--                                </a>-->
+<!--                            </div>-->
+<!--                            <div class="list-item">-->
+<!--                                <a href="#">-->
+<!--                                    <span class="avatar">JL</span>-->
+<!--                                </a>-->
+<!--                                <div class="text-truncate">-->
+<!--                                    <a href="#" class="text-body d-block">Jeffie Lewzey</a>-->
+<!--                                    <small class="d-block text-muted text-truncate mt-n1">justify-content:between ⇒ justify-content:space-between (#29734)</small>-->
+<!--                                </div>-->
+<!--                                <a href="#" class="list-item-actions">-->
+<!--                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><path d="M6 18v-6a3 3 0 0 1 3 -3h10l-5 -5m0 10l5 -5"></path></svg>-->
+<!--                                    <span class="avatar" style="background-image: url(/static/tabler/avatars/000m.jpg)"></span>-->
+<!--                                </a>-->
+<!--                            </div>-->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-lg-12 col-xl-12">
+                        <div class="mb-3">
+                            <label class="form-label">用户名</label>
+                            <input type="text" id="username" class="form-control" name="example-text-input" placeholder="Input placeholder">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">内容</label>
+                            <textarea class="form-control" id="content" name="example-textarea" placeholder="Textarea placeholder"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">邮箱（用于显示头像）</label>
+                            <input type="text" id="email" class="form-control" name="example-password-input" placeholder="Input placeholder">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">网址</label>
+                            <input type="text" id="website" class="form-control" name="example-password-input" placeholder="Input placeholder">
+                        </div>
+                        <div class="mb-3 justify-content-end">
+                            <button type="button" id="btn-submit" class="btn btn-primary">提交</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
+    <!-- Libs JS -->
+    <script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Tabler Core -->
+    <script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
+    <script type="text/javascript" src="/static/tabler/dist/libs/prime/prism.js" data-manual></script>
+    <script>
+        document.body.style.display = 'block';
+    </script>
+    <script>
+        document.getElementById('btn-submit').addEventListener('click', function(){
+            let comment = {};
+            comment.username = document.getElementById('username').value;
+            comment.content = document.getElementById('content').value;
+            comment.email = document.getElementById('email').value;
+            comment.website = document.getElementById('website').value;
+
+            $.ajax({
+                url: '/module/article/' + '[[${article.id}]]' + '/comment/save',
+                data: JSON.stringify(comment),
+                dataType: 'json',
+                contentType: 'application/json;charset=utf8',
+                type: 'post',
+                success: function(res){
+                    console.log(res);
+                }
+            });
+        })
+
+        $(document).ready(function(){
+
+            $.ajax({
+                url: '/api/module/article/'+ '[[${article.id}]]' + '/comments',
+                type: 'get',
+                dataType: 'json',
+                success: function(res){
+                    let data = res.data;
+                    let html = '';
+                    for(let i = 0; i <data.length; i++){
+                        if(i === 0){
+                            html += '<div class="list list-row list-hoverable">';
+                        }
+                        html += '<div class="list-item">';
+                        html += '<a href="#">';
+                        html += '<span class="avatar" style="background-image: url(/static/tabler/avatars/000m.jpg)"></span> ';
+                        html += '</a> ';
+                        html += '<div class="text-truncate"> ';
+                        html += '<a href="#" class="text-body d-block">' + data[i].username+'</a> ';
+                        html += '<div class="d-block text-muted text-truncate mt-n1">';
+                        html += data[i].content ;
+                        html += '</div> ';
+                        html += '</div> ';
+                        html += '<a href="#" class="list-item-actions show"> ';
+                        html += '<svg xmlns="http://www.w3.org/2000/svg" class="icon text-muted" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M12 17.75l-6.172 3.245 1.179-6.873-4.993-4.867 6.9-1.002L12 2l3.086 6.253 6.9 1.002-4.993 4.867 1.179 6.873z" /></svg> ';
+                        html += '</a> ' ;
+                        html += '</div>';
+
+                        if(i === data.length-1){
+                            html += '</div>';
+                        }
+                        document.getElementById('commentContainer').innerHTML = html;
+                    }
+                }
+            })
+
+        })
+    </script>
+</body>
+</html>

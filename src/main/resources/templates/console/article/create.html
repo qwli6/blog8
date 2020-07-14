@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="新文章">新文章</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/static/codemirror-5.52.0/lib/codemirror.css">
+    <!-- CSS files -->
+    <link href="/static/tabler/dist/libs/selectize/dist/css/selectize.css" rel="stylesheet"/>
+    <link href="/static/tabler/dist/libs/flatpickr/dist/flatpickr.min.css" rel="stylesheet"/>
+    <link href="/static/tabler/dist/libs/nouislider/distribute/nouislider.min.css" rel="stylesheet"/>
+    <link href="/static/tabler/dist/css/tabler.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/tabler/dist/css/tabler-buttons.min.css">
+    <link href="/static/tabler/dist/css/demo.min.css" rel="stylesheet"/>
+    <style>
+        body {
+            display: none;
+        }
+        .CodeMirror{
+            border: 1px solid #eeeeee;
+            border-radius: 4px;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div th:replace="/console/common/left-menu::leftMenu('article')"></div>
+    <div class="page">
+        <div th:replace="/console/common/head-navbar::headnav('article')"></div>
+        <div class="content">
+            <div class="container-xl">
+                <div class="page-header">
+                    <div class="row row-sm align-items-center">
+                        <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                            <a href="javascript:void(0);" class="btn btn-blue btn-block">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                                返回
+                            </a>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                            <a href="javascript:void(0);" id="btnSubmit" class="btn btn-indigo btn-block">
+                                发布
+                            </a>
+                        </div>
+                        <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                            <a href="javascript:void(0);" class="btn btn-indigo btn-block">
+                                附件库
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-9">
+                        <div class="row">
+                            <div class="col-md-6 col-xl-12">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">标题</label>
+                                    <input type="text" id="title" class="form-control" autocomplete="off" name="title" placeholder="请输入标题">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="content">正文 <span class="form-label-description">0/10240</span></label>
+                                    <textarea class="form-control" id="content" name="example-textarea-input" placeholder="正文内容"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3">
+                        <div class="row">
+                            <div class="col-md-6 col-xl-12">
+                                <!-- 别名 -->
+                                <div class="mb-3">
+                                    <label for="urlName" class="form-label">访问别名</label>
+                                    <input type="text" class="form-control" id="urlName" name="urlName" placeholder="urlName">
+                                </div>
+                                <!-- 分类 -->
+                                <div class="mb-3">
+                                    <label for="select-users" class="form-label">分类</label>
+                                    <select name="users" id="select-users" class="form-select">
+                                        <option value="1">java</option>
+                                        <option value="2">web</option>
+                                        <option value="3" selected>life</option>
+                                    </select>
+                                </div>
+                                <!-- 评论设置  -->
+                                <div class="mb-3">
+                                    <div class="form-label">评论</div>
+                                    <div>
+                                        <label class="form-check form-check-inline">
+                                            <input class="form-check-input" name="allowComment" type="radio" checked>
+                                            <span class="form-check-label">开启</span>
+                                        </label>
+                                        <label class="form-check form-check-inline">
+                                            <input class="form-check-input" name="allowComment" type="radio">
+                                            <span class="form-check-label">关闭</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- 状态设置 -->
+                                <div class="mb-3">
+                                    <div class="form-label">状态</div>
+                                    <div>
+                                        <label class="form-check form-check-inline">
+                                            <input class="form-check-input" value="POSTED" name="status" type="radio" checked>
+                                            <span class="form-check-label">发布</span>
+                                        </label>
+                                        <label class="form-check form-check-inline">
+                                            <input class="form-check-input" value="SCHEDULED" name="status" type="radio">
+                                            <span class="form-check-label">计划</span>
+                                        </label>
+                                        <label class="form-check form-check-inline">
+                                            <input class="form-check-input" value="DRAFT" name="status" type="radio">
+                                            <span class="form-check-label">草稿</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="mb-3" style="display: none;">
+                                    <label class="form-label" for="scheduledDate">计划发布时间</label>
+                                    <input id="scheduledDate" type="text" class="form-control" name="scheduledDate" placeholder="Input placeholder">
+                                </div>
+
+                                <!-- 标签 -->
+                                <div class="mb-3">
+                                    <label for="select-tags-advanced" class="form-label">标签（最多 5 个）</label>
+                                    <select name="tags-advanced" id="select-tags-advanced" class="form-select" multiple>
+                                        <option value="HTML">HTML</option>
+                                        <option value="JavaScript">JavaScript</option>
+                                        <option value="CSS">CSS</option>
+                                        <option value="jQuery">jQuery</option>
+                                        <option value="Bootstrap">Bootstrap</option>
+                                        <option value="Ruby" selected>Ruby</option>
+                                        <option value="Python" selected>Python</option>
+                                    </select>
+                                </div>
+
+                                <!-- 摘要 -->
+                                <div class="mb-3">
+                                    <label class="form-label" for="digest">摘要</label>
+                                    <textarea id="digest" class="form-control" data-toggle="autosize" placeholder="Typing something…"></textarea>
+                                </div>
+                                <!-- 缩略图 -->
+                                <div class="mb-3">
+                                    <label class="form-label">缩略图</label>
+                                    <div class="row row-sm">
+                                        <div class="col-6 col-sm-4">
+                                            <label class="form-imagecheck mb-2">
+                                                <input name="form-imagecheck" type="radio" value="1" class="form-imagecheck-input" />
+                                                <span class="form-imagecheck-figure">
+                                  <img src="/static/tabler/photos/1b73704b282a8ec6.jpg" alt="Breakfast served with tea, bread and eggs" class="form-imagecheck-image">
+                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="col-6 col-sm-4">
+                                            <label class="form-imagecheck mb-2">
+                                                <input name="form-imagecheck" type="radio" value="2" class="form-imagecheck-input"  checked/>
+                                                <span class="form-imagecheck-figure">
+                                  <img src="/static/tabler/photos/3d2998219313cd37.jpg" alt="Book, fairy lights" class="form-imagecheck-image">
+                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="col-6 col-sm-4">
+                                            <label class="form-imagecheck mb-2">
+                                                <input name="form-imagecheck" type="radio" value="3" class="form-imagecheck-input" />
+                                                <span class="form-imagecheck-figure">
+                                  <img src="/static/tabler/photos/6ab3200b14549f8a.jpg" alt="Healthy Dinner" class="form-imagecheck-image">
+                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="col-6 col-sm-4">
+                                            <label class="form-imagecheck mb-2">
+                                                <input name="form-imagecheck" type="radio" value="4" class="form-imagecheck-input"  checked/>
+                                                <span class="form-imagecheck-figure">
+                                  <img src="/static/tabler/photos/6d35d9a2bd6c63c2.jpg" alt="Aperol Spritz is a cocktail consisting of prosecco, aperitif and soda water" class="form-imagecheck-image">
+                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="col-6 col-sm-4">
+                                            <label class="form-imagecheck mb-2">
+                                                <input name="form-imagecheck" type="radio" value="5" class="form-imagecheck-input" />
+                                                <span class="form-imagecheck-figure">
+                                  <img src="/static/tabler/photos/8a26974ee6444acd.jpg" alt="Beautiful blonde woman on a wooden pier by the lake" class="form-imagecheck-image">
+                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="col-6 col-sm-4">
+                                            <label class="form-imagecheck mb-2">
+                                                <input name="form-imagecheck" type="radio" value="6" class="form-imagecheck-input" />
+                                                <span class="form-imagecheck-figure">
+                                  <img src="/static/tabler/photos/8c13ad59f739558c.jpg" alt="Still life of mandarin oranges with leaves" class="form-imagecheck-image">
+                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="col-6 col-sm-4">
+                                            <label class="form-imagecheck mb-2">
+                                                <input name="form-imagecheck" type="radio" value="7" class="form-imagecheck-input"  checked/>
+                                                <span class="form-imagecheck-figure">
+                                  <img src="/static/tabler/photos/8fdeb4785d2b82ef.jpg" alt="Blonde woman having a healthy snack at the wooden pier" class="form-imagecheck-image">
+                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="col-6 col-sm-4">
+                                            <label class="form-imagecheck mb-2">
+                                                <input name="form-imagecheck" type="radio" value="8" class="form-imagecheck-input" />
+                                                <span class="form-imagecheck-figure">
+                                  <img src="/static/tabler/photos/9f36332564ca271d.jpg" alt="Woman working on a laptop while enjoying a breakfast coffee and chocolate in bed" class="form-imagecheck-image">
+                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="col-6 col-sm-4">
+                                            <label class="form-imagecheck mb-2">
+                                                <input name="form-imagecheck" type="radio" value="9" class="form-imagecheck-input" />
+                                                <span class="form-imagecheck-figure">
+                                  <img src="/static/tabler/photos/35b88fc04a518c1b.jpg" alt="Overhead view of macarons on a marble slab" class="form-imagecheck-image">
+                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
+
+    <!-- Libs JS -->
+    <script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="/static/tabler/dist/libs/autosize/dist/autosize.min.js"></script>
+    <script type="text/javascript" src="/static/tabler/dist/libs/selectize/dist/js/standalone/selectize.min.js"></script>
+    <script type="text/javascript" src="/static/tabler/dist/libs/nouislider/distribute/nouislider.min.js"></script>
+    <!-- Tabler Core -->
+    <script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
+    <script type="text/javascript" src="/static/codemirror-5.52.0/lib/codemirror.js"></script>
+    <script type="text/javascript" src="/static/codemirror-5.52.0/mode/markdown/markdown.js"></script>
+    <script>
+        document.body.style.display='block';
+    </script>
+    <script>
+        // let rootPath = '@[[/]]';
+        // $(document).ready(function(){
+        //     CodeMirror.fromTextArea(document.getElementById('content'), {
+        //         mode: 'markdown',
+        //         lineNumbers: false,
+        //     });
+        //
+        //     $("#btnSubmit").click(function (event) {
+        //
+        //         //stop submit the form, we will post it manually.
+        //         event.preventDefault();
+        //
+        //         fire_ajax_submit();
+        //     });
+        //
+        //    loadData();
+        // });
+
+
+        // function loadData(){
+        //     $.get(rootPath + 'console/categories/list', {}, function(data){
+        //         let html = '';
+        //         for(let i = 0; i < data.length; i++){
+        //             let cData = data[i];
+        //             html += '<option value="'+cData.id+'">'+cData.name+'</option>';
+        //         }
+        //         $('#category').html(html);
+        //     });
+        // }
+
+        // function getArticle(){
+        //     let Article = {};
+        //     Article.title = document.getElementById('title').value;
+        //     Article.content = document.getElementById('content').value;
+        //     Article.urlName = document.getElementById('urlName').value;
+        //
+        //     let Category = {};
+        //     Category.id = document.getElementById('select-users').selected;
+        //     Article.category = Category;
+        //
+        //     Article.digest = document.getElementById('digest').value;
+        //
+        //     return Article;
+        // }
+
+
+        // function fire_ajax_submit() {
+        //     // Get form
+        //     $("#btnSubmit").prop("disabled", true);
+        //
+        //     $.ajax({
+        //         type: "POST",
+        //         url: rootPath + "console/article/save",
+        //         data: JSON.stringify(getArticle()),
+        //         contentType: 'application/json;charset=utf8',
+        //         dataType: 'json',
+        //         success: function (data) {
+        //             $("#btnSubmit").prop("disabled", false);
+        //             // $('#createStaticBackdrop').modal('hide');
+        //             // loadData();
+        //         },
+        //         error: function (e) {
+        //             console.log("ERROR : ", e);
+        //             $("#btnSubmit").prop("disabled", false);
+        //         }
+        //     });
+        // }
+
+    </script>
+    <script>
+        // $(document).ready(function () {
+        //     $('#select-tags-advanced').selectize({
+        //         maxItems: 4,
+        //         plugins: ['remove_button'],
+        //     });
+        // });
+    </script>
+    <script>
+        // $(document).ready(function () {
+        //     $('#select-users').selectize({
+        //         maxItems: 1
+        //     });
+        // });
+    </script>
+
+</body>
+</html>

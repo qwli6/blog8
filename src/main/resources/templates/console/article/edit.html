@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>新文章</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" href="/static/codemirror-5.52.0/lib/codemirror.css">
+    <style>
+        .CodeMirror{
+            border: 1px solid #eeeeee;
+            border-radius: 4px;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="/console/common/head-navbar::headNavbar('category')"></div>
+<main role="main" class="container my-5">
+    <div class="row">
+        <div class="col-9">
+            <div class="form-group">
+                <input type="text" id="title" placeholder="请输入标题" class="form-control form-control-lg">
+            </div>
+            <div class="form-group">
+                <textarea name="content" id="content" rows="10" class="form-control"></textarea>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card">
+                <div class="card-header">
+                    设置别名
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <input type="text" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-header">
+                    绑定分类
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <select class="form-control" name="category" id="category"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-header">
+                    选择标签
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <input type="text" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-header">
+                    设置缩略图
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <input type="text" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-header">
+                    其他设置
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <input type="text" class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 align-content-end">
+            <a href="" class="btn btn-light">取消</a>
+            <button type="button" class="btn btn-danger">存为草稿</button>
+            <button type="button" class="btn btn-primary" id="btnSubmit">发布</button>
+        </div>
+    </div>
+</main>
+
+<!-- CreateModal -->
+<div class="modal fade" id="createStaticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createStaticBackdropLabel">创建</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="name">名称</label>
+                    <input type="text" id="name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="sort">级别</label>
+                    <input type="number" id="sort" value="0" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="show">可见</label>
+                    <input type="checkbox" id="show" checked>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary">创建</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" th:src="@{/webjars/jquery/3.0.0/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/popper.js/1.14.3/popper.min.js}"></script>
+<script type="text/javascript" src="/static/codemirror-5.52.0/lib/codemirror.js"></script>
+<script type="text/javascript" src="/static/codemirror-5.52.0/mode/markdown/markdown.js"></script>
+<script>
+    $(document).ready(function(){
+
+
+        CodeMirror.fromTextArea(document.getElementById('content'), {
+            mode: 'markdown',
+            lineNumbers: false,
+        });
+
+        $("#btnSubmit").click(function (event) {
+
+            //stop submit the form, we will post it manually.
+            event.preventDefault();
+
+            fire_ajax_submit();
+        });
+
+       loadData();
+    });
+
+
+    function loadData(){
+        $.get('/console/categories/list', {}, function(data){
+            let html = '';
+            for(let i = 0; i < data.length; i++){
+                let cData = data[i];
+                html += '<option value="'+cData.id+'">'+cData.name+'</option>';
+            }
+            $('#category').html(html);
+        });
+    }
+
+    function getArticle(){
+        let Article = {};
+        Article.title = document.getElementById('title').value;
+        Article.content = document.getElementById('content').value;
+
+
+        return Article;
+    }
+
+
+    function fire_ajax_submit() {
+        // Get form
+        $("#btnSubmit").prop("disabled", true);
+
+
+
+        $.ajax({
+            type: "POST",
+            url: "/console/article/saved",
+            data: JSON.stringify(getArticle()),
+            contentType: 'application/json;charset=utf8',
+            dataType: 'json',
+            success: function (data) {
+                $("#btnSubmit").prop("disabled", false);
+                // $('#createStaticBackdrop').modal('hide');
+                // loadData();
+            },
+            error: function (e) {
+                console.log("ERROR : ", e);
+                $("#btnSubmit").prop("disabled", false);
+            }
+        });
+    }
+
+    function deleteCategory(id){
+        $.ajax({
+            url: '/console/category/' + id + '/delete',
+            type: 'delete',
+            success: function(res){
+                loadData();
+            }
+        })
+    }
+</script>
+</body>
+</html>
