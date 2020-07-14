@@ -32,7 +32,7 @@ public class CategoryController extends BaseController {
         return "console/category/index";
     }
 
-    @GetMapping("categories/list")
+    @GetMapping(value = "categories/list", headers = "")
     @ResponseBody
     public Map<String, List<Category>> findAll(){
         Map<String, List<Category>> dataMap = new HashMap<>();

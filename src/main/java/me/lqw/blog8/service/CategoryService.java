@@ -32,7 +32,9 @@ public class CategoryService extends BaseService<Category> implements Initializi
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public Category save(Category category) throws LogicException {
-        categoryMapper.findByName(category.getName()).orElseThrow(() -> new LogicException("categoryService.save.nameExists", "分类名称已存在"));
+        categoryMapper.findByName(category.getName()).ifPresent(e -> {
+                throw new LogicException("categoryService.save.nameExists", "分类名称已存在");
+        });
         categoryMapper.insert(category);
         return category;
     }
