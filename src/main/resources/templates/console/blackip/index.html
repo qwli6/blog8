@@ -117,20 +117,35 @@
 
     for(const elem of document.querySelectorAll('[data-trash]')){
         elem.addEventListener('click', function(){
-            let ip = this.dataset.trash;
-            $.ajax({
-                url: rootPath + 'console/blackip/' + ip + '/delete',
-                type: 'delete',
-                success: function(res){
-                    toast("删除成功");
-                    setTimeout(function(){
-                        window.location.href= rootPath + 'console/blackips';
-                    }, 800)
-                },
-                error: function(res){
 
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    let ip = this.dataset.trash;
+                    $.ajax({
+                        url: rootPath + 'console/blackip/' + ip + '/delete',
+                        type: 'delete',
+                        success: function(res){
+                            toast("删除成功");
+                            setTimeout(function(){
+                                window.location.href= rootPath + 'console/blackips';
+                            }, 800)
+                        },
+                        error: function(res){
+
+                        }
+                    });
                 }
-            });
+            })
+
+
         })
     }
 </script>
