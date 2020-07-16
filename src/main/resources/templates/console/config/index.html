@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="系统设置">系统设置</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="/static/tabler/dist/css/tabler-buttons.min.css" />
+    <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
+    <style>
+        body {
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+<div th:replace="/console/common/left-menu::leftMenu('config')"></div>
+<div class="page">
+    <div th:replace="/console/common/head-navbar::headnav('config')"></div>
+    <div class="content">
+        <div class="container-xl">
+            <div class="card">
+                <ul class="nav nav-tabs nav-tabs-alt" data-toggle="tabs">
+                    <li class="nav-item">
+                        <a href="#tabs-home-ex6" class="nav-link active" data-toggle="tab"><!-- SVG icon code -->
+                            博客设置</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#tabs-profile-ex6" class="nav-link" data-toggle="tab"><!-- SVG icon code -->
+                            SEO设置</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#tabs-profile-ex7" class="nav-link" data-toggle="tab"><!-- SVG icon code -->
+                            文章设置</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#tabs-profile-ex8" class="nav-link" data-toggle="tab"><!-- SVG icon code -->
+                            评论设置</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#tabs-profile-ex9" class="nav-link" data-toggle="tab"><!-- SVG icon code -->
+                            附件设置</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#tabs-profile-ex10" class="nav-link" data-toggle="tab"><!-- SVG icon code -->
+                            其他设置</a>
+                    </li>
+                </ul>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane active show" id="tabs-home-ex6">
+                            <div>
+                                博客设置
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tabs-profile-ex6">
+                            <div>SEO 设置</div>
+                        </div>
+                        <div class="tab-pane" id="tabs-profile-ex7">
+                            <div>文章设置</div>
+                        </div>
+
+                        <div class="tab-pane" id="tabs-profile-ex8">
+                            <div>评论设置</div>
+                        </div>
+                        <div class="tab-pane" id="tabs-profile-ex9">
+                            <div>附件设置</div>
+                        </div>
+                        <div class="tab-pane" id="tabs-profile-ex10">
+                            <div>其他设置</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
+<!-- Libs JS -->
+<script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Tabler Core -->
+<script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
+<script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/sweetalert2-2.9.js"></script>
+<script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/Toast.js"></script>
+<script>
+    document.body.style.display = "block"
+    const rootPath = '[[@{/}]]';
+</script>
+
+<script>
+
+    // document.getElementById('create-btn').addEventListener('click', function(){
+    //     (async function getName(){
+    //         const { value : ip} = await Swal.fire({
+    //             title: 'ip',
+    //             input: 'text',
+    //             inputValue: '',
+    //             showCancelButton: true,
+    //             confirmButtonText: '确定',
+    //             cancelButtonText: '取消'
+    //         })
+    //         if(ip){
+    //             $.ajax({
+    //                 type: "POST",
+    //                 url: rootPath + 'console/blackip/save',
+    //                 data: JSON.stringify({'ip': ip}),
+    //                 contentType: 'application/json;charset=utf8',
+    //                 dataType: 'json',
+    //                 success: function () {
+    //                     // $("#create-btn").prop("disabled", false);
+    //                     toast("创建成功");
+    //                     setTimeout(function(){
+    //                         window.location.href= rootPath + 'console/blackips';
+    //                     }, 800);
+    //                 },
+    //                 error: function (e) {
+    //                     // console.log("ERROR : ", e);
+    //                     // $("#create-btn").prop("disabled", false);
+    //                 }
+    //             });
+    //         }
+    //     })();
+    // })
+
+    // for(const elem of document.querySelectorAll('[data-trash]')){
+    //     elem.addEventListener('click', function(){
+    //
+    //         Swal.fire({
+    //             title: 'Are you sure?',
+    //             text: "You won't be able to revert this!",
+    //             icon: 'warning',
+    //             showCancelButton: true,
+    //             confirmButtonColor: '#3085d6',
+    //             cancelButtonColor: '#d33',
+    //             confirmButtonText: 'Yes, delete it!'
+    //         }).then((result) => {
+    //             if (result.value) {
+    //                 let ip = this.dataset.trash;
+    //                 $.ajax({
+    //                     url: rootPath + 'console/blackip/' + ip + '/delete',
+    //                     type: 'delete',
+    //                     success: function(res){
+    //                         toast("删除成功");
+    //                         setTimeout(function(){
+    //                             window.location.href= rootPath + 'console/blackips';
+    //                         }, 800)
+    //                     },
+    //                     error: function(res){
+    //
+    //                     }
+    //                 });
+    //             }
+    //         })
+    //
+    //
+    //     })
+    // }
+</script>
+</body>
+</html>

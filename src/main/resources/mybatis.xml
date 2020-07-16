@@ -24,6 +24,7 @@
         <mapper resource="mapper/MomentMapper.xml" />
         <mapper resource="mapper/CommentMapper.xml" />
         <mapper resource="mapper/BlackIpMapper.xml" />
+        <mapper resource="mapper/BlogConfigMapper.xml" />
     </mappers>
 
 </configuration>

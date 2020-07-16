@@ -2,7 +2,14 @@ package me.lqw.blog8;
 
 import me.lqw.blog8.exception.Message;
 
-public class BlogConstants {
+import java.io.Serializable;
+
+/**
+ * 全局系统设置
+ * @author liqiwen
+ * @version 1.0
+ */
+public class BlogConstants implements Serializable {
 
     private BlogConstants() {
         super();
@@ -15,5 +22,13 @@ public class BlogConstants {
     public static final String REDIRECT_URL_ATTRIBUTE = "redirectUrl";
 
     public static final String DEFAULT_AVATAR = "";
+
+
+
+
+    //审核策略
+    public static final String COMMENT_CHECK_STRATEGY = "CheckStrategy";
+    //评论通知
+    public static final String COMMENT_NOTIFY = "CommentNotify";
 
 }

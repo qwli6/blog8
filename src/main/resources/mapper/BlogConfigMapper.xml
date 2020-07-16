@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.lqw.blog8.mapper.BlogConfigMapper">
+
+    <resultMap id="BlogConfigMap" type="BlogConfig">
+        <id property="id" column="id"/>
+        <result property="key" column="key"/>
+        <result property="value" column="value"/>
+    </resultMap>
+
+    <sql id="full">
+        select id, `key`, value, create_at, modify_at from blog_config
+    </sql>
+
+    <select id="selectByKey" parameterType="string" resultMap="BlogConfigMap">
+        <include refid="full" />
+        where username = #{username, jdbcType=VARCHAR}
+    </select>
+
+
+
+</mapper>
