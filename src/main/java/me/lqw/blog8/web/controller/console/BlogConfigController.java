@@ -42,7 +42,6 @@ public class BlogConfigController {
     @ResponseBody
     public Object queryConfig(@RequestParam("key") String key){
 
-
         return new HashMap<>();
     }
 }

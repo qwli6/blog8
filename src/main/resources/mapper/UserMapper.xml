@@ -35,5 +35,15 @@
                   #{email,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR})
     </insert>
 
+    <update id="update" parameterType="user">
+        update blog_user
+        set username = 'admin'
+        <where>
+            <if test="username != null and username != ''">
+                and username = #{username,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </update>
+
 
 </mapper>

@@ -4,14 +4,12 @@
     <meta charset="UTF-8">
     <title th:text="动态列表">新动态</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="/static/images/favicon.ico" rel="shortcut icon">
+    <link rel="stylesheet" href="/static/css/base.css">
     <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
     <link href="/static/tabler/dist/css/tabler-buttons.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
-    <style>
-        body{
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/codemirror-5.52.0/lib/codemirror.css">
 </head>
 <body class="antialiased">
 <div th:replace="/console/common/left-menu::leftMenu('moment')"></div>
@@ -20,25 +18,55 @@
     <div class="content">
         <div class="container-xl">
             <!-- Page title -->
-            <div class="page-header">
-                <div class="row row-sm align-items-center">
-                    <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
-                        <a th:href="@{/console/moments}" class="btn btn-blue btn-block">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                            返回
-                        </a>
-                    </div>
-                    <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
-                        <a href="javascript:void(0);" id="btnSubmit" class="btn btn-indigo btn-block">
-                            发布
-                        </a>
-                    </div>
-                </div>
-            </div>
+<!--            <div class="page-header">-->
+<!--                <div class="row row-sm align-items-center">-->
+<!--                    <div class="col-6 col-sm-4 col-md-2 col-xl-auto">-->
+<!--                        <a th:href="@{/console/moments}" class="btn btn-blue btn-block">-->
+<!--                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>-->
+<!--                            返回-->
+<!--                        </a>-->
+<!--                    </div>-->
+<!--                    <div class="col-6 col-sm-4 col-md-2 col-xl-auto">-->
+<!--                        <a href="javascript:void(0);" id="btnSubmit" class="btn btn-indigo btn-block">-->
+<!--                            发布-->
+<!--                        </a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
 
            <div class="row">
                <div class="col-12">
-                   <textarea name="content" class="form-control" id="content" cols="30" rows="10"></textarea>
+                   <div class="card">
+                       <ul class="nav nav-tabs" data-toggle="tabs">
+                           <li class="nav-item">
+                               <a href="#tabs-home-ex2" class="nav-link active" data-toggle="tab"><!-- SVG icon code -->
+                                   编辑</a>
+                           </li>
+                           <li class="nav-item">
+                               <a href="#tabs-profile-ex2" class="nav-link" data-toggle="tab"><!-- SVG icon code -->
+                                   预览</a>
+                           </li>
+                           <li class="nav-item ml-auto">
+                               <a href="#tabs-settings-ex2" class="nav-link" title="Settings" data-toggle="tab"><!-- SVG icon code -->
+                               </a>
+                           </li>
+                       </ul>
+                       <div class="card-body">
+                           <div class="tab-content">
+                               <div class="tab-pane active show" id="tabs-home-ex2">
+                                   <div class="form-group">
+                                       <textarea name="content" id="content" cols="30" rows="10" class="form-control"></textarea>
+                                   </div>
+                               </div>
+                               <div class="tab-pane" id="tabs-profile-ex2">
+                                   <div>Fringilla egestas nunc quis tellus diam rhoncus ultricies tristique enim at diam, sem nunc amet, pellentesque id egestas velit sed</div>
+                               </div>
+                               <div class="tab-pane" id="tabs-settings-ex2">
+                                   <div>Donec ac vitae diam amet vel leo egestas consequat rhoncus in luctus amet, facilisi sit mauris accumsan nibh habitant senectus</div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
                </div>
                <div class="mb-3">
                    <div class="form-label">评论</div>
@@ -59,6 +87,8 @@
 <script src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Tabler Core -->
 <script src="/static/tabler/dist/js/tabler.min.js"></script>
+<script src="/static/codemirror-5.52.0/lib/codemirror.js"></script>
+<script src="/static/codemirror-5.52.0/mode/markdown/markdown.js"></script>
 <script>
     document.body.style.display = "block";
 </script>
@@ -67,6 +97,9 @@
     let rootPath = '[[@{/}]]';
 
     $(document).ready(function(){
+
+        // CodeMirror.fromTextArea('content')
+
         $("#btnSubmit").click(function (event) {
 
             //stop submit the form, we will post it manually.

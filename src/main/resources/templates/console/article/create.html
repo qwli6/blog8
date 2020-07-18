@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <title th:text="新文章">新文章</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="/static/codemirror-5.52.0/lib/codemirror.css">
+<!--    <link rel="stylesheet" href="/static/codemirror-5.52.0/lib/codemirror.css">-->
     <!-- CSS files -->
+    <link href="/static/images/favicon.ico" rel="shortcut icon">
     <link href="/static/tabler/dist/libs/selectize/dist/css/selectize.css" rel="stylesheet"/>
     <link href="/static/tabler/dist/libs/flatpickr/dist/flatpickr.min.css" rel="stylesheet"/>
     <link href="/static/tabler/dist/libs/nouislider/distribute/nouislider.min.css" rel="stylesheet"/>
@@ -16,11 +17,11 @@
         body {
             display: none;
         }
-        .CodeMirror{
-            border: 1px solid #eeeeee;
-            border-radius: 4px;
-            padding: 8px;
-        }
+        /*.CodeMirror{*/
+        /*    border: 1px solid #eeeeee;*/
+        /*    border-radius: 4px;*/
+        /*    padding: 8px;*/
+        /*}*/
     </style>
 </head>
 <body class="antialiased">
@@ -227,100 +228,15 @@
 
     <!-- Libs JS -->
     <script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="/static/tabler/dist/libs/autosize/dist/autosize.min.js"></script>
-    <script type="text/javascript" src="/static/tabler/dist/libs/selectize/dist/js/standalone/selectize.min.js"></script>
-    <script type="text/javascript" src="/static/tabler/dist/libs/nouislider/distribute/nouislider.min.js"></script>
+<!--    <script type="text/javascript" src="/static/tabler/dist/libs/autosize/dist/autosize.min.js"></script>-->
+<!--    <script type="text/javascript" src="/static/tabler/dist/libs/selectize/dist/js/standalone/selectize.min.js"></script>-->
+<!--    <script type="text/javascript" src="/static/tabler/dist/libs/nouislider/distribute/nouislider.min.js"></script>-->
     <!-- Tabler Core -->
     <script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
-    <script type="text/javascript" src="/static/codemirror-5.52.0/lib/codemirror.js"></script>
-    <script type="text/javascript" src="/static/codemirror-5.52.0/mode/markdown/markdown.js"></script>
+<!--    <script type="text/javascript" src="/static/codemirror-5.52.0/lib/codemirror.js"></script>-->
+<!--    <script type="text/javascript" src="/static/codemirror-5.52.0/mode/markdown/markdown.js"></script>-->
     <script>
         document.body.style.display='block';
-    </script>
-    <script>
-        // let rootPath = '@[[/]]';
-        // $(document).ready(function(){
-        //     CodeMirror.fromTextArea(document.getElementById('content'), {
-        //         mode: 'markdown',
-        //         lineNumbers: false,
-        //     });
-        //
-        //     $("#btnSubmit").click(function (event) {
-        //
-        //         //stop submit the form, we will post it manually.
-        //         event.preventDefault();
-        //
-        //         fire_ajax_submit();
-        //     });
-        //
-        //    loadData();
-        // });
-
-
-        // function loadData(){
-        //     $.get(rootPath + 'console/categories/list', {}, function(data){
-        //         let html = '';
-        //         for(let i = 0; i < data.length; i++){
-        //             let cData = data[i];
-        //             html += '<option value="'+cData.id+'">'+cData.name+'</option>';
-        //         }
-        //         $('#category').html(html);
-        //     });
-        // }
-
-        // function getArticle(){
-        //     let Article = {};
-        //     Article.title = document.getElementById('title').value;
-        //     Article.content = document.getElementById('content').value;
-        //     Article.urlName = document.getElementById('urlName').value;
-        //
-        //     let Category = {};
-        //     Category.id = document.getElementById('select-users').selected;
-        //     Article.category = Category;
-        //
-        //     Article.digest = document.getElementById('digest').value;
-        //
-        //     return Article;
-        // }
-
-
-        // function fire_ajax_submit() {
-        //     // Get form
-        //     $("#btnSubmit").prop("disabled", true);
-        //
-        //     $.ajax({
-        //         type: "POST",
-        //         url: rootPath + "console/article/save",
-        //         data: JSON.stringify(getArticle()),
-        //         contentType: 'application/json;charset=utf8',
-        //         dataType: 'json',
-        //         success: function (data) {
-        //             $("#btnSubmit").prop("disabled", false);
-        //             // $('#createStaticBackdrop').modal('hide');
-        //             // loadData();
-        //         },
-        //         error: function (e) {
-        //             console.log("ERROR : ", e);
-        //             $("#btnSubmit").prop("disabled", false);
-        //         }
-        //     });
-        // }
-
-    </script>
-    <script>
-        // $(document).ready(function () {
-        //     $('#select-tags-advanced').selectize({
-        //         maxItems: 4,
-        //         plugins: ['remove_button'],
-        //     });
-        // });
-    </script>
-    <script>
-        // $(document).ready(function () {
-        //     $('#select-users').selectize({
-        //         maxItems: 1
-        //     });
-        // });
     </script>
 
 </body>

@@ -1,6 +1,7 @@
 package me.lqw.blog8.web.controller;
 
 import me.lqw.blog8.BlogContext;
+import me.lqw.blog8.mapper.UserMapper;
 import me.lqw.blog8.model.User;
 import me.lqw.blog8.model.vo.LoginParam;
 import me.lqw.blog8.service.UserService;
@@ -22,9 +23,11 @@ public class LoginController extends BaseController {
 
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
-    public LoginController(UserService userService) {
+    public LoginController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @GetMapping("login")
@@ -50,5 +53,16 @@ public class LoginController extends BaseController {
     @ResponseBody
     public ResponseEntity<Boolean> authorized(){
         return ResponseEntity.ok(BlogContext.isAuthorized());
+    }
+
+
+    @GetMapping("test2")
+    @ResponseBody
+    public String index(){
+
+        User user = new User();
+        userMapper.update(user);
+
+        return "success";
     }
 }

@@ -15,6 +15,11 @@
         <package name="me.lqw.blog8.model"/>
     </typeAliases>
 
+    <!-- 禁用 update delete 插件 -->
+    <plugins>
+        <plugin interceptor="me.lqw.blog8.plugins.BatchUpdateOrDeleteForbiddenPlugins" />
+    </plugins>
+
     <mappers>
         <mapper resource="mapper/UserMapper.xml" />
         <mapper resource="mapper/CategoryMapper.xml" />
@@ -26,5 +31,7 @@
         <mapper resource="mapper/BlackIpMapper.xml" />
         <mapper resource="mapper/BlogConfigMapper.xml" />
     </mappers>
+
+
 
 </configuration>
