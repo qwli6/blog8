@@ -9,6 +9,7 @@ import me.lqw.blog8.file.BlogResourceHttpRequestHandler;
 import me.lqw.blog8.file.FileResourceResolver;
 import me.lqw.blog8.file.FileService;
 import me.lqw.blog8.service.BlackIpService;
+import me.lqw.blog8.service.BlogConfigService;
 import me.lqw.blog8.util.WebUtil;
 import me.lqw.blog8.web.filter.BlackIpFilter;
 import me.lqw.blog8.web.filter.ContextFilter;
@@ -42,14 +43,17 @@ public class WebConfigurerAdapter implements WebMvcConfigurer {
 
     private final FileService fileService;
 
+    private final BlogConfigService configService;
+
     private final BlogHandlerExceptionResolver resolver;
 
 
 
 
-    public WebConfigurerAdapter(FileService fileService, BlogHandlerExceptionResolver resolver) {
+    public WebConfigurerAdapter(FileService fileService, BlogConfigService configService ,BlogHandlerExceptionResolver resolver) {
         this.resolver = resolver;
         this.fileService = fileService;
+        this.configService = configService;
 //        handlerExceptionResolvers.add(new BlogHandlerExceptionResolver());
     }
 
@@ -91,8 +95,8 @@ public class WebConfigurerAdapter implements WebMvcConfigurer {
 
 
     @Bean
-    public FilterRegistrationBean<ContextFilter> contextFilterFilterRegistrationBean(){
-        ContextFilter contextFilter = new ContextFilter();
+    public FilterRegistrationBean<ContextFilter> contextFilterFilterRegistrationBean(BlogConfigService configService){
+        ContextFilter contextFilter = new ContextFilter(configService);
 
         FilterRegistrationBean<ContextFilter> filterRegistrationBean = new FilterRegistrationBean<>();
         filterRegistrationBean.setName(ContextFilter.class.getSimpleName());

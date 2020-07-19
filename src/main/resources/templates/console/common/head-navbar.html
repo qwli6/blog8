@@ -1,4 +1,4 @@
-<header class="navbar navbar-expand-md navbar-light sticky-top d-none d-lg-flex" th:fragment="headnav(type)">
+<header class="navbar navbar-expand-md navbar-light d-none d-lg-flex" th:fragment="headnav(type)">
     <div class="container-xl">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu">
             <span class="navbar-toggler-icon"></span>
@@ -35,8 +35,16 @@
                         设置
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#"><svg xmlns="http://www.w3.org/2000/svg" class="icon dropdown-item-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                        退出</a>
+                    <a class="dropdown-item" th:href="@{/}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon dropdown-item-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                        首页
+                    </a>
+                    <div class="dropdown-divider"></div>
+
+                    <a class="dropdown-item" href="#">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon dropdown-item-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                        退出
+                    </a>
                 </div>
             </div>
         </div>

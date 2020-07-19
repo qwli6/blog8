@@ -67,7 +67,7 @@
     </select>
 
     <select id="findById" parameterType="integer" resultMap="MomentResult">
-        select content, hits, allow_comment from blog_moment where id = #{id,jdbcType=INTEGER}
+        select content, hits, allow_comment, comments from blog_moment where id = #{id,jdbcType=INTEGER}
     </select>
 
     <update id="update" parameterType="Moment">

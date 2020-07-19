@@ -48,14 +48,17 @@
 
 
 
-    <insert id="insert" parameterType="Article">
+    <insert id="insert" parameterType="Article" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        <selectKey keyProperty="id" keyColumn="id" resultType="integer">
+            select last_insert_id()
+        </selectKey>
         insert into blog_article(title, url_name, content, post_at,
-                                 hits, comments, allow_comment, fk_category_id, create_at, modify_at)
+                                 hits, comments, allow_comment, status, fk_category_id, create_at, modify_at)
         VALUES
             (#{title,jdbcType=VARCHAR}, #{urlName,jdbcType=VARCHAR},
              #{content,jdbcType=VARCHAR}, #{postAt},
              #{hits,jdbcType=INTEGER}, #{comments,jdbcType=INTEGER},
-             #{allowComment,jdbcType=BOOLEAN}, #{category.id,jdbcType=INTEGER},
+             #{allowComment,jdbcType=BOOLEAN}, #{status, typeHandler=EnumOrdinalTypeHandler}, #{category.id,jdbcType=INTEGER},
             now(), now())
     </insert>
     <select id="count" parameterType="HandledArticleQueryParam" resultType="integer">

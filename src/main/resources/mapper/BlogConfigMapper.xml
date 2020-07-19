@@ -4,17 +4,17 @@
 
     <resultMap id="BlogConfigMap" type="BlogConfig">
         <id property="id" column="id"/>
-        <result property="key" column="key"/>
-        <result property="value" column="value"/>
+        <result property="key" column="option_key"/>
+        <result property="value" column="option_value"/>
     </resultMap>
 
     <sql id="full">
-        select id, `key`, value, create_at, modify_at from blog_config
+        select id, option_key, option_value, create_at, modify_at from blog_config
     </sql>
 
     <select id="selectByKey" parameterType="string" resultMap="BlogConfigMap">
         <include refid="full" />
-        where username = #{username, jdbcType=VARCHAR}
+        where option_key = #{key, jdbcType=VARCHAR}
     </select>
 
 

@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <title th:text="${article.title}"></title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="/static/images/favicon.ico" rel="shortcut icon">
+    <link rel="stylesheet" href="/static/css/base.css">
     <link href="/static/tabler/dist/css/tabler.min.css" rel="stylesheet"/>
     <link href="/static/tabler/dist/css/demo.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="/static/tabler/dist/libs/prime/prism.css">
-    <style>
-        body {
-            display: none;
-        }
-    </style>
 </head>
 <body class="antialiased">
     <div class="page">
@@ -19,18 +16,17 @@
         <div class="content">
             <div class="container-xl">
                 <div class="row justify-content-center">
-                    <div class="col-lg-12 col-xl-12">
-                        <h2 th:text="${article.title}"></h2>
-                        <div class="text-muted">
-                            <small th:text="${#temporals.format(article.postAt, 'yyyy-MM-dd HH:mm:ss')}"></small>
-                        </div>
+                    <div class="col-lg-8 col-xl-8 col-md-12 col-sm-12 offset-xl-2 offset-lg-2">
+                        <h2>
+                            <a th:text="${article.title}" href="javascript:void(0);"></a>
+                        </h2>
                         <div th:utext="${article.content}"></div>
                     </div>
                 </div>
 
 
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-8 offset-2">
                         <div class="list list-row list-hoverable" id="commentContainer">
 <!--                            <div class="list-item">-->
 <!--                                <a href="#">-->

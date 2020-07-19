@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @RequestMapping("console")
@@ -26,6 +27,13 @@ public class TagController extends BaseController {
         model.addAttribute("tagPage", tagService.selectPage(queryParam));
         return "/console/tag/index";
     }
+
+    @GetMapping("tags/list")
+    @ResponseBody
+    public List<Tag> lists(){
+        return tagService.listAll();
+    }
+
 
     @DeleteMapping("tag/{id}/delete")
     @ResponseBody

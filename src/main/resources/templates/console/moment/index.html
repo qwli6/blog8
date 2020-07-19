@@ -197,116 +197,17 @@
     </div>
 
 
-<!--<script type="text/javascript" th:src="@{/webjars/jquery/3.0.0/jquery.min.js}"></script>-->
-<!-- Libs JS -->
-<script src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Tabler Core -->
-<script src="/static/tabler/dist/js/tabler.min.js"></script>
+<script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
+<script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/sweetalert2-2.9.js"></script>
+<script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/Toast.js"></script>
 <script>
     document.body.style.display = "block";
     function toPage(i){
         document.getElementById('currentPage').value = i;
         document.getElementById('queryForm').submit();
     }
-</script>
-<script>
-
-    let rootPath = '[[@{/}]]';
-
-
-
-    function queryArticles() {
-
-    }
-
-    $(document).ready(function(){
-        $("#btnSubmit").click(function (event) {
-
-            //stop submit the form, we will post it manually.
-            event.preventDefault();
-
-            fire_ajax_submit();
-        });
-
-        queryArticles();
-        // $("#articleTable").DataTable({
-        //     ordering: false,
-        //     searching: false,
-        //     serverSide: true,
-        //     autoWidth: true,
-        //     renderer: "bootstrap",
-        //     ajax: {
-        //         type: 'get',
-        //         dataType: 'json',
-        //         url: '/console/article/query',
-        //         async: false
-        //     },
-        //     columns: [
-        //         {data: 'title', render : function(value, row, index){
-        //                 let html = '<a href="">'+value+'</a>';
-        //                 return html;
-        //         }},
-        //         {data: 'createAt'},
-        //         {data: 'postAt'},
-        //         {data: ''},
-        //         {data: 'hits'},
-        //         {data: 'comments'},
-        //         {
-        //             className: "td-operation text-center",
-        //             data: null,
-        //             defaultContent: "",
-        //             orderable: false,
-        //             width: "160px",
-        //         }
-        //     ],
-        //     createRow : function(row, data, index){
-        //         let $btn = $('<div class="btn-group text-cen">'+
-        //             '<button type="button" class="btn btn-sm btn-primary btn-edit">修改</button>'+
-        //             '<button type="button" class="btn btn-sm btn-danger btn-del">删除</button>'+
-        //             '</div>'+
-        //             '</div>');
-        //         $('td', row).eq(6).append($btn);
-        //     },
-        //     paginate: {
-        //         first: "首页",
-        //         previous: '上页',
-        //         next: '下页',
-        //         last: '末页'
-        //     }
-        // });
-
-       // loadData();
-    });
-
-
-    function fire_ajax_submit() {
-        // Get form
-        $("#btnSubmit").prop("disabled", true);
-
-        let data = {
-            name: document.getElementById('name').value,
-            sort: document.getElementById('sort').value,
-            show: document.getElementById('show').checked
-        }
-
-        $.ajax({
-            type: "POST",
-            url: "/console/category/saved",
-            data: JSON.stringify(data),
-            contentType: 'application/json;charset=utf8',
-            dataType: 'json',
-            success: function (data) {
-                $("#btnSubmit").prop("disabled", false);
-                $('#createStaticBackdrop').modal('hide');
-                loadData();
-            },
-            error: function (e) {
-                console.log("ERROR : ", e);
-                $("#btnSubmit").prop("disabled", false);
-            }
-        });
-    }
-
 </script>
 </body>
 </html>

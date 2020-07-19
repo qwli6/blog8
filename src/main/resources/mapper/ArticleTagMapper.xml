@@ -16,8 +16,8 @@
 
     <insert id="batchInsert" parameterType="ArticleTag">
         insert into blog_article_tag(article_id, tag_id)  values
-            <foreach collection="articleTags" item="item" close="" separator="," open="">
-                (#{article.id}, #{tag.id})
+            <foreach collection="list" item="item" close="" separator="," open="">
+                (#{item.article.id}, #{item.tag.id})
             </foreach>
     </insert>
 

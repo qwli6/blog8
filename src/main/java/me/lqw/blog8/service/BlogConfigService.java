@@ -5,8 +5,11 @@ import me.lqw.blog8.BlogConstants;
 import me.lqw.blog8.mapper.BlogConfigMapper;
 import me.lqw.blog8.model.BlogConfig;
 import me.lqw.blog8.model.CommentCheckStrategy;
+import me.lqw.blog8.model.config.BlogConfigModel;
 import me.lqw.blog8.model.config.CheckStrategy;
 import me.lqw.blog8.util.JacksonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -22,6 +25,8 @@ import java.util.OptionalInt;
  */
 @Service
 public class BlogConfigService implements Serializable {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
 
     private final BlogConfigMapper configMapper;
@@ -79,4 +84,38 @@ public class BlogConfigService implements Serializable {
         return Collections.emptyList();
     }
 
+    public BlogConfigModel selectBlogConfig(String blogConfig) {
+        Optional<BlogConfig> blogConfigOp = configMapper.selectByKey(blogConfig);
+        if(blogConfigOp.isPresent()){
+            BlogConfig config = blogConfigOp.get();
+            String value = config.getValue();
+            if(StringUtils.isEmpty(value)){
+                return createDefaultBlogConfigModel();
+            }
+
+            BlogConfigModel blogConfigModel = JacksonUtil.parseObject(value, new TypeReference<BlogConfigModel>() {});
+
+            if(blogConfigModel == null){
+                return createDefaultBlogConfigModel();
+            }
+            return blogConfigModel;
+        }
+        return createDefaultBlogConfigModel();
+    }
+
+
+    /**
+     * 创建默认的博客配置
+     * @return blogConfigModel
+     */
+    private BlogConfigModel createDefaultBlogConfigModel(){
+
+        BlogConfigModel blogConfigModel = new BlogConfigModel();
+        blogConfigModel.setFavicon("/static/images/favicon.ico");
+        blogConfigModel.setHeader("博客系统");
+        blogConfigModel.setFooterScript("");
+        blogConfigModel.setWebsiteUrl("http://localhost:8080");
+        logger.info("createDefaultBlogConfigModel return:[{}]", JacksonUtil.toJsonString(blogConfigModel));
+        return blogConfigModel;
+    }
 }

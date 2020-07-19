@@ -25,4 +25,7 @@ public interface TagMapper {
     List<Tag> selectPage(TagQueryParam queryParam);
 
     void delete(@Param("id") Integer id);
+
+    List<Tag> listAll();
+
 }

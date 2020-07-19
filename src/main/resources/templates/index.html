@@ -2,15 +2,12 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="李启文的博客">Title</title>
+    <title th:text="${blogConfigModel.header}">李启文的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link th:href="${blogConfigModel.favicon}" rel="shortcut icon">
+    <link rel="stylesheet" href="/static/css/base.css">
     <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
     <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
-    <style>
-        body {
-            display: none;
-        }
-    </style>
 </head>
 <body class="antialiased">
     <div class="page">

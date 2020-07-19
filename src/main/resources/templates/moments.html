@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title th:text="动态-李启文的博客">Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="/static/images/favicon.ico" rel="shortcut icon">
+    <link rel="stylesheet" href="/static/css/base.css">
     <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
     <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
 </head>
@@ -69,6 +71,7 @@
 <!-- Tabler Core -->
 <script src="/static/tabler/dist/js/tabler.min.js"></script>
 <script>
+    document.body.style.display = 'block';
     for(const elem of document.querySelectorAll('[data-momentid]')){
         elem.addEventListener('click', function(){
             window.location.href = '/moment/' + this.dataset.momentid;

@@ -30,5 +30,7 @@ public class BlogConstants implements Serializable {
     public static final String COMMENT_CHECK_STRATEGY = "CheckStrategy";
     //评论通知
     public static final String COMMENT_NOTIFY = "CommentNotify";
+    //博客配置
+    public static final String BLOG_CONFIG = "BlogConfig";
 
 }

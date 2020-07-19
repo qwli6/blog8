@@ -72,4 +72,7 @@ public class TagService extends BaseService<Tag> implements InitializingBean {
     }
 
 
+    public List<Tag> listAll() {
+        return tagMapper.listAll();
+    }
 }

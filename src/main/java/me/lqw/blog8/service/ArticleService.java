@@ -21,6 +21,8 @@ import org.springframework.util.StringUtils;
 import java.io.Closeable;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -80,8 +82,15 @@ public class ArticleService extends BaseService<Article> implements CommentModul
         }
         //判断是否为定时发送
         if(status.equals(StatusEnum.SCHEDULED)){
-//            ExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-//            executorService.submit(new RunT)
+            //延时发布在 60s 内，就不算延时
+            LocalDateTime postAt = article.getPostAt();
+            if(postAt != null && postAt.minus(1, ChronoUnit.SECONDS).isBefore(LocalDateTime.now())){
+                article.setPostAt(LocalDateTime.now());
+//                Executors.newScheduledThreadPool(1).scheduleAtFixedRate()
+            }
+
+//            ExecutorService executorService = Executors.newScheduledThreadPool(1);
+//            executorService.sche
         }
         article.setHits(0);
         article.setComments(0);
@@ -109,17 +118,23 @@ public class ArticleService extends BaseService<Article> implements CommentModul
         if(!tags.isEmpty()){
             List<ArticleTag> articleTags = new ArrayList<>(tags.size());
             tags.forEach(e -> {
-                Optional<Tag> tagOp = tagMapper.findByName(e.getTagName());
-                if(tagOp.isPresent()){
-                    articleTags.add(new ArticleTag(article, tagOp.get()));
-                } else {
-                    Tag tag = new Tag();
-                    tag.setTagName(e.getTagName());
-                    tagMapper.insert(tag);
-                    articleTags.add(new ArticleTag(article, tag));
-                }
+
+                Optional<Tag> tagOp = tagMapper.findById(e.getId());
+                tagOp.ifPresent(tag -> articleTags.add(new ArticleTag(article, tag)));
+
+//                Optional<Tag> tagOp = tagMapper.findByName(e.getTagName());
+//                if(tagOp.isPresent()){
+//                    articleTags.add(new ArticleTag(article, tagOp.get()));
+//                } else {
+//                    Tag tag = new Tag();
+//                    tag.setTagName(e.getTagName());
+//                    tagMapper.insert(tag);
+//                    articleTags.add(new ArticleTag(article, tag));
+//                }
             });
-            articleTagMapper.batchInsert(articleTags);
+            if(!articleTags.isEmpty()) {
+                articleTagMapper.batchInsert(articleTags);
+            }
         }
     }
 

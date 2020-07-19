@@ -2,17 +2,14 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title th:text="文件管理">Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="/static/images/favicon.ico" rel="shortcut icon">
+    <link rel="stylesheet" href="/static/css/base.css">
     <link href="/static/tabler/dist/libs/jqvmap/dist/jqvmap.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
-    <link rel="stylesheet" href="/static/tabler/dist/css/tabler-buttons.min.css">
-    <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
-    <style>
-        body{
-            display: none;
-        }
-    </style>
+    <link href="/static/tabler/dist/css/tabler.min.css" rel="stylesheet">
+    <link href="/static/tabler/dist/css/tabler-buttons.min.css" rel="stylesheet">
+    <link href="/static/tabler/dist/css/demo.min.css" rel="stylesheet">
 </head>
 <body class="antialiased">
     <div th:replace="/console/common/left-menu::leftMenu('file')"></div>
