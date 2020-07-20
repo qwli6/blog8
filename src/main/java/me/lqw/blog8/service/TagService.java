@@ -46,10 +46,16 @@ public class TagService extends BaseService<Tag> implements InitializingBean {
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public void update(Tag tag) throws LogicException {
-        Tag old = tagMapper.findByName(tag.getTagName()).orElseThrow(() -> new LogicException("tagService.update.notExists", "标签不存在"));
+        Tag old = tagMapper.findById(tag.getId()).orElseThrow(()
+                -> new LogicException("tagService.update.notExists", "标签不存在"));
+
         if(old.getTagName().equals(tag.getTagName())){
             return;
         }
+        //不能更新名称已存在的标签
+        tagMapper.findByName(tag.getTagName()).ifPresent(e -> {
+            throw new LogicException("tagService.update.nameExists", "标签名称已经存在");
+        });
         tagMapper.update(tag);
     }
 

@@ -48,7 +48,7 @@ public class TagController extends BaseController {
         return ResponseEntity.ok(tagService.save(tag).getId());
     }
 
-    @PostMapping("tag/{id}/update")
+    @PutMapping("tag/{id}/update")
     @ResponseBody
     public void update(@PathVariable("id") Integer id, @RequestBody Tag tag){
         tag.setId(id);
