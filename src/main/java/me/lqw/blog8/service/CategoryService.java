@@ -63,19 +63,24 @@ public class CategoryService extends BaseService<Category> implements Initializi
         });
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public void update(Category category) throws LogicException {
         Category old = categoryMapper.findById(category.getId()).orElseThrow(() ->
-                new LogicException("categoryService.delete.notExists", "分类不存在"));
+                new LogicException("categoryService.update.notExists", "分类不存在"));
         if(old.getName().equals(category.getName()) && old.getShow().equals(category.getShow())){
             return;
         }
+        categoryMapper.findByName(category.getName()).ifPresent(e -> {
+            throw new LogicException("categoryService.update.nameExists", "名称已存在, 无法修改");
+        });
+
         categoryMapper.update(category);
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        logger.info("CategoryService afterPropertiesSet()...");
+        logger.info("CategoryService#afterPropertiesSet()...");
     }
 
 }

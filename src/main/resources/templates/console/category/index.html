@@ -7,135 +7,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="/static/css/base.css">
     <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
-    <link href="/static/tabler/dist/css/tabler-buttons.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/tabler/dist/css/tabler-buttons.min.css"/>
     <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
 </head>
 <body class="antialiased">
-<div th:replace="/console/common/left-menu::leftMenu('category')"></div>
-<div class="page">
-    <div th:replace="/console/common/head-navbar::headnav('category')"></div>
-    <div class="content">
-        <div class="container-xl">
-            <!-- Page title -->
-            <div class="page-header">
-                <div class="row row-sm align-items-center">
-                    <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
-                        <a href="javascript:void(0);" class="btn btn-primary btn-icon" id="create-btn" aria-label="Button">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                        </a>
+    <div th:replace="/console/common/left-menu::leftMenu('category')"></div>
+    <div class="page">
+        <div th:replace="/console/common/head-navbar::headnav('category')"></div>
+        <div class="content">
+            <div class="container-xl">
+                <!-- Page title -->
+                <div class="page-header">
+                    <div class="row row-sm align-items-center">
+                        <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
+                            <a href="javascript:void(0);" class="btn btn-primary" id="create-btn" aria-label="Button">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                                新分类
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap datatable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>分类名称</th>
+                                    <th>创建时间</th>
+                                    <th>修改时间</th>
+                                    <th>是否可见</th>
+                                    <th class="w-1"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="category: ${categories}">
+                                    <td th:text="${category.id}"></td>
+                                    <td><a href="javascript:void(0);" th:text="${category.name}"></a></td>
+                                    <td th:text="${#temporals.format(category.getCreateAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                    <td th:text="${#temporals.format(category.getModifyAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                    <td>
+                                        <span th:text="${category.show ? '可见' : '隐藏'}" class="badge" th:classappend="${category.show ? 'bg-primary' : 'bg-danger'}"></span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-list text-right flex-nowrap">
+                                            <a href="javascript:void(0);" th:data-edit="${category.id}" th:data-name="${category.name}" class="btn btn-icon btn-primary">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><path d="M9 7 h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3"></path><path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3"></path><line x1="16" y1="5" x2="19" y2="8"></line></svg>
+                                            </a>
+                                            <a href="javascript:void(0);" th:data-trash="${category.id}" class="btn btn-icon btn-outline-danger">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="4" y1="7" x2="20" y2="7"></line><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-
-            <div class="card">
-                <div class="table-responsive">
-                    <table class="table card-table table-vcenter text-nowrap datatable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>分类名称</th>
-                                <th>创建时间</th>
-                                <th>修改时间</th>
-                                <th>是否可见</th>
-                                <th class="w-1"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="category: ${categories}">
-                                <td th:text="${category.id}"></td>
-                                <td><a href="javascript:void(0);" th:text="${category.name}"></a></td>
-                                <td th:text="${#temporals.format(category.getCreateAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
-                                <td th:text="${#temporals.format(category.getModifyAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
-                                <td th:text="${category.show}"></td>
-                                <td>
-                                    <div class="btn-list text-right flex-nowrap">
-                                        <a href="javascript:void(0);" th:data-edit="${category.id}" class="btn btn-primary">编辑</a>
-                                        <a href="javascript:void(0);" th:data-trash="${category.id}" class="btn btn-danger">删除</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
+
     </div>
 
-</div>
 
+    <script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
+    <script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/sweetalert2-2.9.js"></script>
+    <script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/Toast.js"></script>
 
-<script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
-<!-- Libs JS -->
-<script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Tabler Core -->
-<script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
-<script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/sweetalert2-2.9.js"></script>
-<script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/Toast.js"></script>
-<script>
-    document.body.style.display = "block"
-    const rootPath = '[[@{/}]]';
-</script>
+    <script>
 
-<script>
+        document.body.style.display = "block";
+        const rootPath = '[[@{/}]]';
 
-
-    document.getElementById('create-btn').addEventListener('click', function(){
-        (async function getName(){
-            const { value : name} = await Swal.fire({
-                title: '分类名称',
-                input: 'text',
-                inputValue: '',
-                showCancelButton: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消'
-            })
-            if(name){
-                $.ajax({
-                    type: "POST",
-                    url: rootPath + 'console/category/save',
-                    data: JSON.stringify({'name': name}),
-                    contentType: 'application/json;charset=utf8',
-                    dataType: 'json',
-                    success: function () {
-                        // $("#create-btn").prop("disabled", false);
-                        toast("创建成功");
-                        setTimeout(function(){
-                            window.location.href= rootPath + 'console/categories';
-                        }, 800);
-                    },
-                    error: function (e) {
-                        // console.log("ERROR : ", e);
-                        // $("#create-btn").prop("disabled", false);
-                    }
-                });
-            }
-        })();
-    })
-
-    for(const elem of document.querySelectorAll('[data-trash]')){
-        elem.addEventListener('click', function(){
-            let id = this.dataset.trash;
-            $.ajax({
-                url: rootPath + 'console/category/' + id + '/delete',
-                type: 'delete',
-                success: function(res){
-                    toast("删除成功");
-                    setTimeout(function(){
-                        window.location.href= rootPath + 'console/categories';
-                    }, 800)
-                },
-                error: function(res){
-
-                }
-            });
-        })
-    }
-
-    for(const elem of document.querySelectorAll('[data-edit]')){
-        elem.addEventListener('click', function(){
-            let id = this.dataset.edit;
+        document.getElementById('create-btn').addEventListener('click', function(){
             (async function getName(){
-                const {value: name} = await Swal.fire({
+                const { value : name} = await Swal.fire({
                     title: '分类名称',
                     input: 'text',
                     inputValue: '',
@@ -143,14 +92,102 @@
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
                 })
-
                 if(name){
-
+                    fetch(rootPath + 'console/category/save', {
+                        method: 'POST',
+                        body: JSON.stringify({'name': name}),
+                        headers: new Headers({
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        })
+                    }).then(res => {
+                        console.log(res);
+                    }).catch(error => {
+                        console.error('Error:' + error);
+                    }).then(response => {
+                        console.log('Success:' + response);
+                        toast('分类保存成功');
+                        setTimeout(function(){
+                            window.location.href = rootPath + 'console/categories';
+                        }, 800);
+                    });
                 }
             })();
         })
-    }
 
-</script>
+        for(const elem of document.querySelectorAll('[data-trash]')){
+            elem.addEventListener('click', function(){
+                let id = this.dataset.trash;
+                Swal.fire({
+                    title: '您确定吗?',
+                    text: "此操作不可逆, 您确定要把该分类移除吗?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消'
+                }).then((result) => {
+                    if (result.value) {
+                        let id = this.dataset.trash;
+                        fetch(rootPath + 'console/category/' + id + '/delete', {
+                            method: 'DELETE',
+                            headers: new Headers({
+                                'Content-Type': 'application/json; charset=UTF-8'
+                            })
+                        }).then(res => {
+                            console.log(res);
+                        }).catch(error => {
+                            console.error('Error:' + error);
+                        }).then(response => {
+                            console.log('Success: ' + response);
+                            toast('分类已成功删除');
+                            setTimeout(function () {
+                                window.location.href = rootPath + 'console/categories';
+                            }, 800);
+                        });
+                    }
+                });
+            })
+        }
+
+        //编辑
+        for(const ele of document.querySelectorAll('[data-edit]')){
+            ele.addEventListener('click', function(){
+
+                let id = this.dataset.edit;
+                let oldName = this.dataset.name;
+                (async function getName () {
+                    const { value: name } = await Swal.fire({
+                        title: '名称',
+                        input: 'text',
+                        inputValue: oldName,
+                        showCancelButton: true,
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消'
+                    })
+                    if (name) {
+                        fetch(rootPath + 'console/category/' + id + '/update', {
+                            method: 'PUT',
+                            body: JSON.stringify({'name': name}),
+                            headers: new Headers({
+                                'Content-Type': 'application/json;  charset=UTF-8'
+                            })
+                        }).then(res => {
+                            console.log("Res: " + res);
+                        }).catch(error => {
+                            console.error("Error:" + error);
+                        }).then(response => {
+                            console.log("Success:" + response);
+                            toast('更新分类成功');
+                            setTimeout(function(){
+                                window.location.href = rootPath + 'console/categories';
+                            }, 800);
+                        });
+                    }
+                })();
+            })
+        }
+
+    </script>
 </body>
 </html>

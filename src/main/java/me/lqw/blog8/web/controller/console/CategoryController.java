@@ -52,7 +52,7 @@ public class CategoryController extends BaseController {
         categoryService.delete(id);
     }
 
-    @PostMapping("category/{id}/update")
+    @PutMapping("category/{id}/update")
     @ResponseBody
     public void update(@PathVariable("id") Integer id, @RequestBody Category category){
         category.setId(id);
