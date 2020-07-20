@@ -16,7 +16,6 @@
     <div th:replace="/console/common/head-navbar::headnav('blackip')"></div>
     <div class="content">
         <div class="container-xl">
-            <!-- Page title -->
             <div class="page-header">
                 <div class="row row-sm align-items-center">
                     <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
@@ -48,7 +47,7 @@
                                 <td th:text="${#temporals.format(blackip.createAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
                                 <td>
                                     <div class="btn-list text-right flex-nowrap">
-                                        <a href="javascript:void(0);" th:data-trash="${blackip.ip}" class="btn btn-icon btn-danger">
+                                        <a href="javascript:void(0);" th:data-trash="${blackip.ip}" class="btn btn-icon btn-outline-danger">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="4" y1="7" x2="20" y2="7"></line><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>
                                         </a>
                                     </div>
@@ -65,19 +64,15 @@
 
 
 <script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
-<!-- Libs JS -->
 <script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Tabler Core -->
 <script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
 <script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/sweetalert2-2.9.js"></script>
 <script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/Toast.js"></script>
+
 <script>
-    document.body.style.display = "block"
+
+    document.body.style.display = "block";
     const rootPath = '[[@{/}]]';
-</script>
-
-<script>
-
     document.getElementById('create-btn').addEventListener('click', function(){
         (async function getName(){
             const { value : ip} = await Swal.fire({
@@ -89,23 +84,22 @@
                 cancelButtonText: '取消'
             })
             if(ip){
-                $.ajax({
-                    type: "POST",
-                    url: rootPath + 'console/blackip/save',
-                    data: JSON.stringify({'ip': ip}),
-                    contentType: 'application/json;charset=utf8',
-                    dataType: 'json',
-                    success: function () {
-                        // $("#create-btn").prop("disabled", false);
-                        toast("创建成功");
-                        setTimeout(function(){
-                            window.location.href= rootPath + 'console/blackips';
-                        }, 800);
-                    },
-                    error: function (e) {
-                        // console.log("ERROR : ", e);
-                        // $("#create-btn").prop("disabled", false);
-                    }
+                fetch(rootPath+'console/blackip/save', {
+                    method:'POST',
+                    body: JSON.stringify({'ip': ip}),
+                    headers: new Headers({
+                        'Content-Type': 'application/json; charset=UTF-8'
+                    })
+                }).then(res => res.json())
+                .catch(error => {
+                    console.log('Error:', error);
+                })
+                .then(response => {
+                    console.log('Success:', response);
+                    toast('创建黑名单成功');
+                    setTimeout(function(){
+                        window.location.href = rootPath + 'console/blackips';
+                    },800);
                 });
             }
         })();
@@ -115,34 +109,37 @@
         elem.addEventListener('click', function(){
 
             Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
+                title: '您确定吗?',
+                text: "此操作不可逆, 您确定要把该 ip 从黑名单列表中移除吗?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
+                confirmButtonText: '确定',
+                cancelButtonText: '取消'
             }).then((result) => {
                 if (result.value) {
                     let ip = this.dataset.trash;
-                    $.ajax({
-                        url: rootPath + 'console/blackip/' + ip + '/delete',
-                        type: 'delete',
-                        success: function(res){
-                            toast("删除成功");
-                            setTimeout(function(){
-                                window.location.href= rootPath + 'console/blackips';
-                            }, 800)
-                        },
-                        error: function(res){
 
-                        }
+                    fetch(rootPath + 'console/blackip/' + ip + '/delete', {
+                        method: 'DELETE',
+                        headers: new Headers({
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        })
+                    }).then(res => {
+                        console.log('then:' + res);
+                    }).catch(error => {
+                        console.log('Error:' + error);
+                    }).then(response => {
+                        console.log('Success:' + response);
+                        toast('该黑名单已被移除');
+                        setTimeout(function() {
+                            window.location.href = rootPath + 'console/blackips';
+                        }, 800);
                     });
                 }
-            })
-
-
-        })
+            });
+        });
     }
 </script>
 </body>
