@@ -12,4 +12,5 @@ public interface BlogConfigMapper {
 
     Optional<BlogConfig> selectByKey(@Param("key") String key);
 
+    void updateConfig(@Param("key") String key, @Param("value") String value);
 }

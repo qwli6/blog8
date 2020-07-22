@@ -7,11 +7,10 @@
     <link href="/static/images/favicon.ico" rel="shortcut icon">
     <link rel="stylesheet" href="/static/css/base.css">
     <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
-    <link href="/static/tabler/dist/css/tabler-buttons.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/tabler/dist/css/tabler-buttons.min.css" />
     <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
 </head>
 <body class="antialiased">
-    <div th:replace="/console/common/left-menu::leftMenu('comment')"></div>
     <div class="page">
         <div th:replace="/console/common/head-navbar::headnav('comment')"></div>
         <form th:action="@{/console/comments}" id="queryForm" method="get">
@@ -98,11 +97,11 @@
 
 <script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
 <!-- Libs JS -->
-<script src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Tabler Core -->
-<script src="/static/tabler/dist/js/tabler.min.js"></script>
+<script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
 <script>
-    document.body.style.display = "block"
+    document.body.style.display = "block";
 </script>
 <script>
     function toPage(i){

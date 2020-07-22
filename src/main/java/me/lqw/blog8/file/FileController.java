@@ -69,7 +69,7 @@ public class FileController extends BaseController {
     }
 
     @PostMapping("file/upload/multi")
-    public ResponseEntity<String> uploadFileMulti(@RequestParam("extraField") String extraField, @RequestParam("files") MultipartFile[] uploadFiles) {
+    public ResponseEntity<String> uploadFileMulti(@RequestParam(value = "extraField", required = false) String extraField, @RequestParam("files") MultipartFile[] uploadFiles) {
 
         logger.debug("Multiple file upload!");
 

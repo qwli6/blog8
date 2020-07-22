@@ -28,6 +28,10 @@ public class BlogConstants implements Serializable {
 
     //审核策略
     public static final String COMMENT_CHECK_STRATEGY = "CheckStrategy";
+
+    //邮件通知
+    public static final String BLOG_CONFIG_EMAIL = "BlogConfigEmail";
+
     //评论通知
     public static final String COMMENT_NOTIFY = "CommentNotify";
     //博客配置

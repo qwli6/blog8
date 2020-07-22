@@ -1,14 +1,13 @@
 package me.lqw.blog8.web.controller.console;
 
+import me.lqw.blog8.model.config.BlogConfigModel;
+import me.lqw.blog8.model.config.EmailConfigModel;
 import me.lqw.blog8.service.BlogConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 
@@ -37,11 +36,26 @@ public class BlogConfigController {
         return "console/config/index";
     }
 
+    @PutMapping("config/blog/update")
+    @ResponseBody
+    public void updateBlogConfig(@RequestBody BlogConfigModel configModel) {
+        blogConfigService.updateConfig(configModel);
+    }
+
+    @PutMapping("config/email/update")
+    @ResponseBody
+    public void updateEmailConfig(@RequestBody EmailConfigModel configModel) {
+        blogConfigService.updateConfig(configModel);
+    }
+
 
     @GetMapping("config")
-    @ResponseBody
-    public Object queryConfig(@RequestParam("key") String key){
+    public String selectConfig(@RequestParam("key") String key, Model model){
+//        blogConfigService.
 
-        return new HashMap<>();
+//        return new HashMap<>();
+        model.addAttribute("key", key);
+
+        return "/console/config/blogConfig";
     }
 }

@@ -12,6 +12,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * 用户业务实现类
+ * @author liqiwen
+ * @version 1.0
+ */
 @Service
 public class UserService implements InitializingBean {
 
@@ -33,14 +38,14 @@ public class UserService implements InitializingBean {
             BlogContext.AUTH_THREAD_LOCAL.set(true);
             return user;
         }
-        throw new UnauthorizedException("user.auth.failed", "用户认证失败");
+        throw new UnauthorizedException("user.auth.fail", "用户认证失败");
     }
 
 
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        logger.info("UserService afterPropertiesSet()...");
+        logger.info("UserService#afterPropertiesSet()...");
     }
 
 

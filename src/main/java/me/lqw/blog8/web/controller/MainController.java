@@ -77,13 +77,13 @@ public class MainController extends BaseController {
 
 
 
-    @PostMapping("moment/{id}/hits")
+    @PutMapping("moment/{id}/hits")
     @ResponseBody
     public void hitMoment(@PathVariable("id") Integer id){
         momentService.hit(id);
     }
 
-    @PostMapping("article/{id}/hits")
+    @PutMapping("article/{id}/hits")
     @ResponseBody
     public void hitArticle(@PathVariable("id") Integer id){
         articleService.hit(id);

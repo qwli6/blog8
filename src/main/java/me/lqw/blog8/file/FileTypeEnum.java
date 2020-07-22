@@ -22,6 +22,7 @@ public enum FileTypeEnum {
     PRO("properties"),
     YML("yml"),
     PDF("pdf"),
+    PPT("pptx"),
     TXT("txt");
 
     String code;

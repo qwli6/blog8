@@ -2,14 +2,13 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="文件管理">Title</title>
+    <title th:text="文件管理">文件管理</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="/static/images/favicon.ico" rel="shortcut icon">
+    <link th:href="${blogConfigModel.favicon}" rel="shortcut icon">
     <link rel="stylesheet" href="/static/css/base.css">
-    <link href="/static/tabler/dist/libs/jqvmap/dist/jqvmap.min.css" rel="stylesheet"/>
-    <link href="/static/tabler/dist/css/tabler.min.css" rel="stylesheet">
-    <link href="/static/tabler/dist/css/tabler-buttons.min.css" rel="stylesheet">
-    <link href="/static/tabler/dist/css/demo.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="/static/tabler/dist/css/tabler-buttons.min.css">
+    <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css" >
 </head>
 <body class="antialiased">
     <div th:replace="/console/common/left-menu::leftMenu('file')"></div>
@@ -140,227 +139,148 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <input type="file" multiple>
+                        <button type="button" id="btn-upload" class="btn btn-primary">上传</button>
+                    </div>
+                </div>
             </div>
         </div>
-
     </div>
-
-<!--<div th:replace="/console/common/head-navbar::headNavbar('file')"></div>-->
-<!--<main role="main" class="container">-->
-
-<!--    <nav aria-label="breadcrumb">-->
-<!--        <ol class="breadcrumb">-->
-<!--            <li class="breadcrumb-item"><a href="#">Root</a></li>-->
-<!--            <li class="breadcrumb-item"><a href="#">Library</a></li>-->
-<!--            <li class="breadcrumb-item active" aria-current="page">Data</li>-->
-<!--        </ol>-->
-<!--    </nav>-->
-<!--    <div class="row">-->
-<!--        <div class="col-12">-->
-<!--            <button type="button" class="btn btn-primary">返回上一级</button>-->
-<!--            <button type="button"  class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">上传</button>-->
-<!--            <button type="button"  class="btn btn-primary" data-toggle="modal" data-target="#createStaticBackdrop">创建</button>-->
-<!--            <button type="button" class="btn btn-primary">统计</button>-->
-<!--            <button type="button" class="btn btn-primary">查询</button>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="row">-->
-<!--        <div class="col-12">-->
-<!--            <h6>文件夹</h6>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="row">-->
-<!--        <div class="col-2">-->
-<!--            <div class="card">-->
-<!--                <div class="card-body">-->
-<!--                    <img style="width: 32px; height: 32px;" src="/static/images/logoH.png" /> images-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="col-2">-->
-<!--            <div class="card">-->
-<!--                <div class="card-body">-->
-<!--                    <img style="width: 32px; height: 32px;" src="/static/images/logoH.png" /> video-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="row">-->
-<!--        <div class="col-12">-->
-<!--            <h6>文件</h6>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="row">-->
-<!--        <div class="col-12 table-responsive">-->
-<!--            <table class="table table-bordered">-->
-<!--                <thead>-->
-<!--                    <tr>-->
-<!--                        <th>名称</th>-->
-<!--                        <th>大小</th>-->
-<!--                        <th>上传时间</th>-->
-<!--                        <th>后缀类型</th>-->
-<!--                        <th>是否可编辑</th>-->
-<!--                        <th>操作</th>-->
-<!--                    </tr>-->
-<!--                </thead>-->
-<!--                <tbody>-->
-<!--                    <tr>-->
-<!--                        <td>1547447428020839.mp4</td>-->
-<!--                        <td>1554804</td>-->
-<!--                        <td>1590557229000</td>-->
-<!--                        <td>mp4</td>-->
-<!--                        <td>false</td>-->
-<!--                        <td>-->
-<!--                            <a href="">编辑</a>-->
-<!--                        </td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <td>1547447428020839.mp4</td>-->
-<!--                        <td>1554804</td>-->
-<!--                        <td>1590557229000</td>-->
-<!--                        <td>mp4</td>-->
-<!--                        <td>false</td>-->
-<!--                        <td>-->
-<!--                            <a href="">编辑</a>-->
-<!--                        </td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <td>1547447428020839.mp4</td>-->
-<!--                        <td>1554804</td>-->
-<!--                        <td>1590557229000</td>-->
-<!--                        <td>mp4</td>-->
-<!--                        <td>false</td>-->
-<!--                        <td>-->
-<!--                            <a href="">编辑</a>-->
-<!--                        </td>-->
-<!--                    </tr>-->
-<!--                </tbody>-->
-<!--            </table>-->
-<!--        </div>-->
-<!--    </div>-->
-
-
-<!--    <h1>Ajax Post Result</h1>-->
-<!--    &lt;pre&gt;-->
-<!--    <span id="result"></span>-->
-<!--    &lt;/pre&gt;-->
-<!--</main>-->
 
 <!-- CreateModal -->
-<div class="modal fade" id="createStaticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createStaticBackdropLabel">创建</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form method="POST" enctype="multipart/form-data" id="fileCreateForm">
-                    <input type="text" name="extraField"/><br/><br/>
-                    <input type="file" name="files"/><br/><br/>
-                    <input type="file" name="files"/><br/><br/>
-                    <!--                    <input type="submit" class="btn btn-primary" value="Submit" id="btnSubmit"/>-->
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                <button type="button" id="createSubmit" class="btn btn-primary">创建</button>
-            </div>
-        </div>
-    </div>
-</div>
+<!--<div class="modal fade" id="createStaticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">-->
+<!--    <div class="modal-dialog" role="document">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <h5 class="modal-title" id="createStaticBackdropLabel">创建</h5>-->
+<!--                <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                    <span aria-hidden="true">&times;</span>-->
+<!--                </button>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <form method="POST" enctype="multipart/form-data" id="fileCreateForm">-->
+<!--                    <input type="text" name="extraField"/><br/><br/>-->
+<!--                    <input type="file" name="files"/><br/><br/>-->
+<!--                    <input type="file" name="files"/><br/><br/>-->
+<!--                    &lt;!&ndash;                    <input type="submit" class="btn btn-primary" value="Submit" id="btnSubmit"/>&ndash;&gt;-->
+<!--                </form>-->
+<!--            </div>-->
+<!--            <div class="modal-footer">-->
+<!--                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>-->
+<!--                <button type="button" id="createSubmit" class="btn btn-primary">创建</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 
-<!-- UploadModal -->
-<div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">上传</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form method="POST" enctype="multipart/form-data" id="fileUploadForm">
-                    <input type="text" name="extraField"/><br/><br/>
-                    <input type="file" name="files"/><br/><br/>
-                    <input type="file" name="files"/><br/><br/>
-<!--                    <input type="submit" class="btn btn-primary" value="Submit" id="btnSubmit"/>-->
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                <button type="button" id="btnSubmit"  class="btn btn-primary">上传</button>
+    <!-- UploadModal -->
+    <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">上传</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" enctype="multipart/form-data" id="fileUploadForm">
+                        <input type="text" name="extraField"/><br/><br/>
+                        <input type="file" name="files"/><br/><br/>
+                        <input type="file" name="files"/><br/><br/>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnSubmit"  class="btn btn-primary">上传</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<script type="text/javascript" th:src="@{/webjars/jquery/3.0.0/jquery.min.js}"></script>
-    <!-- Libs JS -->
-    <script src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/static/tabler/dist/libs/jquery/dist/jquery.slim.min.js"></script>
-    <script src="/static/tabler/dist/libs/apexcharts/dist/apexcharts.min.js"></script>
-    <script src="/static/tabler/dist/libs/jqvmap/dist/jquery.vmap.min.js"></script>
-    <script src="/static/tabler/dist/libs/jqvmap/dist/maps/jquery.vmap.world.js"></script>
-    <script src="/static/tabler/dist/libs/peity/jquery.peity.min.js"></script>
-    <!-- Tabler Core -->
-    <script src="/static/tabler/dist/js/tabler.min.js"></script>
+
+    <script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
 
     <script>
-        document.body.style.display = "block"
-    </script>
-<script>
-    $(document).ready(function(){
-        $("#btnSubmit").click(function (event) {
+        document.body.style.display = "block";
+        const rootPath = '[[@{/}]]';
 
-            //stop submit the form, we will post it manually.
-            event.preventDefault();
-
+        document.getElementById('btn-upload').addEventListener('click', function(){
             fire_ajax_submit();
+        })
+
+        $(document).ready(function(){
+            $("#btnSubmit").click(function (event) {
+
+                //stop submit the form, we will post it manually.
+                event.preventDefault();
+
+                fire_ajax_submit();
+            });
+
+            $.get('/console/file/getQueryCriteriaNew', {}, function(data){
+                console.log(data);
+            });
         });
 
-        $.get('/console/file/getQueryCriteriaNew', {}, function(data){
-            console.log(data);
-        });
-    });
+        function fire_ajax_submit() {
 
-    function fire_ajax_submit() {
+            // Get form
+            // let form = $('#fileUploadForm')[0];
 
-        // Get form
-        let form = $('#fileUploadForm')[0];
+            // let data = new FormData(form);
 
-        let data = new FormData(form);
+            // data.append("CustomField", "This is some extra data, testing");
 
-        data.append("CustomField", "This is some extra data, testing");
+            // $("#btnSubmit").prop("disabled", true);
 
-        $("#btnSubmit").prop("disabled", true);
+            const formData = new FormData();
 
-        $.ajax({
-            type: "POST",
-            enctype: 'multipart/form-data',
-            url: "/console/api/upload/multi",
-            data: data,
-            processData: false,
-            contentType: false,
-            cache: false,
-            timeout: 600000,
-            success: function (data) {
+            let photos = document.querySelector("input[type='file'][multiple]");
 
-                $("#result").text(data);
-                console.log("SUCCESS : ", data);
-                $("#btnSubmit").prop("disabled", false);
-                $('#staticBackdrop').modal('hide');
+            formData.append("title", "图片上传测试");
 
-            },
-            error: function (e) {
-                $("#result").text(e.responseText);
-                console.log("ERROR : ", e);
-                $("#btnSubmit").prop("disabled", false);
+            // formData 只接受文件、Blob 或字符串，不能直接传递数组，所以必须循环嵌入
+            for(let i = 0; i < photos.files.length; i++){
+                formData.append("files", photos.files[i]);
             }
-        });
-    }
-</script>
+
+            fetch(rootPath + 'console/file/upload/multi', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+            .then(response => console.log('Success:', JSON.stringify(response)))
+            .catch(error => console.error('Error:', error));
+
+
+            // $.ajax({
+            //     type: "POST",
+            //     enctype: 'multipart/form-data',
+            //     url: "/console/api/upload/multi",
+            //     data: data,
+            //     processData: false,
+            //     contentType: false,
+            //     cache: false,
+            //     timeout: 600000,
+            //     success: function (data) {
+            //
+            //         $("#result").text(data);
+            //         console.log("SUCCESS : ", data);
+            //         $("#btnSubmit").prop("disabled", false);
+            //         $('#staticBackdrop').modal('hide');
+            //
+            //     },
+            //     error: function (e) {
+            //         $("#result").text(e.responseText);
+            //         console.log("ERROR : ", e);
+            //         $("#btnSubmit").prop("disabled", false);
+            //     }
+            // });
+        }
+    </script>
 </body>
 </html>

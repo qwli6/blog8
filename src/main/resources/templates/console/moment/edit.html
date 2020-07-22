@@ -20,7 +20,6 @@
     </style>
 </head>
 <body class="antialiased">
-<div th:replace="/console/common/left-menu::leftMenu('moment')"></div>
 <div class="page">
     <div th:replace="/console/common/head-navbar::headnav('moment')"></div>
     <div class="content">
@@ -92,13 +91,13 @@
 
 <!-- Libs JS -->
 <script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
-<script src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Tabler Core -->
-<script src="/static/tabler/dist/js/tabler.min.js"></script>
+<script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
 <script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/sweetalert2-2.9.js"></script>
 <script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/Toast.js"></script>
 <script>
-    document.body.style.display = "block"
+    document.body.style.display = "block";
 </script>
 <script>
     document.getElementById('passwordProtectEnable').addEventListener('click', function(){
@@ -108,7 +107,6 @@
             document.getElementById('passwordProtect').disabled = 'disabled';
             document.getElementById('passwordProtect').value = '';
         }
-
     });
 
     document.getElementById('btn-moment-update').addEventListener('click',function(){

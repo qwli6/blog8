@@ -16,3 +16,16 @@ function toast(info) {
         title: info === null || info === '' ? '操作成功' : info
     });
 }
+
+function alertError(errors){
+    Swal.fire({
+        title: errors.errors.msg,
+        text: errors.errors.code,
+        icon: 'error',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '确定',
+        showCancelButton: true,
+        cancelButtonText: '取消'
+    });
+}

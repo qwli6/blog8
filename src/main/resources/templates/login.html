@@ -5,6 +5,7 @@
     <title th:text="用户登录">用户登录</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" th:href="${blogConfigModel.favicon}" >
     <link rel="stylesheet" href="/static/css/base.css">
     <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
     <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
@@ -44,7 +45,7 @@
                 </div>
                 <div class="mb-2">
                     <label class="form-check">
-                        <input type="checkbox" class="form-check-input"/>
+                        <input type="checkbox" id="rememberMe" class="form-check-input"/>
                         <span class="form-check-label">记住我</span>
                     </label>
                 </div>
@@ -81,8 +82,8 @@
 
     <script>
 
-        document.body.style.display = "block";
-        const rootPath = '[[@{/}]]';
+        document.body.style.display = 'block';
+        // const rootPath = '[[@{/}]]';
 
 
         window.onload = function(){
@@ -93,6 +94,7 @@
 
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
 
             if(username == null || username === '' || username.trim().length === 0){
                 Swal.fire({
@@ -120,7 +122,8 @@
 
             const data = {
                 'username': username,
-                'password': password
+                'password': password,
+                'rememberMe': rememberMe
             }
 
             fetch('/login', {
@@ -129,12 +132,15 @@
                 headers: new Headers({
                     'Content-Type':'application/json;charset=UTF-8'
                 })
-            }).then(res => res.json())
+            })
+            .then(res => {
+                return res.json();
+            })
             .catch(error => {
                 console.error('Error:', error)
-            }).then(response => {
-                alert('111');
-                console.log('Success:', response);
+            })
+            .then(response => {
+                alertError(response);
             });
         });
 

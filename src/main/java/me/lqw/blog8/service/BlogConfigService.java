@@ -2,16 +2,21 @@ package me.lqw.blog8.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import me.lqw.blog8.BlogConstants;
+import me.lqw.blog8.exception.LogicException;
 import me.lqw.blog8.mapper.BlogConfigMapper;
 import me.lqw.blog8.model.BlogConfig;
 import me.lqw.blog8.model.CommentCheckStrategy;
 import me.lqw.blog8.model.config.BlogConfigModel;
 import me.lqw.blog8.model.config.CheckStrategy;
+import me.lqw.blog8.model.config.ConfigModel;
+import me.lqw.blog8.model.config.EmailConfigModel;
 import me.lqw.blog8.util.JacksonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
@@ -117,5 +122,54 @@ public class BlogConfigService implements Serializable {
         blogConfigModel.setWebsiteUrl("http://localhost:8080");
         logger.info("createDefaultBlogConfigModel return:[{}]", JacksonUtil.toJsonString(blogConfigModel));
         return blogConfigModel;
+    }
+
+    /**
+     * 更新博客配置
+     * @param configModel configModel
+     * @throws LogicException 逻辑异常
+     */
+    public void updateBlogConfig(BlogConfigModel configModel) throws LogicException {
+
+
+
+        String value = JacksonUtil.toJsonString(configModel);
+
+        Assert.notNull(value, "config option value must not null.");
+
+        updateConfig(BlogConstants.BLOG_CONFIG, value);
+
+    }
+
+    public void updateConfig(ConfigModel configModel) throws LogicException {
+        String value = JacksonUtil.toJsonString(configModel);
+
+        Assert.notNull(value, "config option value must not null.");
+
+        if(configModel instanceof BlogConfigModel){
+            updateConfig(BlogConstants.BLOG_CONFIG, value);
+        }
+
+        if(configModel instanceof EmailConfigModel){
+            updateConfig(BlogConstants.BLOG_CONFIG_EMAIL, value);
+        }
+    }
+
+    /**
+     * 更新系统配置
+     * @param key 系统级 key
+     * @param value 系统配置 value
+     * @throws LogicException 逻辑异常
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void updateConfig(String key, String value) throws LogicException {
+        BlogConfig blogConfig = configMapper.selectByKey(key)
+                .orElseThrow(() -> new LogicException("blogConfig.notExists", "配置不存在"));
+
+        String oldValue = blogConfig.getValue();
+        if(value.equals(oldValue)){
+            return;
+        }
+        configMapper.updateConfig(key, value);
     }
 }

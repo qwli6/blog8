@@ -17,6 +17,10 @@
         where option_key = #{key, jdbcType=VARCHAR}
     </select>
 
+    <update id="updateConfig">
+        update blog_config set option_value = #{value,jdbcType=VARCHAR},
+                               modify_at = now() where option_key = #{key,jdbcType=VARCHAR}
+    </update>
 
 
 </mapper>

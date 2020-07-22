@@ -7,6 +7,10 @@ body{
     font-size: 14px !important;
 }
 
+.markdown {
+    font-size: 16px !important;
+}
+
 a {
     cursor: pointer;
 }

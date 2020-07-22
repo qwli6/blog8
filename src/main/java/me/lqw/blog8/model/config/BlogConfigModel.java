@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class BlogConfigModel implements Serializable {
+public class BlogConfigModel extends ConfigModel implements Serializable {
 
 
     /**

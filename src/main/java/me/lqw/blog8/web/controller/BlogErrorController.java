@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -30,6 +31,7 @@ public class BlogErrorController extends BaseController implements ErrorControll
     private final ErrorAttributes errorAttributes;
 
     public BlogErrorController(ErrorAttributes errorAttributes) {
+        super();
         this.errorAttributes = errorAttributes;
     }
 
@@ -54,13 +56,19 @@ public class BlogErrorController extends BaseController implements ErrorControll
 
 
     @RequestMapping
+    @ResponseBody
     public ResponseEntity<Map<String, Object>> errorJSON(HttpServletRequest request, HttpServletResponse response){
         HttpStatus status = getStatus(request);
         if(!status.isError()){
             return new ResponseEntity<>(status);
         }
-        Map<String, Object> errors = Collections.unmodifiableMap(errorAttributes.getErrorAttributes(new ServletWebRequest(request),
-                ErrorAttributeOptions.defaults()));
+        //        Map<String, Object> errors = this.errorAttributes.getErrorAttributes(new ServletWebRequest(request), false);
+        ErrorAttributeOptions options = ErrorAttributeOptions.defaults();
+        options.including(ErrorAttributeOptions.Include.MESSAGE);
+        options.including(ErrorAttributeOptions.Include.BINDING_ERRORS);
+        Map<String, Object> errors = this.errorAttributes.getErrorAttributes(new ServletWebRequest(request),
+                options);
+//        Map<String, Object> errors = Collections.unmodifiableMap();
 
         return new ResponseEntity<>(errors, status);
     }
@@ -76,8 +84,8 @@ public class BlogErrorController extends BaseController implements ErrorControll
         }
         try {
             return HttpStatus.valueOf(statusCode);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
     }

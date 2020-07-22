@@ -2,37 +2,22 @@ package me.lqw.blog8.web;
 
 import me.lqw.blog8.BlogConstants;
 import me.lqw.blog8.BlogContext;
-import me.lqw.blog8.exception.BlogHandlerExceptionResolver;
-import me.lqw.blog8.exception.Message;
-import me.lqw.blog8.exception.UnauthorizedException;
-import me.lqw.blog8.file.BlogResourceHttpRequestHandler;
-import me.lqw.blog8.file.FileResourceResolver;
+import me.lqw.blog8.exception.resolver.BlogHandlerExceptionResolver;
 import me.lqw.blog8.file.FileService;
 import me.lqw.blog8.service.BlackIpService;
 import me.lqw.blog8.service.BlogConfigService;
 import me.lqw.blog8.util.WebUtil;
 import me.lqw.blog8.web.filter.BlackIpFilter;
 import me.lqw.blog8.web.filter.ContextFilter;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.http.MediaType;
-import org.springframework.util.PathMatcher;
-import org.springframework.web.HttpRequestHandler;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,13 +30,8 @@ public class WebConfigurerAdapter implements WebMvcConfigurer {
 
     private final BlogConfigService configService;
 
-    private final BlogHandlerExceptionResolver resolver;
 
-
-
-
-    public WebConfigurerAdapter(FileService fileService, BlogConfigService configService ,BlogHandlerExceptionResolver resolver) {
-        this.resolver = resolver;
+    public WebConfigurerAdapter(FileService fileService, BlogConfigService configService) {
         this.fileService = fileService;
         this.configService = configService;
 //        handlerExceptionResolvers.add(new BlogHandlerExceptionResolver());
@@ -61,20 +41,20 @@ public class WebConfigurerAdapter implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
-//        registry.addInterceptor(new HandlerInterceptor() {
-//            @Override
-//            public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-//                                     Object handler) throws Exception {
-//                if(WebUtil.isConsoleRequest(request) && !BlogContext.isAuthorized()){
-//                    request.setAttribute(BlogConstants.REDIRECT_URL_ATTRIBUTE,
-//                            ServletUriComponentsBuilder.fromRequest(request).build().toString());
-//                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-//                    return false;
-//                }
-//
-//                return true;
-//            }
-//        }).addPathPatterns("/console/**");
+        registry.addInterceptor(new HandlerInterceptor() {
+            @Override
+            public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+                                     Object handler) throws Exception {
+                if(WebUtil.isConsoleRequest(request) && !BlogContext.isAuthorized()){
+                    request.setAttribute(BlogConstants.REDIRECT_URL_ATTRIBUTE,
+                            ServletUriComponentsBuilder.fromRequest(request).build().toString());
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                    return false;
+                }
+
+                return true;
+            }
+        }).addPathPatterns("/console/**");
 
     }
 
@@ -110,7 +90,7 @@ public class WebConfigurerAdapter implements WebMvcConfigurer {
 
     @Override
     public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
-        resolvers.add(resolver);
+        resolvers.add(new BlogHandlerExceptionResolver());
     }
 
     @Override
