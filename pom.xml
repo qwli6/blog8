@@ -112,6 +112,14 @@
             <version>${commonmark.version}</version>
         </dependency>
 
+        <!-- render task list -->
+        <dependency>
+            <groupId>com.atlassian.commonmark</groupId>
+            <artifactId>commonmark-ext-task-list-items</artifactId>
+            <version>0.15.2</version>
+        </dependency>
+
+
         <!-- jsoup 解析 html -->
         <dependency>
             <groupId>org.jsoup</groupId>
