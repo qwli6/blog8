@@ -242,14 +242,15 @@
 
             let photos = document.querySelector("input[type='file'][multiple]");
 
-            formData.append("title", "图片上传测试");
+            formData.append("extraField", "图片上传测试");
+            formData.append("targetPath", "/Downloads")
 
             // formData 只接受文件、Blob 或字符串，不能直接传递数组，所以必须循环嵌入
             for(let i = 0; i < photos.files.length; i++){
                 formData.append("files", photos.files[i]);
             }
 
-            fetch(rootPath + 'console/file/upload/multi', {
+            fetch(rootPath + 'console/api/upload/multi/model', {
                 method: 'POST',
                 body: formData
             }).then(response => response.json())

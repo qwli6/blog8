@@ -1,5 +1,7 @@
 package me.lqw.blog8.file;
 
+import me.lqw.blog8.model.dto.CR;
+import me.lqw.blog8.model.dto.ResultDTO;
 import me.lqw.blog8.web.controller.console.BaseController;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.http.HttpHeaders;
@@ -58,11 +60,7 @@ public class FileController extends BaseController {
             return new ResponseEntity("please select a file!", HttpStatus.OK);
         }
 
-        try {
-            fileService.saveUploadedFiles(Arrays.asList(uploadFile));
-        } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        fileService.saveUploadedFiles(Arrays.asList(uploadFile));
         return new ResponseEntity("Successfully uploaded - " +
                 uploadFile.getOriginalFilename(), new HttpHeaders(), HttpStatus.OK);
 
@@ -82,20 +80,15 @@ public class FileController extends BaseController {
             return new ResponseEntity<>("please select a file!", HttpStatus.OK);
         }
 
-        try {
-            for(MultipartFile file : uploadFiles){
-                String originalFilename = file.getOriginalFilename();
-                boolean flag = FileTypeEnum.checkSuffix(originalFilename);
-                if(!flag){
-                    return new ResponseEntity<>("Illegal file type", HttpStatus.BAD_REQUEST);
-                }
+        for(MultipartFile file : uploadFiles){
+            String originalFilename = file.getOriginalFilename();
+            boolean flag = FileTypeEnum.checkSuffix(originalFilename);
+            if(!flag){
+                return new ResponseEntity<>("Illegal file type", HttpStatus.BAD_REQUEST);
             }
-
-            fileService.saveUploadedFiles(Arrays.asList(uploadFiles));
-
-        } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+        fileService.saveUploadedFiles(Arrays.asList(uploadFiles));
 
         return new ResponseEntity<>("Successfully uploaded - "
                 + uploadedFileName, HttpStatus.OK);
@@ -105,19 +98,9 @@ public class FileController extends BaseController {
     // 3.1.3 maps html form to a Model
     @PostMapping("api/upload/multi/model")
     @ResponseBody
-    public ResponseEntity<String> multiUploadFileModel(@ModelAttribute UploadModel model) {
+    public CR<?> multiUploadFileModel(@ModelAttribute UploadModel model) {
 
-        logger.debug("Multiple file upload! With UploadModel");
-
-        try {
-
-            fileService.saveUploadedFiles(Arrays.asList(model.getFiles()));
-
-        } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        return new ResponseEntity<>("Successfully uploaded!", HttpStatus.OK);
+        return ResultDTO.create(fileService.saveUploadedFiles(Arrays.asList(model.getFiles())));
     }
 
 }

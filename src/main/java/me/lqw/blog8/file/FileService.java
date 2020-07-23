@@ -1,47 +1,58 @@
 package me.lqw.blog8.file;
 
-import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.omg.SendingContext.RunTime;
+import me.lqw.blog8.exception.LogicException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.core.io.Resource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
+/**
+ * 文件服务接口处理类
+ * @author liqiwen
+ * @version 1.0
+ */
 @Conditional(FileCondition.class)
 @Service
 public class FileService implements InitializingBean {
 
-    private final Path root;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+
+    private final Path rootPath;
 
     private final FileProperties fileProperties;
 
-
-
-    public FileService(FileProperties fileProperties) {
+    public FileService(FileProperties fileProperties) throws IOException {
         this.fileProperties = fileProperties;
         String uploadPath = fileProperties.getUploadPath();
-        if(StringUtils.isEmpty(uploadPath)){
-            throw new RuntimeException("Please provide [blog.file.upload-path] in application.yml");
+        String fileRootPath = fileProperties.getFileRootPath();
+        if (StringUtils.isEmpty(fileRootPath)) {
+            throw new RuntimeException("文件系统已开启, 请提供在系统配置文件[application.yml]中一个上传文件的个路径, 参考key:[blog.file.file-root-path]");
         }
-        this.root = Paths.get(uploadPath);
+
+        this.rootPath = Paths.get(fileRootPath);
+        if(!this.rootPath.toFile().exists()){
+            Files.createDirectories(rootPath);
+            logger.info("上传文件夹创建成功");
+        }
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-
-    }
 
     public List<FileInfo> queryFiles(FileQueryParam queryParam) throws Exception {
 
@@ -50,15 +61,12 @@ public class FileService implements InitializingBean {
         List<String> fileSuffixes = queryParam.getFileSuffixes();
 
 
-
         int visitDepth = queryParam.getContainChildDir() ? Integer.MAX_VALUE : 1;
-
-
 
 
         Set<FileVisitOption> optionSet = new HashSet<>();
         optionSet.add(FileVisitOption.FOLLOW_LINKS);
-        Path path = Files.walkFileTree(root, optionSet, visitDepth, new SimpleFileVisitor<Path>() {
+        Path path = Files.walkFileTree(rootPath, optionSet, visitDepth, new SimpleFileVisitor<Path>() {
 
             // dir pre
             @Override
@@ -142,21 +150,72 @@ public class FileService implements InitializingBean {
         return fileInfos;
     }
 
-    //save file
-    public void saveUploadedFiles(List<MultipartFile> files) throws IOException {
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<FileInfo> saveUploadedFiles(List<MultipartFile> files) throws LogicException {
+
+
+        List<FileInfo> fileInfos = new ArrayList<>();
 
         for (MultipartFile file : files) {
 
             if (file.isEmpty()) {
-                continue; //next pls
+                continue;
             }
 
+            try {
+                byte[] bytes = file.getBytes();
+                Path path = Paths.get(fileProperties.getUploadPath() + file.getOriginalFilename());
 
-            byte[] bytes = file.getBytes();
-            Path path = Paths.get(fileProperties.getUploadPath() + file.getOriginalFilename());
-            Path filePath = Files.write(path, bytes);
+                if(Files.exists(path)){
+                    throw new LogicException("fileService.fileExists", "名称为[" + file.getOriginalFilename() +"]的文件已经存在");
+                }
 
+                //写文件
+                Path filePath = Files.write(path, bytes);
+
+
+
+                FileInfo fileInfo = new FileInfo();
+
+                fileInfo.setSize(file.getSize());
+                fileInfo.setFileName(file.getOriginalFilename());
+
+
+                String ext = FileUtils.getExtension(file).orElseThrow(()
+                        -> new LogicException("fileService.invalid.extension", "无效的文件扩展名"));
+                fileInfo.setFileSuffix(ext);
+
+                fileInfo.setCanEdit(FileTypeEnum.canEdit(file.getOriginalFilename()));
+
+
+
+                BasicFileAttributes fileAttributes = Files.readAttributes(path, BasicFileAttributes.class);
+
+                //文件创建时间
+                Instant instant = fileAttributes.creationTime().toInstant();
+
+                //文件更新时间
+//                Instant lastModifiedInstant = fileAttributes.lastModifiedTime().toInstant();
+
+                //文件上次访问时间
+//                Instant lastAccessInstant = fileAttributes.lastAccessTime().toInstant();
+
+                String format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault()).format(instant);
+
+
+                fileInfos.add(fileInfo);
+            } catch (IOException ex){
+                logger.error("上传文件失败:[{}]", ex.getMessage(), ex);
+                throw new LogicException("fileService.upload.fail", "文件上传失败");
+            }
         }
+
+        if(fileInfos.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return fileInfos;
 
     }
 
@@ -193,6 +252,11 @@ public class FileService implements InitializingBean {
     }
 
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        logger.info("文件系统服务处理类已初始化");
+    }
+
     private static class _ReadablePath implements ReadablePath {
         private final Path path;
 
@@ -227,14 +291,5 @@ public class FileService implements InitializingBean {
 //            return FileUtils.lastModified(path);
             return 0;
         }
-    }
-    public Optional<Resource> getFileInfo(String path) {
-        File file = new File("/Users/liqiwen/Downloads/banner.png");
-
-//        FileInputStream fileInputStream = new FileInputStream(file);
-
-//        fileInputStream.
-
-        return null;
     }
 }

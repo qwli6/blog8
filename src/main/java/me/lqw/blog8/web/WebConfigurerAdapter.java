@@ -38,25 +38,25 @@ public class WebConfigurerAdapter implements WebMvcConfigurer {
     }
 
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-
-        registry.addInterceptor(new HandlerInterceptor() {
-            @Override
-            public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-                                     Object handler) throws Exception {
-                if(WebUtil.isConsoleRequest(request) && !BlogContext.isAuthorized()){
-                    request.setAttribute(BlogConstants.REDIRECT_URL_ATTRIBUTE,
-                            ServletUriComponentsBuilder.fromRequest(request).build().toString());
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                    return false;
-                }
-
-                return true;
-            }
-        }).addPathPatterns("/console/**");
-
-    }
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//
+//        registry.addInterceptor(new HandlerInterceptor() {
+//            @Override
+//            public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+//                                     Object handler) throws Exception {
+//                if(WebUtil.isConsoleRequest(request) && !BlogContext.isAuthorized()){
+//                    request.setAttribute(BlogConstants.REDIRECT_URL_ATTRIBUTE,
+//                            ServletUriComponentsBuilder.fromRequest(request).build().toString());
+//                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+//                    return false;
+//                }
+//
+//                return true;
+//            }
+//        }).addPathPatterns("/console/**");
+//
+//    }
 
 
     @Bean
