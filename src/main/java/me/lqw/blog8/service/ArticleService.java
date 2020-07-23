@@ -26,6 +26,12 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * 内容业务实现类
+ * @author liqiwen
+ * @version 1.2
+ * @since 1.2
+ */
 @Service
 public class ArticleService extends BaseService<Article> implements CommentModuleHandler<Article>, InitializingBean {
 
@@ -240,30 +246,40 @@ public class ArticleService extends BaseService<Article> implements CommentModul
 
         processArticleContents(articles);
 
-        for(Article article : articles){
-
-            if(article.getContent() == null){
+        for(Article article : articles) {
+            if(StringUtils.isEmpty(article.getContent())){
                 continue;
             }
 
-            if(article.getFeatureImage() != null){
+            if(StringUtils.isEmpty(article.getFeatureImage())){
                 continue;
             }
 
             Optional<String> featureImageOp = JsoupUtils.getFirstImage(mdHandler.toHtml(article.getContent()));
             featureImageOp.ifPresent(article::setFeatureImage);
-
         }
-
     }
 
 
-    private void processArticleContents(List<Article> articles){
-        Map<Integer, String> map = mdHandler.toHtmls(articles);
+    private void processArticleContents(List<Article> articles) {
 
-        for(Article article: articles){
-            article.setDigest(map.get(-article.getId()));
-            article.setContent(map.get(article.getId()));
+        Map<Integer, String> markdownMap = new HashMap<>();
+        for(Article article : articles){
+            if(!StringUtils.isEmpty(article.getDigest())){
+                markdownMap.put(-article.getId(), article.getDigest());
+            }
+            if(!StringUtils.isEmpty(article.getContent())){
+                markdownMap.put(article.getId(), article.getContent());
+            }
+        }
+
+        if(!markdownMap.isEmpty()){
+            Map<Integer, String> htmlMap = mdHandler.toHtmls(markdownMap);
+            for(Article article: articles){
+                article.setDigest(htmlMap.get(-article.getId()));
+                article.setContent(htmlMap.get(article.getId()));
+            }
+
         }
     }
 

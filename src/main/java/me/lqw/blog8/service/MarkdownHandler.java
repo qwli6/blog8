@@ -1,17 +1,12 @@
 package me.lqw.blog8.service;
 
-import me.lqw.blog8.model.Article;
 import org.commonmark.Extension;
 import org.commonmark.ext.autolink.AutolinkExtension;
 import org.commonmark.ext.gfm.tables.TablesExtension;
 import org.commonmark.ext.heading.anchor.HeadingAnchorExtension;
 import org.commonmark.ext.task.list.items.TaskListItemsExtension;
 import org.commonmark.parser.Parser;
-import org.commonmark.renderer.NodeRenderer;
-import org.commonmark.renderer.Renderer;
 import org.commonmark.renderer.html.HtmlRenderer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -21,6 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Markdown 解析器
+ * @author liqiwen
+ * @version 1.2
+ * @since 1.2
+ */
 @Component
 public class MarkdownHandler implements Serializable {
 
@@ -37,16 +38,12 @@ public class MarkdownHandler implements Serializable {
         this.parser = Parser.builder().extensions(extensions).build();
     }
 
-    public Map<Integer, String> toHtmls(List<Article> articles){
-        if(articles.isEmpty()){
+    public Map<Integer, String> toHtmls(Map<Integer, String> markdownMap){
+        if(markdownMap.isEmpty()){
             return new HashMap<>();
         }
-        Map<Integer, String> dataMap = new HashMap<>(articles.size()*2);
-        for(Article article: articles){
-            dataMap.put(article.getId(), toHtml(article.getContent()));
-            dataMap.put(-article.getId(), toHtml(article.getDigest()));
-        }
-        return dataMap;
+        markdownMap.replaceAll((i, v) -> toHtml(markdownMap.get(i)));
+        return markdownMap;
     }
 
 
