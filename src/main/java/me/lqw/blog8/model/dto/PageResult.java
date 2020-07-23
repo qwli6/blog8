@@ -8,6 +8,9 @@ import java.util.List;
 
 /**
  * 分页查询对象
+ * @author liqiwen
+ * @version 1.0
+ * @since 1.0
  * @param <T> T
  */
 public class PageResult<T> implements Serializable {
