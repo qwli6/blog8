@@ -22,7 +22,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -167,9 +166,13 @@ public class ArticleService extends BaseService<Article> implements CommentModul
             }
         }
 
-
-
         HandledArticleQueryParam handledArticleQueryParam = new HandledArticleQueryParam(queryParam, categoryId, tagId);
+
+        if(!BlogContext.isAuthorized()){
+            handledArticleQueryParam.setStatus(StatusEnum.POSTED);
+            handledArticleQueryParam.setQueryPasswordProtect(false);
+            handledArticleQueryParam.setQueryPrivate(false);
+        }
 
         int count = articleMapper.count(handledArticleQueryParam);
 
@@ -179,7 +182,7 @@ public class ArticleService extends BaseService<Article> implements CommentModul
 
         List<Article> articles = articleMapper.selectPage(handledArticleQueryParam);
 
-        handleContentAndDigestData(articles);
+        processArticles(articles, BlogContext.isAuthorized());
 
 
         return new PageResult<>(queryParam, count, articles);
@@ -203,7 +206,7 @@ public class ArticleService extends BaseService<Article> implements CommentModul
 
         for(ArticleArchive archive : data){
             List<Article> articles = archive.getArticles();
-            handleContentAndDigestData(articles);
+            processArticles(articles, BlogContext.isAuthorized());
         }
 
         return new PageResult<>(queryParam, count, data);
@@ -211,20 +214,57 @@ public class ArticleService extends BaseService<Article> implements CommentModul
     }
 
 
-    private void handleContentAndDigestData(List<Article> articles){
-        articles.forEach(article -> {
-            String digest = article.getDigest();
-            if(!StringUtils.isEmpty(digest)){
-                article.setDigest(mdHandler.toHtml(digest));
+    private void processArticles(List<Article> articles, boolean auth){
+
+        if(articles.isEmpty()){
+            return;
+        }
+
+        for(Article article: articles){
+
+            Set<Tag> tags = article.getTags();
+            if(!tags.isEmpty()){
+                Iterator<Tag> iterator = tags.iterator();
+                while (iterator.hasNext()){
+                    Tag next = iterator.next();
+                    Optional<Tag> tagOp = tagMapper.findById(next.getId());
+                    if(tagOp.isPresent()){
+                        next.setTagName(tagOp.get().getTagName());
+                    } else {
+                        iterator.remove();
+                    }
+                }
+
+            }
+        }
+
+        processArticleContents(articles);
+
+        for(Article article : articles){
+
+            if(article.getContent() == null){
+                continue;
             }
 
-            String content = article.getContent();
-            String featureImage = article.getFeatureImage();
-            if(StringUtils.isEmpty(featureImage)){
-                article.setFeatureImage(JsoupUtils.getFirstImage(mdHandler.toHtml(content)).orElse(""));
+            if(article.getFeatureImage() != null){
+                continue;
             }
-            article.setContent(null);
-        });
+
+            Optional<String> featureImageOp = JsoupUtils.getFirstImage(mdHandler.toHtml(article.getContent()));
+            featureImageOp.ifPresent(article::setFeatureImage);
+
+        }
+
+    }
+
+
+    private void processArticleContents(List<Article> articles){
+        Map<Integer, String> map = mdHandler.toHtmls(articles);
+
+        for(Article article: articles){
+            article.setDigest(map.get(-article.getId()));
+            article.setContent(map.get(article.getId()));
+        }
     }
 
 

@@ -1,6 +1,11 @@
 package me.lqw.blog8.service;
 
 import me.lqw.blog8.model.Article;
+import org.commonmark.Extension;
+import org.commonmark.ext.autolink.AutolinkExtension;
+import org.commonmark.ext.gfm.tables.TablesExtension;
+import org.commonmark.ext.heading.anchor.HeadingAnchorExtension;
+import org.commonmark.ext.task.list.items.TaskListItemsExtension;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.NodeRenderer;
 import org.commonmark.renderer.Renderer;
@@ -11,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +27,14 @@ public class MarkdownHandler implements Serializable {
     private final HtmlRenderer renderer;
     private final Parser parser;
 
+    List<Extension> extensions = Arrays.asList(TablesExtension.create(),
+            AutolinkExtension.create(), HeadingAnchorExtension.create(),
+            TaskListItemsExtension.create());
+
+
     public MarkdownHandler(){
-        this.renderer = HtmlRenderer.builder().build();
-        this.parser = Parser.builder().build();
+        this.renderer = HtmlRenderer.builder().extensions(extensions).build();
+        this.parser = Parser.builder().extensions(extensions).build();
     }
 
     public Map<Integer, String> toHtmls(List<Article> articles){

@@ -8,7 +8,17 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 文章内容查询参数
+ * @author liqiwen
+ * @version 1.0
+ */
 public class HandledArticleQueryParam extends QueryParam implements Serializable {
+
+
+    private boolean queryPrivate;
+
+    private boolean queryPasswordProtect;
 
     private QueryParam queryParam;
 
@@ -18,6 +28,22 @@ public class HandledArticleQueryParam extends QueryParam implements Serializable
 
     public void setQueryParam(QueryParam queryParam) {
         this.queryParam = queryParam;
+    }
+
+    public boolean isQueryPrivate() {
+        return queryPrivate;
+    }
+
+    public void setQueryPrivate(boolean queryPrivate) {
+        this.queryPrivate = queryPrivate;
+    }
+
+    public boolean isQueryPasswordProtect() {
+        return queryPasswordProtect;
+    }
+
+    public void setQueryPasswordProtect(boolean queryPasswordProtect) {
+        this.queryPasswordProtect = queryPasswordProtect;
     }
 
     private Category category;
