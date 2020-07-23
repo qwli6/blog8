@@ -5,7 +5,7 @@
     <title th:text="${blogConfigModel.header}">李启文的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link th:href="${blogConfigModel.favicon}" rel="shortcut icon">
-    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/front.css">
     <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
     <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
 </head>
@@ -24,17 +24,18 @@
                                 </div>
                                 <div class="col">
                                     <div class="card-body">
-                                        <h2 class="card-title">
+                                        <h2 class="article-list-title article-title-list-view">
                                             <a th:href="${#strings.isEmpty(article.urlName) ? '/article/' + article.id : '/article/' + article.urlName}" th:text="${article.title}"></a>
                                         </h2>
-                                        <div class="text-muted" th:if="${!#strings.isEmpty(article.digest)}" th:utext="${article.digest}"></div>
-
-<!--                                        <div>-->
+                                        <div th:if="${!#strings.isEmpty(article.digest)}" th:utext="${article.digest}"></div>
+                                        <div>
                                             <a th:href="@{/} + '?category=' + ${article.category.name}" class="badge badge-addon" th:text="${article.category.name}"></a>
+                                        </div>
+                                        <div>
                                             <a th:if="${!#sets.isEmpty(article.tags)}" th:href="@{/} + '?tag=' + ${tag.tagName}" th:each="tag : ${article.tags}">
                                                 <span th:text="${#strings.concat('# ', tag.tagName)}"></span>
                                             </a>
-<!--                                        </div>-->
+                                        </div>
 
                                         <div class="d-flex align-items-center pt-5 mt-auto">
                                             <div>

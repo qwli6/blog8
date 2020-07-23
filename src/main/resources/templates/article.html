@@ -8,7 +8,16 @@
     <link rel="stylesheet" href="/static/css/front.css">
     <link href="/static/tabler/dist/css/tabler.min.css" rel="stylesheet"/>
     <link href="/static/tabler/dist/css/demo.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="/static/tabler/dist/libs/prime/prism.css">
+    <link rel="stylesheet" href="/static/tabler/dist/libs/prism/prism.css">
+    <link rel="stylesheet" href="/static/css/github-markdown.css">
+    <style>
+
+        @media (max-width: 767px) {
+            .markdown-body {
+                padding: 15px;
+            }
+        }
+    </style>
 </head>
 <body class="antialiased">
     <div class="page">
@@ -18,7 +27,7 @@
                 <div class="row justify-content-center">
                     <div class="col-12">
                         <h1 th:text="${article.title}"></h1>
-                        <div class="markdown" th:utext="${article.content}"></div>
+                        <div class="markdown-body" th:utext="${article.content}"></div>
                     </div>
                 </div>
 
@@ -55,7 +64,7 @@
     <script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Tabler Core -->
     <script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
-    <script type="text/javascript" src="/static/tabler/dist/libs/prime/prism.js" data-manual></script>
+    <script type="text/javascript" src="/static/tabler/dist/libs/prism/prism.js"></script>
     <script>
         document.body.style.display = 'block';
     </script>
