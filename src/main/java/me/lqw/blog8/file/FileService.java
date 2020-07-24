@@ -232,7 +232,9 @@ public class FileService implements InitializingBean {
 
     public FileInfoDetail getFileInfoDetail(String path){
 
-        Path filePath = this.rootPath.resolve(Paths.get(path));
+        System.out.println("根目录的地址：" + this.rootPath.toString());
+
+        Path filePath = this.rootPath.resolve(path);
 
         logger.info("filePath:[{}]", filePath.toString());
 
@@ -461,5 +463,26 @@ public class FileService implements InitializingBean {
 //            return FileUtils.lastModified(path);
             return 0;
         }
+    }
+
+
+    public static void main(String[] args){
+
+        Path path1 = Paths.get("folder1", "sub1");
+        Path path2 = Paths.get("folder2", "sub2");
+
+        String s = path1.relativize(path2).toString();
+        System.out.println(s);
+
+        Path resolve = path1.resolve(path2);
+        System.out.println(resolve.toString());
+//        path1.resolve(path2); //folder1\sub1\folder2\sub2
+//        path1.resolveSibling(path2); //folder1\folder2\sub2
+//        path1.relativize(path2); //..\..\folder2\sub2
+//        path1.subpath(0, 1); //folder1
+//        path1.startsWith(path2); //false
+//        path1.endsWith(path2); //false
+//        Paths.get("folder1/./../folder2/my.text").normalize(); //folder2\my.te
+
     }
 }
