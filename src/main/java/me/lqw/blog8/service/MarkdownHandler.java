@@ -7,6 +7,11 @@ import org.commonmark.ext.heading.anchor.HeadingAnchorExtension;
 import org.commonmark.ext.task.list.items.TaskListItemsExtension;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -24,6 +29,8 @@ import java.util.Map;
  */
 @Component
 public class MarkdownHandler implements Serializable {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private final HtmlRenderer renderer;
     private final Parser parser;
@@ -51,6 +58,21 @@ public class MarkdownHandler implements Serializable {
         if(StringUtils.isEmpty(content)){
             return "";
         }
-        return renderer.render(parser.parse(content));
+        String render = renderer.render(parser.parse(content));
+        Document document = Jsoup.parse(render);
+        document.select("a").forEach(a -> {
+            final String src = a.attr("href");
+            //如果不是本网站内部的链接，全部添加 target = _blank 属性
+            if(!StringUtils.startsWithIgnoreCase(src, "https://localhost:8080") && !StringUtils.startsWithIgnoreCase("src", "#")){
+                a.attr("target", "_blank");
+            }
+
+            a.removeAttr("id");
+        });
+
+        String html = document.select("body").html();
+        //渲染的内容为
+        logger.info("render html:[{}]", html);
+        return html;
     }
 }

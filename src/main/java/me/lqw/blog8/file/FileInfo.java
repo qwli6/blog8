@@ -39,6 +39,19 @@ public class FileInfo implements Serializable {
      */
     private Boolean directory;
 
+    public FileInfo() {
+    }
+
+    public FileInfo(FileInfo fileInfo) {
+        super();
+        this.fileName = fileInfo.fileName;
+        this.ext = fileInfo.ext;
+        this.size = fileInfo.size;
+        this.lastModified = fileInfo.lastModified;
+        this.canEdit = fileInfo.canEdit;
+        this.directory = fileInfo.directory;
+    }
+
     public Boolean getDirectory() {
         return directory;
     }

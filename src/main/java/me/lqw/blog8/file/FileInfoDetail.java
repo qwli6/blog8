@@ -56,6 +56,7 @@ public class FileInfoDetail extends FileInfo implements Serializable {
     }
 
     public FileInfoDetail(FileInfo fileInfo) {
+        super(fileInfo);
 
     }
 }

@@ -230,17 +230,24 @@ public class FileService implements InitializingBean {
     }
 
 
-    public FileInfoDetail getFileInfoDetail(Path path) {
-        FileInfoDetail fid = new FileInfoDetail(getFileInfo(path));
-        if(fid.getCanEdit() && Files.isReadable(path)){
+    public FileInfoDetail getFileInfoDetail(String path){
+
+        Path filePath = this.rootPath.resolve(Paths.get(path));
+
+        logger.info("filePath:[{}]", filePath.toString());
+
+        FileInfoDetail fid = new FileInfoDetail(getFileInfo(filePath));
+
+        if(fid.getCanEdit() && Files.isReadable(filePath)){
             try {
-                fid.setContent(String.join("", Files.readAllLines(path, Charset.defaultCharset())));
+                fid.setContent(String.join("", Files.readAllLines(filePath, Charset.defaultCharset())));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         return fid;
     }
+
 
     public FileInfo getFileInfo(Path path) {
 
