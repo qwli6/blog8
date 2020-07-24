@@ -1,13 +1,13 @@
-import { loadMode } from "../display/mode_state.js"
-import { runInOp } from "../display/operations.js"
-import { regChange } from "../display/view_tracking.js"
-import { Line, updateLine } from "../line/line_data.js"
-import { findMaxLine } from "../line/spans.js"
-import { getLine } from "../line/utils_line.js"
-import { estimateLineHeights } from "../measurement/position_measurement.js"
-import { addClass, rmClass } from "../util/dom.js"
-import { lst } from "../util/misc.js"
-import { signalLater } from "../util/operation_group.js"
+import {loadMode} from "../display/mode_state.js"
+import {runInOp} from "../display/operations.js"
+import {regChange} from "../display/view_tracking.js"
+import {Line, updateLine} from "../line/line_data.js"
+import {findMaxLine} from "../line/spans.js"
+import {getLine} from "../line/utils_line.js"
+import {estimateLineHeights} from "../measurement/position_measurement.js"
+import {addClass, rmClass} from "../util/dom.js"
+import {lst} from "../util/misc.js"
+import {signalLater} from "../util/operation_group.js"
 
 // DOCUMENT DATA STRUCTURE
 

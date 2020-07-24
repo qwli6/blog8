@@ -1,7 +1,7 @@
-import { cmp, Pos } from "../line/pos.js"
-import { lst } from "../util/misc.js"
+import {cmp, Pos} from "../line/pos.js"
+import {lst} from "../util/misc.js"
 
-import { normalizeSelection, Range, Selection } from "./selection.js"
+import {normalizeSelection, Range, Selection} from "./selection.js"
 
 // Compute the position of the end of a change (its 'to' property
 // refers to the pre-change end).

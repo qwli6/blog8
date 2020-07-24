@@ -2,13 +2,11 @@ package me.lqw.blog8.web.controller.console;
 
 import me.lqw.blog8.exception.ResourceNotFoundException;
 import me.lqw.blog8.model.Article;
-import me.lqw.blog8.model.dto.PageResult;
 import me.lqw.blog8.model.vo.ArticleQueryParam;
 import me.lqw.blog8.service.ArticleService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 

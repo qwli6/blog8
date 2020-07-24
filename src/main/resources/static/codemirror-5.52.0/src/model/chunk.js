@@ -1,6 +1,6 @@
-import { cleanUpLine } from "../line/line_data.js"
-import { indexOf } from "../util/misc.js"
-import { signalLater } from "../util/operation_group.js"
+import {cleanUpLine} from "../line/line_data.js"
+import {indexOf} from "../util/misc.js"
+import {signalLater} from "../util/operation_group.js"
 
 // The document is represented as a BTree consisting of leaves, with
 // chunk of lines in them, and branches, with up to ten leaves or

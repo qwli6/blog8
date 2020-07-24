@@ -1,7 +1,5 @@
 package me.lqw.blog8.model.dto;
 
-import me.lqw.blog8.model.vo.QueryParam;
-
 import java.io.Serializable;
 
 /**

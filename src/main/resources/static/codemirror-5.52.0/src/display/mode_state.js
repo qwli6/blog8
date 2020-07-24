@@ -1,7 +1,7 @@
-import { getMode } from "../modes.js"
+import {getMode} from "../modes.js"
 
-import { startWorker } from "./highlight_worker.js"
-import { regChange } from "./view_tracking.js"
+import {startWorker} from "./highlight_worker.js"
+import {regChange} from "./view_tracking.js"
 
 // Used to get the editor into a consistent state again when options change.
 

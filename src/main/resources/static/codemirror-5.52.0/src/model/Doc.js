@@ -1,23 +1,29 @@
 import CodeMirror from "../edit/CodeMirror.js"
-import { docMethodOp } from "../display/operations.js"
-import { Line } from "../line/line_data.js"
-import { clipPos, clipPosArray, Pos } from "../line/pos.js"
-import { visualLine } from "../line/spans.js"
-import { getBetween, getLine, getLines, isLine, lineNo } from "../line/utils_line.js"
-import { classTest } from "../util/dom.js"
-import { splitLinesAuto } from "../util/feature_detection.js"
-import { createObj, map, isEmpty, sel_dontScroll } from "../util/misc.js"
-import { ensureCursorVisible, scrollToCoords } from "../display/scrolling.js"
+import {docMethodOp} from "../display/operations.js"
+import {Line} from "../line/line_data.js"
+import {clipPos, clipPosArray, Pos} from "../line/pos.js"
+import {visualLine} from "../line/spans.js"
+import {getBetween, getLine, getLines, isLine, lineNo} from "../line/utils_line.js"
+import {classTest} from "../util/dom.js"
+import {splitLinesAuto} from "../util/feature_detection.js"
+import {createObj, isEmpty, map, sel_dontScroll} from "../util/misc.js"
+import {ensureCursorVisible, scrollToCoords} from "../display/scrolling.js"
 
-import { changeLine, makeChange, makeChangeFromHistory, replaceRange } from "./changes.js"
-import { computeReplacedSel } from "./change_measurement.js"
-import { BranchChunk, LeafChunk } from "./chunk.js"
-import { directionChanged, linkedDocs, updateDoc } from "./document_data.js"
-import { copyHistoryArray, History } from "./history.js"
-import { addLineWidget } from "./line_widget.js"
-import { copySharedMarkers, detachSharedMarkers, findSharedMarkers, markText } from "./mark_text.js"
-import { normalizeSelection, Range, simpleSelection } from "./selection.js"
-import { extendSelection, extendSelections, setSelection, setSelectionReplaceHistory, setSimpleSelection } from "./selection_updates.js"
+import {changeLine, makeChange, makeChangeFromHistory, replaceRange} from "./changes.js"
+import {computeReplacedSel} from "./change_measurement.js"
+import {BranchChunk, LeafChunk} from "./chunk.js"
+import {directionChanged, linkedDocs, updateDoc} from "./document_data.js"
+import {copyHistoryArray, History} from "./history.js"
+import {addLineWidget} from "./line_widget.js"
+import {copySharedMarkers, detachSharedMarkers, findSharedMarkers, markText} from "./mark_text.js"
+import {normalizeSelection, Range, simpleSelection} from "./selection.js"
+import {
+  extendSelection,
+  extendSelections,
+  setSelection,
+  setSelectionReplaceHistory,
+  setSimpleSelection
+} from "./selection_updates.js"
 
 let nextDocId = 0
 let Doc = function(text, mode, firstLine, lineSep, direction) {

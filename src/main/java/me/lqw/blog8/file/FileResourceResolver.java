@@ -7,20 +7,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.resource.ResourceResolver;
 import org.springframework.web.servlet.resource.ResourceResolverChain;
 
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-//@ConditionalOnWebApplication
-//@Conditional(FileCondition.class)
 @Component
+@Conditional(FileCondition.class)
+@ConditionalOnWebApplication
 public class FileResourceResolver implements ResourceResolver {
 
 
     private final FileService fileService;
+    private final FileProperties fileProperties;
 
-    public FileResourceResolver(FileService fileService) {
+    public FileResourceResolver(FileService fileService, FileProperties fileProperties) {
         this.fileService = fileService;
+        this.fileProperties = fileProperties;
     }
 
     @Override

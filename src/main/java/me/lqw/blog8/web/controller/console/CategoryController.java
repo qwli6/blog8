@@ -1,14 +1,11 @@
 package me.lqw.blog8.web.controller.console;
 
 import me.lqw.blog8.model.Category;
-import me.lqw.blog8.model.Tag;
 import me.lqw.blog8.service.CategoryService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.util.HashMap;

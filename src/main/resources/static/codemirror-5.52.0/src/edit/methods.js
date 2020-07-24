@@ -1,27 +1,48 @@
-import { deleteNearSelection } from "./deleteNearSelection.js"
-import { commands } from "./commands.js"
-import { attachDoc } from "../model/document_data.js"
-import { activeElt, addClass, rmClass } from "../util/dom.js"
-import { eventMixin, signal } from "../util/event.js"
-import { getLineStyles, getContextBefore, takeToken } from "../line/highlight.js"
-import { indentLine } from "../input/indent.js"
-import { triggerElectric } from "../input/input.js"
-import { onKeyDown, onKeyPress, onKeyUp } from "./key_events.js"
-import { onMouseDown } from "./mouse_events.js"
-import { getKeyMap } from "../input/keymap.js"
-import { endOfLine, moveLogically, moveVisually } from "../input/movement.js"
-import { endOperation, methodOp, operation, runInOp, startOperation } from "../display/operations.js"
-import { clipLine, clipPos, equalCursorPos, Pos } from "../line/pos.js"
-import { charCoords, charWidth, clearCaches, clearLineMeasurementCache, coordsChar, cursorCoords, displayHeight, displayWidth, estimateLineHeights, fromCoordSystem, intoCoordSystem, scrollGap, textHeight } from "../measurement/position_measurement.js"
-import { Range } from "../model/selection.js"
-import { replaceOneSelection, skipAtomic } from "../model/selection_updates.js"
-import { addToScrollTop, ensureCursorVisible, scrollIntoView, scrollToCoords, scrollToCoordsRange, scrollToRange } from "../display/scrolling.js"
-import { heightAtLine } from "../line/spans.js"
-import { updateGutterSpace } from "../display/update_display.js"
-import { indexOf, insertSorted, isWordChar, sel_dontScroll, sel_move } from "../util/misc.js"
-import { signalLater } from "../util/operation_group.js"
-import { getLine, isLine, lineAtHeight } from "../line/utils_line.js"
-import { regChange, regLineChange } from "../display/view_tracking.js"
+import {deleteNearSelection} from "./deleteNearSelection.js"
+import {commands} from "./commands.js"
+import {attachDoc} from "../model/document_data.js"
+import {activeElt, addClass, rmClass} from "../util/dom.js"
+import {eventMixin, signal} from "../util/event.js"
+import {getContextBefore, getLineStyles, takeToken} from "../line/highlight.js"
+import {indentLine} from "../input/indent.js"
+import {triggerElectric} from "../input/input.js"
+import {onKeyDown, onKeyPress, onKeyUp} from "./key_events.js"
+import {onMouseDown} from "./mouse_events.js"
+import {getKeyMap} from "../input/keymap.js"
+import {endOfLine, moveLogically, moveVisually} from "../input/movement.js"
+import {endOperation, methodOp, operation, runInOp, startOperation} from "../display/operations.js"
+import {clipLine, clipPos, equalCursorPos, Pos} from "../line/pos.js"
+import {
+  charCoords,
+  charWidth,
+  clearCaches,
+  clearLineMeasurementCache,
+  coordsChar,
+  cursorCoords,
+  displayHeight,
+  displayWidth,
+  estimateLineHeights,
+  fromCoordSystem,
+  intoCoordSystem,
+  scrollGap,
+  textHeight
+} from "../measurement/position_measurement.js"
+import {Range} from "../model/selection.js"
+import {replaceOneSelection, skipAtomic} from "../model/selection_updates.js"
+import {
+  addToScrollTop,
+  ensureCursorVisible,
+  scrollIntoView,
+  scrollToCoords,
+  scrollToCoordsRange,
+  scrollToRange
+} from "../display/scrolling.js"
+import {heightAtLine} from "../line/spans.js"
+import {updateGutterSpace} from "../display/update_display.js"
+import {indexOf, insertSorted, isWordChar, sel_dontScroll, sel_move} from "../util/misc.js"
+import {signalLater} from "../util/operation_group.js"
+import {getLine, isLine, lineAtHeight} from "../line/utils_line.js"
+import {regChange, regLineChange} from "../display/view_tracking.js"
 
 // The publicly visible API. Note that methodOp(f) means
 // 'wrap f in an operation, performed on its `this` parameter'.

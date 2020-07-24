@@ -1,21 +1,31 @@
-import { scrollbarModel } from "../display/scrollbars.js"
-import { wheelEventPixels } from "../display/scroll_events.js"
-import { keyMap, keyName, isModifierKey, lookupKey, normalizeKeyMap } from "../input/keymap.js"
-import { keyNames } from "../input/keynames.js"
-import { Line } from "../line/line_data.js"
-import { cmp, Pos } from "../line/pos.js"
-import { changeEnd } from "../model/change_measurement.js"
+import {scrollbarModel} from "../display/scrollbars.js"
+import {wheelEventPixels} from "../display/scroll_events.js"
+import {isModifierKey, keyMap, keyName, lookupKey, normalizeKeyMap} from "../input/keymap.js"
+import {keyNames} from "../input/keynames.js"
+import {Line} from "../line/line_data.js"
+import {cmp, Pos} from "../line/pos.js"
+import {changeEnd} from "../model/change_measurement.js"
 import Doc from "../model/Doc.js"
-import { LineWidget } from "../model/line_widget.js"
-import { SharedTextMarker, TextMarker } from "../model/mark_text.js"
-import { copyState, extendMode, getMode, innerMode, mimeModes, modeExtensions, modes, resolveMode, startState } from "../modes.js"
-import { addClass, contains, rmClass } from "../util/dom.js"
-import { e_preventDefault, e_stop, e_stopPropagation, off, on, signal } from "../util/event.js"
-import { splitLinesAuto } from "../util/feature_detection.js"
-import { countColumn, findColumn, isWordCharBasic, Pass } from "../util/misc.js"
+import {LineWidget} from "../model/line_widget.js"
+import {SharedTextMarker, TextMarker} from "../model/mark_text.js"
+import {
+  copyState,
+  extendMode,
+  getMode,
+  innerMode,
+  mimeModes,
+  modeExtensions,
+  modes,
+  resolveMode,
+  startState
+} from "../modes.js"
+import {addClass, contains, rmClass} from "../util/dom.js"
+import {e_preventDefault, e_stop, e_stopPropagation, off, on, signal} from "../util/event.js"
+import {splitLinesAuto} from "../util/feature_detection.js"
+import {countColumn, findColumn, isWordCharBasic, Pass} from "../util/misc.js"
 import StringStream from "../util/StringStream.js"
 
-import { commands } from "./commands.js"
+import {commands} from "./commands.js"
 
 export function addLegacyProps(CodeMirror) {
   CodeMirror.off = off

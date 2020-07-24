@@ -1,7 +1,7 @@
-import { elt, removeChildren } from "../util/dom.js"
-import { regChange } from "./view_tracking.js"
-import { alignHorizontally } from "./line_numbers.js"
-import { updateGutterSpace } from "./update_display.js"
+import {elt, removeChildren} from "../util/dom.js"
+import {regChange} from "./view_tracking.js"
+import {alignHorizontally} from "./line_numbers.js"
+import {updateGutterSpace} from "./update_display.js"
 
 export function getGutters(gutters, lineNumbers) {
   let result = [], sawLineNumbers = false

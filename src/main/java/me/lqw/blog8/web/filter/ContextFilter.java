@@ -2,7 +2,6 @@ package me.lqw.blog8.web.filter;
 
 import me.lqw.blog8.BlogConstants;
 import me.lqw.blog8.BlogContext;
-import me.lqw.blog8.model.BlogConfig;
 import me.lqw.blog8.model.config.BlogConfigModel;
 import me.lqw.blog8.service.BlogConfigService;
 import me.lqw.blog8.util.WebUtil;

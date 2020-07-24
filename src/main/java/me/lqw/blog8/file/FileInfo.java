@@ -1,7 +1,6 @@
 package me.lqw.blog8.file;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 文件信息

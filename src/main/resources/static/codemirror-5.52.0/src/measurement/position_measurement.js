@@ -1,16 +1,16 @@
-import { buildLineContent, LineView } from "../line/line_data.js"
-import { clipPos, Pos } from "../line/pos.js"
-import { collapsedSpanAround, heightAtLine, lineIsHidden, visualLine } from "../line/spans.js"
-import { getLine, lineAtHeight, lineNo, updateLineHeight } from "../line/utils_line.js"
-import { bidiOther, getBidiPartAt, getOrder } from "../util/bidi.js"
-import { chrome, android, ie, ie_version } from "../util/browser.js"
-import { elt, removeChildren, range, removeChildrenAndAdd } from "../util/dom.js"
-import { e_target } from "../util/event.js"
-import { hasBadZoomedRects } from "../util/feature_detection.js"
-import { countColumn, findFirst, isExtendingChar, scrollerGap, skipExtendingChars } from "../util/misc.js"
-import { updateLineForChanges } from "../display/update_line.js"
+import {buildLineContent, LineView} from "../line/line_data.js"
+import {clipPos, Pos} from "../line/pos.js"
+import {collapsedSpanAround, heightAtLine, lineIsHidden, visualLine} from "../line/spans.js"
+import {getLine, lineAtHeight, lineNo, updateLineHeight} from "../line/utils_line.js"
+import {bidiOther, getBidiPartAt, getOrder} from "../util/bidi.js"
+import {android, chrome, ie, ie_version} from "../util/browser.js"
+import {elt, range, removeChildren, removeChildrenAndAdd} from "../util/dom.js"
+import {e_target} from "../util/event.js"
+import {hasBadZoomedRects} from "../util/feature_detection.js"
+import {countColumn, findFirst, isExtendingChar, scrollerGap, skipExtendingChars} from "../util/misc.js"
+import {updateLineForChanges} from "../display/update_line.js"
 
-import { widgetHeight } from "./widgets.js"
+import {widgetHeight} from "./widgets.js"
 
 // POSITION MEASUREMENT
 

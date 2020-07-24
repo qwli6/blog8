@@ -1,8 +1,8 @@
-import { buildLineContent } from "../line/line_data.js"
-import { lineNumberFor } from "../line/utils_line.js"
-import { ie, ie_version } from "../util/browser.js"
-import { elt, classTest } from "../util/dom.js"
-import { signalLater } from "../util/operation_group.js"
+import {buildLineContent} from "../line/line_data.js"
+import {lineNumberFor} from "../line/utils_line.js"
+import {ie, ie_version} from "../util/browser.js"
+import {classTest, elt} from "../util/dom.js"
+import {signalLater} from "../util/operation_group.js"
 
 // When an aspect of a line changes, a string is added to
 // lineView.changes. This updates the relevant part of the line's

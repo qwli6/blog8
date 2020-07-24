@@ -1,12 +1,12 @@
-import { runInOp } from "../display/operations.js"
-import { addToScrollTop } from "../display/scrolling.js"
-import { regLineChange } from "../display/view_tracking.js"
-import { heightAtLine, lineIsHidden } from "../line/spans.js"
-import { lineNo, updateLineHeight } from "../line/utils_line.js"
-import { widgetHeight } from "../measurement/widgets.js"
-import { changeLine } from "./changes.js"
-import { eventMixin } from "../util/event.js"
-import { signalLater } from "../util/operation_group.js"
+import {runInOp} from "../display/operations.js"
+import {addToScrollTop} from "../display/scrolling.js"
+import {regLineChange} from "../display/view_tracking.js"
+import {heightAtLine, lineIsHidden} from "../line/spans.js"
+import {lineNo, updateLineHeight} from "../line/utils_line.js"
+import {widgetHeight} from "../measurement/widgets.js"
+import {changeLine} from "./changes.js"
+import {eventMixin} from "../util/event.js"
+import {signalLater} from "../util/operation_group.js"
 
 // Line widgets are block elements displayed above or below a line.
 

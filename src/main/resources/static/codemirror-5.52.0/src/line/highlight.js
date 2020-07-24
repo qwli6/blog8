@@ -1,9 +1,9 @@
-import { countColumn } from "../util/misc.js"
-import { copyState, innerMode, startState } from "../modes.js"
+import {countColumn} from "../util/misc.js"
+import {copyState, innerMode, startState} from "../modes.js"
 import StringStream from "../util/StringStream.js"
 
-import { getLine, lineNo } from "./utils_line.js"
-import { clipPos } from "./pos.js"
+import {getLine, lineNo} from "./utils_line.js"
+import {clipPos} from "./pos.js"
 
 class SavedContext {
   constructor(state, lookAhead) {

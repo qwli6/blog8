@@ -1,27 +1,20 @@
 package me.lqw.blog8.web;
 
-import me.lqw.blog8.BlogConstants;
-import me.lqw.blog8.BlogContext;
 import me.lqw.blog8.exception.resolver.BlogHandlerExceptionResolver;
 import me.lqw.blog8.file.FileService;
 import me.lqw.blog8.service.BlackIpService;
 import me.lqw.blog8.service.BlogConfigService;
-import me.lqw.blog8.util.WebUtil;
 import me.lqw.blog8.web.filter.BlackIpFilter;
 import me.lqw.blog8.web.filter.ContextFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerExceptionResolver;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
 @Configuration
 public class WebConfigurerAdapter implements WebMvcConfigurer {
@@ -101,12 +94,12 @@ public class WebConfigurerAdapter implements WebMvcConfigurer {
 
 //    @Bean
 //    public SimpleUrlHandlerMapping fileMapping(
-//                    FileResourceResolver fileResourceResolver,
-//                    ResourceProperties resourceProperties,
+//            FileResourceResolver fileResourceResolver,
+//            ResourceProperties resourceProperties,
 ////                   ContentNegotiationManager contentNegotiationManager,
-//                   @Qualifier("mvcUrlPathHelper") UrlPathHelper urlPathHelper,
-//                   @Qualifier("mvcPathMatcher") PathMatcher pathMatcher, WebApplicationContext context) {
-//        BlogResourceHttpRequestHandler requestHandler = new BlogResourceHttpRequestHandler(fileResourceResolver,resourceProperties);
+//            @Qualifier("mvcUrlPathHelper") UrlPathHelper urlPathHelper,
+//            @Qualifier("mvcPathMatcher") PathMatcher pathMatcher, WebApplicationContext context) {
+//        BlogResourceHttpRequestHandler requestHandler = new BlogResourceHttpRequestHandler(fileResourceResolver,resourceProperties, fileService);
 //        requestHandler.setApplicationContext(context);
 //        requestHandler.setServletContext(Objects.requireNonNull(context.getServletContext()));
 //
@@ -114,21 +107,21 @@ public class WebConfigurerAdapter implements WebMvcConfigurer {
 //            requestHandler.setUrlPathHelper(urlPathHelper);
 //        }
 //
-//        Map<String, MediaType> mediaTypeMap = new HashMap<>();
-//        mediaTypeMap.put("gif", MediaType.IMAGE_GIF);
-//        mediaTypeMap.put("jpeg", MediaType.IMAGE_JPEG);
-//        mediaTypeMap.put("png", MediaType.IMAGE_PNG);
-//        requestHandler.setMediaTypes(mediaTypeMap);
+////        Map<String, MediaType> mediaTypeMap = new HashMap<>();
+////        mediaTypeMap.put("gif", MediaType.IMAGE_GIF);
+////        mediaTypeMap.put("jpeg", MediaType.IMAGE_JPEG);
+////        mediaTypeMap.put("png", MediaType.IMAGE_PNG);
+////        requestHandler.setMediaTypes(mediaTypeMap);
 ////        if(contentNegotiationManager != null){
 ////            requestHandler.setContentNegotiationManager(contentNegotiationManager);
+//////        }
+////        try {
+////            requestHandler.afterPropertiesSet();
+////        } catch (Throwable ex){
+////            throw new BeanInitializationException("Failed to init ResourceHttpRequestHandler", ex);
 ////        }
-//        try {
-//            requestHandler.afterPropertiesSet();
-//        } catch (Throwable ex){
-//            throw new BeanInitializationException("Failed to init ResourceHttpRequestHandler", ex);
-//        }
-//        Map<String, HttpRequestHandler> urlMap = new LinkedHashMap<>();
-//        urlMap.put("/images/**", requestHandler);
+////        Map<String, HttpRequestHandler> urlMap = new LinkedHashMap<>();
+////        urlMap.put("/images/**", requestHandler);
 //        SimpleUrlHandlerMapping simpleUrlHandlerMapping = new SimpleUrlHandlerMapping(urlMap);
 //        simpleUrlHandlerMapping.setOrder(Ordered.LOWEST_PRECEDENCE-10);
 //        simpleUrlHandlerMapping.setPathMatcher(pathMatcher);

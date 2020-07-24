@@ -1,6 +1,5 @@
 package me.lqw.blog8.exception.resolver;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 import javax.servlet.http.HttpServletRequest;

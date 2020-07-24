@@ -2,7 +2,6 @@ package me.lqw.blog8.exception.resolver;
 
 import me.lqw.blog8.exception.LogicException;
 import me.lqw.blog8.exception.ResourceNotFoundException;
-import me.lqw.blog8.exception.resolver.ExceptionResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

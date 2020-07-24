@@ -1,11 +1,10 @@
 package me.lqw.blog8.file;
 
-import com.sun.mail.util.ReadableMime;
 import me.lqw.blog8.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
-import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -17,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Collections;
@@ -87,8 +87,10 @@ public class BlogResourceHttpRequestHandler extends ResourceHttpRequestHandler {
 //        super.getResourceResolvers().re
 
 
+        return new FileSystemResource(Paths.get("/Users/liqiwen/Downloads/upload/", path));
 
-        return super.getResource(request);
+
+//        return super.getResource(request);
     }
 
 
@@ -101,7 +103,7 @@ public class BlogResourceHttpRequestHandler extends ResourceHttpRequestHandler {
         if (path.contains("%")) {
             try {
                 // Use URLDecoder (vs UriUtils) to preserve potentially decoded UTF-8 chars
-                String decodedPath = URLDecoder.decode(path, "UTF-8");
+                String decodedPath = URLDecoder.decode(path, Charset.defaultCharset().name());
                 if (isInvalidPath(decodedPath)) {
                     return true;
                 }

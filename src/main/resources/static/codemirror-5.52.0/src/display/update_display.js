@@ -1,19 +1,25 @@
-import { sawCollapsedSpans } from "../line/saw_special_spans.js"
-import { heightAtLine, visualLineEndNo, visualLineNo } from "../line/spans.js"
-import { getLine, lineNumberFor } from "../line/utils_line.js"
-import { displayHeight, displayWidth, getDimensions, paddingVert, scrollGap } from "../measurement/position_measurement.js"
-import { mac, webkit } from "../util/browser.js"
-import { activeElt, removeChildren, contains } from "../util/dom.js"
-import { hasHandler, signal } from "../util/event.js"
-import { indexOf } from "../util/misc.js"
+import {sawCollapsedSpans} from "../line/saw_special_spans.js"
+import {heightAtLine, visualLineEndNo, visualLineNo} from "../line/spans.js"
+import {getLine, lineNumberFor} from "../line/utils_line.js"
+import {
+  displayHeight,
+  displayWidth,
+  getDimensions,
+  paddingVert,
+  scrollGap
+} from "../measurement/position_measurement.js"
+import {mac, webkit} from "../util/browser.js"
+import {activeElt, contains, removeChildren} from "../util/dom.js"
+import {hasHandler, signal} from "../util/event.js"
+import {indexOf} from "../util/misc.js"
 
-import { buildLineElement, updateLineForChanges } from "./update_line.js"
-import { startWorker } from "./highlight_worker.js"
-import { maybeUpdateLineNumberWidth } from "./line_numbers.js"
-import { measureForScrollbars, updateScrollbars } from "./scrollbars.js"
-import { updateSelection } from "./selection.js"
-import { updateHeightsInViewport, visibleLines } from "./update_lines.js"
-import { adjustView, countDirtyView, resetView } from "./view_tracking.js"
+import {buildLineElement, updateLineForChanges} from "./update_line.js"
+import {startWorker} from "./highlight_worker.js"
+import {maybeUpdateLineNumberWidth} from "./line_numbers.js"
+import {measureForScrollbars, updateScrollbars} from "./scrollbars.js"
+import {updateSelection} from "./selection.js"
+import {updateHeightsInViewport, visibleLines} from "./update_lines.js"
+import {adjustView, countDirtyView, resetView} from "./view_tracking.js"
 
 // DISPLAY DRAWING
 

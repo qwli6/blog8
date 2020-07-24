@@ -1,7 +1,6 @@
 package me.lqw.blog8.web.filter;
 
 import me.lqw.blog8.BlogContext;
-import me.lqw.blog8.exception.LogicException;
 import me.lqw.blog8.model.BlackIp;
 import me.lqw.blog8.service.BlackIpService;
 import me.lqw.blog8.util.WebUtil;
