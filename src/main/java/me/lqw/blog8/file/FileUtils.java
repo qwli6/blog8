@@ -1,6 +1,5 @@
 package me.lqw.blog8.file;
 
-import jdk.nashorn.internal.runtime.regexp.joni.encoding.ObjPtr;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +17,7 @@ import java.util.stream.Collectors;
  * @version 1.2
  * @since 1.2
  */
-public class FileUtils {
+public class FileUtils extends org.apache.tomcat.util.http.fileupload.FileUtils {
 
 
     private FileUtils() {

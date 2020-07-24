@@ -17,6 +17,20 @@ public class FileInfoDetail extends FileInfo implements Serializable {
 
     private LocalDateTime lastModifiedAt;
 
+    /**
+     * 文件内容
+     * @since 1.2
+     */
+    private String content;
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     public LocalDateTime getCreateAt() {
         return createAt;
     }

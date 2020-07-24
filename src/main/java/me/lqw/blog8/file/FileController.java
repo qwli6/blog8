@@ -6,14 +6,19 @@ import me.lqw.blog8.web.controller.console.BaseController;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,6 +39,34 @@ public class FileController extends BaseController {
     }
 
 
+    @RequestMapping("file1/{name}")
+    public ResponseEntity<byte[]> getImage(@PathVariable("name") String name) throws Exception {
+        byte[] imageContent ;
+        String path = "your image path with image_name";
+        imageContent = fileToByte(new File("/Users/liqiwen/Downloads/upload/" + name));
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+        return new ResponseEntity<>(imageContent, headers, HttpStatus.OK);
+    }
+
+    public static byte[] fileToByte(File img) throws Exception {
+        byte[] bytes = null;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            BufferedImage bi;
+            bi = ImageIO.read(img);
+            ImageIO.write(bi, "png", baos);
+            bytes = baos.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            baos.close();
+        }
+        return bytes;
+    }
+
+
     @GetMapping("file/getQueryCriteriaNew")
     @ResponseBody
     public Map<String, Object> getQueryCriteriaNew(){
@@ -48,8 +81,8 @@ public class FileController extends BaseController {
 
     @GetMapping("files/query")
     @ResponseBody
-    public List<FileInfo> queryFiles(FileQueryParam queryParam) throws Exception {
-        return fileService.queryFiles(queryParam);
+    public FilePageResult selectPage(FileQueryParam queryParam) throws Exception {
+        return fileService.selectPage(queryParam);
     }
 
 

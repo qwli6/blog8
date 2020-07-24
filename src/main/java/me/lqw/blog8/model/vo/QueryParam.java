@@ -1,12 +1,40 @@
 package me.lqw.blog8.model.vo;
 
+/**
+ * 基础查询参数
+ * @author liqiwen
+ * @version 1.2
+ * @since 1.2
+ */
 public abstract class QueryParam {
 
-    protected Integer currentPage = 1;
+    /**
+     * 查询的当前页
+     */
+    private Integer currentPage = 1;
 
-    protected Integer pageSize;
+    /**
+     * 查询的页大小
+     */
+    private Integer pageSize;
 
-    protected Integer offset;
+    /**
+     * 查询的位移量
+     */
+    private Integer offset;
+
+    /**
+     * 是否忽略分页
+     */
+    private boolean ignorePaging;
+
+    public boolean isIgnorePaging() {
+        return ignorePaging;
+    }
+
+    public void setIgnorePaging(boolean ignorePaging) {
+        this.ignorePaging = ignorePaging;
+    }
 
     public Integer getOffset() {
         return (getCurrentPage()-1)*getPageSize();

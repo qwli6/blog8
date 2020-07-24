@@ -3,26 +3,49 @@ package me.lqw.blog8.file;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * 文件信息
+ * @author liqiwen
+ * @version 1.2
+ */
 public class FileInfo implements Serializable {
 
+    /**
+     * 文件名称
+     */
     private String fileName;
 
-    private String fileSuffix;
+    /**
+     * 文件扩展名
+     */
+    private FileTypeEnum ext;
 
+    /**
+     * 文件大小
+     */
     private long size;
 
+    /**
+     * 最近修改时间
+     */
     private long lastModified;
 
+    /**
+     * 是否可以编辑
+     */
     private Boolean canEdit;
 
-    private Boolean dir;
+    /**
+     * 是否是目录
+     */
+    private Boolean directory;
 
-    public Boolean getDir() {
-        return dir;
+    public Boolean getDirectory() {
+        return directory;
     }
 
-    public void setDir(Boolean dir) {
-        this.dir = dir;
+    public void setDirectory(Boolean directory) {
+        this.directory = directory;
     }
 
     public Boolean getCanEdit() {
@@ -41,12 +64,12 @@ public class FileInfo implements Serializable {
         this.fileName = fileName;
     }
 
-    public String getFileSuffix() {
-        return fileSuffix;
+    public FileTypeEnum getExt() {
+        return ext;
     }
 
-    public void setFileSuffix(String fileSuffix) {
-        this.fileSuffix = fileSuffix;
+    public void setExt(FileTypeEnum ext) {
+        this.ext = ext;
     }
 
     public long getSize() {

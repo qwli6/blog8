@@ -1,5 +1,6 @@
 package me.lqw.blog8.file;
 
+import ch.qos.logback.core.rolling.helper.FileFilterUtil;
 import me.lqw.blog8.exception.LogicException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,12 +17,16 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * 文件服务接口处理类
@@ -33,6 +38,11 @@ import java.util.*;
 public class FileService implements InitializingBean {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+    private final int MAX_NAME_LENGTH = 255; //附件名称最大长度
+    private final int MAX_DEEPTH = 10;  //查询最大深度
 
     private final Path rootPath;
 
@@ -48,107 +58,258 @@ public class FileService implements InitializingBean {
 
         this.rootPath = Paths.get(fileRootPath);
         if(!this.rootPath.toFile().exists()){
+//            FileUtils.forceMkdir(this.rootPath);
             Files.createDirectories(rootPath);
             logger.info("上传文件夹创建成功");
         }
     }
 
 
-    public List<FileInfo> queryFiles(FileQueryParam queryParam) throws Exception {
+    public FilePageResult selectPage(FileQueryParam queryParam) throws Exception {
 
         List<FileInfo> fileInfos = new ArrayList<>();
 
-        List<String> fileSuffixes = queryParam.getFileSuffixes();
+//        List<String> fileSuffixes = queryParam.getFileSuffixes();
 
 
         int visitDepth = queryParam.getContainChildDir() ? Integer.MAX_VALUE : 1;
 
 
-        Set<FileVisitOption> optionSet = new HashSet<>();
-        optionSet.add(FileVisitOption.FOLLOW_LINKS);
-        Path path = Files.walkFileTree(rootPath, optionSet, visitDepth, new SimpleFileVisitor<Path>() {
-
-            // dir pre
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                boolean directory = dir.toFile().isDirectory();
-                System.out.println("文件夹：" + directory);
 
 
-                String s = dir.toRealPath(LinkOption.values()).toString();
-                System.out.println("文件夹路径：" + s);
+//        Set<FileVisitOption> optionSet = new HashSet<>();
+//        optionSet.add(FileVisitOption.FOLLOW_LINKS);
+//        Path path = Files.walkFileTree(rootPath, optionSet, visitDepth, new SimpleFileVisitor<Path>() {
+//
+//            // dir pre
+//            @Override
+//            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+//                boolean directory = dir.toFile().isDirectory();
+//                System.out.println("文件夹：" + directory);
+//
+//
+//                String s = dir.toRealPath(LinkOption.values()).toString();
+//                System.out.println("文件夹路径：" + s);
+//
+//                return super.preVisitDirectory(dir, attrs);
+//            }
+//
+//            // only file
+//            @Override
+//            public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+//
+//                FileInfo fileInfo = new FileInfo();
+//
+//                File file = path.toFile();
+//                String fileName = file.getName();
+//
+//                if (!CollectionUtils.isEmpty(fileSuffixes)) {
+//
+//                    String fileSuffix = fileName.substring(fileName.lastIndexOf(".") + 1);
+//                    if (!fileSuffixes.contains(fileSuffix)) {
+//                        return FileVisitResult.CONTINUE;
+//                    }
+//                }
+//
+//
+//                if (!StringUtils.isEmpty(queryParam.getFileName())) {
+//                    if (fileName.contains(queryParam.getFileName())) {
+////                            fileInfo.setFileName(fileName.getFileName().toString());
+//
+//                        long lastModified = file.lastModified();
+//                        fileInfo.setLastModified(lastModified);
+//
+//                        fileInfo.setFileName(fileName);
+//                        fileInfo.setFileSuffix(fileName.substring(fileName.lastIndexOf(".") + 1));
+//
+//                        fileInfo.setDir(false);
+//                        fileInfo.setSize(file.length());
+//
+//                        fileInfo.setCanEdit(FileTypeEnum.canEdit(fileName));
+//
+//                        fileInfos.add(fileInfo);
+//                    }
+//                } else {
+//                    long lastModified = file.lastModified();
+//                    fileInfo.setLastModified(lastModified);
+//
+//                    fileInfo.setFileName(fileName);
+//                    fileInfo.setFileSuffix(fileName.substring(fileName.lastIndexOf(".") + 1));
+//
+//                    fileInfo.setDir(false);
+//                    fileInfo.setSize(file.length());
+//                    fileInfo.setCanEdit(FileTypeEnum.canEdit(fileName));
+//                    fileInfos.add(fileInfo);
+//
+//                }
+//                return FileVisitResult.CONTINUE;
+//            }
+//        });
 
-                return super.preVisitDirectory(dir, attrs);
-            }
+//
+//        Files.walkFileTree(rootPath, new FilterFileVisitor(fileInfos));
+//
+//        // sort by modified desc
+//        fileInfos.sort((o1, o2) -> {
+//            Long lastModified = o1.getLastModified();
+//            Long lastModified1 = o2.getLastModified();
+//            return lastModified1.compareTo(lastModified);
+//        });
+//
+//        //dir sort head
+//        fileInfos.sort((o1, o2) -> {
+//            Boolean dir = o1.getDir();
+//            Boolean dir2 = o2.getDir();
+//            return dir2.compareTo(dir);
+//        });
 
-            // only file
-            @Override
-            public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-
-                FileInfo fileInfo = new FileInfo();
-
-                File file = path.toFile();
-                String fileName = file.getName();
-
-                if (!CollectionUtils.isEmpty(fileSuffixes)) {
-
-                    String fileSuffix = fileName.substring(fileName.lastIndexOf(".") + 1);
-                    if (!fileSuffixes.contains(fileSuffix)) {
-                        return FileVisitResult.CONTINUE;
-                    }
-                }
-
-
-                if (!StringUtils.isEmpty(queryParam.getFileName())) {
-                    if (fileName.contains(queryParam.getFileName())) {
-//                            fileInfo.setFileName(fileName.getFileName().toString());
-
-                        long lastModified = file.lastModified();
-                        fileInfo.setLastModified(lastModified);
-
-                        fileInfo.setFileName(fileName);
-                        fileInfo.setFileSuffix(fileName.substring(fileName.lastIndexOf(".") + 1));
-
-                        fileInfo.setDir(false);
-                        fileInfo.setSize(file.length());
-
-                        fileInfo.setCanEdit(FileTypeEnum.canEdit(fileName));
-
-                        fileInfos.add(fileInfo);
-                    }
-                } else {
-                    long lastModified = file.lastModified();
-                    fileInfo.setLastModified(lastModified);
-
-                    fileInfo.setFileName(fileName);
-                    fileInfo.setFileSuffix(fileName.substring(fileName.lastIndexOf(".") + 1));
-
-                    fileInfo.setDir(false);
-                    fileInfo.setSize(file.length());
-                    fileInfo.setCanEdit(FileTypeEnum.canEdit(fileName));
-                    fileInfos.add(fileInfo);
-
-                }
-                return FileVisitResult.CONTINUE;
-            }
-        });
-
-        // sort by modified desc
-        fileInfos.sort((o1, o2) -> {
-            Long lastModified = o1.getLastModified();
-            Long lastModified1 = o2.getLastModified();
-            return lastModified1.compareTo(lastModified);
-        });
-
-        //dir sort head
-        fileInfos.sort((o1, o2) -> {
-            Boolean dir = o1.getDir();
-            Boolean dir2 = o2.getDir();
-            return dir2.compareTo(dir);
-        });
-
-        return fileInfos;
+        return doQuery(rootPath, queryParam);
     }
+
+
+    public FilePageResult doQuery(Path path, FileQueryParam queryParam) throws IOException {
+
+        boolean needQuery = !CollectionUtils.isEmpty(queryParam.getExtensions()) || !StringUtils.isEmpty(queryParam.getFileName());
+
+
+        FilePageResult filePageResult;
+
+        Predicate<Path> predicate = p -> {
+            if(!p.endsWith(path)){
+
+                return true;
+            }
+            return false;
+        };
+
+        if(needQuery){
+            predicate = predicate.and(p -> matchParam(queryParam, p.getFileName().toString()));
+        }
+
+//        if(queryParam.isHidden()){
+//            predicate = predicate.and(p -> qu)
+//        }
+
+        //是否根据最近修改时间来排序
+        if(!queryParam.isSortByLastModify()) {
+
+            if(queryParam.isIgnorePaging()) {
+                List<FileInfo> fileInfos = Files.walk(path, 1).filter(predicate)
+                        .map(this::getFileInfo).collect(Collectors.toList());
+
+                filePageResult =  new FilePageResult(queryParam, fileInfos.size(), fileInfos);
+
+                return filePageResult;
+            }
+
+            List<FileInfo> fileInfos = Files.walk(path, 1).filter(predicate).skip(queryParam.getOffset())
+                    .limit(queryParam.getPageSize()).map(this::getFileInfo).collect(Collectors.toList());
+
+            int count = (int) Files.walk(path, 1).filter(predicate).count();
+
+            filePageResult = new FilePageResult(queryParam, count, fileInfos);
+
+            return filePageResult;
+
+        }
+
+        return new FilePageResult(queryParam, 0, Collections.emptyList());
+    }
+
+
+    public boolean matchParam(FileQueryParam queryParam, String queryFileName) {
+        Optional<String> extOp = FileUtils.getExtension(queryFileName);
+        if(extOp.isPresent() && !CollectionUtils.isEmpty(queryParam.getExtensions()) &&
+                queryParam.getExtensions().stream().noneMatch(ex -> ex.equalsIgnoreCase(extOp.get()))){
+            return false;
+        }
+        String fileName = queryParam.getFileName();
+        return StringUtils.isEmpty(fileName) || queryFileName.contains(fileName);
+    }
+
+
+    public FileInfoDetail getFileInfoDetail(Path path) {
+        FileInfoDetail fid = new FileInfoDetail(getFileInfo(path));
+        if(fid.getCanEdit() && Files.isReadable(path)){
+            try {
+                fid.setContent(String.join("", Files.readAllLines(path, Charset.defaultCharset())));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return fid;
+    }
+
+    public FileInfo getFileInfo(Path path) {
+
+        FileInfo fileInfo = new FileInfo();
+        FileUtils.getExtension(path).ifPresent(e -> fileInfo.setExt(FileTypeEnum.getType(e)));
+
+        fileInfo.setFileName(path.getFileName().toString());
+
+        fileInfo.setDirectory(Files.isDirectory(path));
+        fileInfo.setCanEdit(FileTypeEnum.canEdit(path));
+
+        if(Files.isDirectory(path)){
+
+        }
+
+//        return getFileInfoDetail(path);
+
+//        BasicFileAttributes fileAttributes = Files.readAttributes(path, BasicFileAttributes.class);
+
+        return fileInfo;
+    }
+
+
+//    private Map<String, Object> getFileProperties(Path path){
+//        Map<String, Object> propMap = new LinkedHashMap<>();
+//
+//        if(Files.isDirectory(path)){
+//
+//        }
+//
+//        if(Files.isRegularFile(path)){
+//
+//
+//        }
+//    }
+//
+//
+//    private FileStatistic getFileStatistic(Path path) throws LogicException {
+//
+//        if (!Files.exists(path)) {
+//            return new FileStatistic(0, 0, 0, null);
+//        }
+//
+//        Files.walk(path).parallel().forEach(p -> {
+//            if(Files.isRegularFile(p)){
+//
+//            }
+//        });
+//
+//    }
+
+
+    private void writeFile(Path file, String content) throws LogicException {
+
+        if(!FileTypeEnum.canEdit(file)){
+            throw new LogicException("fileService.file.unable", "文件不能被编辑");
+        }
+
+        if(!Files.isWritable(file)){
+            throw new LogicException("fileService.file.unwriteable", "文件不可被写");
+        }
+
+        try {
+            Files.write(file, content.getBytes(Charset.defaultCharset()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new LogicException("fileService.file.writeFail", "文件写入失败");
+        }
+
+    }
+
 
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -184,7 +345,7 @@ public class FileService implements InitializingBean {
 
                 String ext = FileUtils.getExtension(file).orElseThrow(()
                         -> new LogicException("fileService.invalid.extension", "无效的文件扩展名"));
-                fileInfo.setFileSuffix(ext);
+                fileInfo.setExt(FileTypeEnum.getType(ext));
 
                 fileInfo.setCanEdit(FileTypeEnum.canEdit(file.getOriginalFilename()));
 

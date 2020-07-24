@@ -115,8 +115,8 @@ public class HandledArticleQueryParam extends QueryParam implements Serializable
             this.category = new Category();
             category.setId(categoryId);
         }
-        this.currentPage = queryParam.getCurrentPage();
-        this.pageSize = queryParam.getPageSize();
+//        this.set = queryParam.getCurrentPage();
+//        this.pageSize = queryParam.getPageSize();
         this.query = queryParam.getQuery();
         this.status = queryParam.getStatus();
         if(tag != null){
