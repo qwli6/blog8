@@ -10,6 +10,12 @@ import org.springframework.web.servlet.resource.ResourceResolverChain;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+/**
+ * 文件资源解析器
+ * @author liqiwen
+ * @version 1.2
+ * @since 1.2
+ */
 @Component
 @Conditional(FileCondition.class)
 @ConditionalOnWebApplication

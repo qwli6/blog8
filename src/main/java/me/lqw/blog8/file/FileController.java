@@ -23,6 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * 文件系统 controller
+ * @author liqiwen
+ * @version 1.2
+ * @since 1.2
+ */
 @Controller
 @RequestMapping("console")
 @Conditional({FileCondition.class})

@@ -52,7 +52,7 @@ public class MarkdownRenderController {
         }
         FileInfoDetail fid = fileService.getFileInfoDetail(pathAttribute);
 
-        if(StringUtils.isEmpty(fid.getContent())){
+        if(!StringUtils.isEmpty(fid.getContent())){
             fid.setContent(handler.toHtml(fid.getContent()));
         }
 

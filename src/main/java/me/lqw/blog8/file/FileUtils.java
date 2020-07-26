@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -101,5 +105,17 @@ public class FileUtils extends org.apache.tomcat.util.http.fileupload.FileUtils 
                     .parallelStream().collect(Collectors.joining()));
         }
         return Optional.empty();
+    }
+
+    /**
+     * 格式化文件时间
+     * @param fileTime fileTime
+     * @return string
+     */
+    public static String formatDateTime(FileTime fileTime){
+        LocalDateTime localDateTime = fileTime.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 }

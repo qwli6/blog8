@@ -234,7 +234,12 @@ public class FileService implements InitializingBean {
 
         System.out.println("根目录的地址：" + this.rootPath.toString());
 
-        Path filePath = this.rootPath.resolve(path);
+//        Path filePath = this.rootPath.resolve(path);
+
+
+        Path filePath = Paths.get(this.fileProperties.getFileRootPath(), path);
+
+
 
         logger.info("filePath:[{}]", filePath.toString());
 

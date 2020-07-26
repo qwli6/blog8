@@ -15,6 +15,9 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "blog.file")
 public class FileProperties {
 
+    /**
+     * 文件上传路径
+     */
     private String uploadPath;
 
     /**
