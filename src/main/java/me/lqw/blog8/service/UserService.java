@@ -5,6 +5,7 @@ import me.lqw.blog8.exception.LogicException;
 import me.lqw.blog8.exception.UnauthorizedException;
 import me.lqw.blog8.mapper.UserMapper;
 import me.lqw.blog8.model.User;
+import me.lqw.blog8.util.SecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,6 +23,9 @@ public class UserService implements InitializingBean {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
+    /**
+     * 用户操作密码持久类
+     */
     private final UserMapper userMapper;
 
     public UserService(UserMapper userMapper) {
@@ -29,6 +33,9 @@ public class UserService implements InitializingBean {
     }
 
     public User userAuth(String username, String password) throws LogicException {
+
+//        password = SecurityUtil.encodePassword(password);
+
 
         Optional<User> userOp = userMapper.findUser(username, password);
         if(userOp.isPresent()){

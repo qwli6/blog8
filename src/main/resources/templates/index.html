@@ -105,7 +105,7 @@
     <div id="queryForm" class="hide" th:action="@{/}">
         <input type="hidden" value="" name="tag">
         <input type="hidden" name="query">
-        <input type="hidden" th:value="${articlePage.queryParam.currentPage}" id="currentPage" name="currentPage">
+        <input type="hidden" th:value="${articlePage.pageQueryParam.currentPage}" id="currentPage" name="currentPage">
     </div>
 <script type="text/javascript" th:src="@{/webjars/jquery/3.0.0/jquery.min.js}"></script>
 <!-- Libs JS -->

@@ -2,7 +2,7 @@ package me.lqw.blog8.web.controller.console;
 
 import me.lqw.blog8.exception.ResourceNotFoundException;
 import me.lqw.blog8.model.Moment;
-import me.lqw.blog8.model.vo.MomentQueryParam;
+import me.lqw.blog8.model.vo.MomentPageQueryParam;
 import me.lqw.blog8.service.MomentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,7 +23,7 @@ public class MomentController extends BaseController {
     }
 
     @GetMapping("moments")
-    private String index(Model model, MomentQueryParam queryParam){
+    private String index(Model model, MomentPageQueryParam queryParam){
         model.addAttribute("momentPage", momentService.selectPage(queryParam));
         return "console/moment/index";
     }

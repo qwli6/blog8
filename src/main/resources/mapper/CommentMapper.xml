@@ -71,7 +71,7 @@
         delete from blog_comment where fk_parent_id = #{id,jdbcType=INTEGER}
     </delete>
 
-    <select id="countByQueryParam" parameterType="CommentQueryParam" resultType="int">
+    <select id="countByQueryParam" parameterType="CommentPageQueryParam" resultType="int">
         select count(id) from blog_comment
         <where>
             <if test="module != null">
@@ -84,7 +84,7 @@
         </where>
     </select>
 
-    <select id="selectPage" parameterType="CommentQueryParam" resultMap="CommentMap">
+    <select id="selectPage" parameterType="CommentPageQueryParam" resultMap="CommentMap">
         select id, content, email, username, module_name,
             module_id, status, path, fk_parent_id, admin, ip,
             address, from_client, create_at, modify_at, avatar

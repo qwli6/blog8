@@ -42,7 +42,7 @@
     </insert>
 
 
-    <select id="count" resultType="integer" parameterType="MomentQueryParam">
+    <select id="count" resultType="integer" parameterType="MomentPageQueryParam">
         select count(1) from blog_moment
         <where>
             <if test="query != null and query != ''">
@@ -51,7 +51,7 @@
         </where>
     </select>
 
-    <select id="selectPage" resultMap="MomentPageResult" parameterType="MomentQueryParam">
+    <select id="selectPage" resultMap="MomentPageResult" parameterType="MomentPageQueryParam">
         select
         id, content, create_at, modify_at,
         allow_comment, hits, comments
@@ -95,7 +95,7 @@
         select count(bmd.date) from (select date_format(create_at, '%Y-%m-%d') as date from blog_moment group by date) bmd
     </select>
 
-    <select id="selectMomentArchivePage" parameterType="MomentQueryParam" resultMap="MomentArchiveResult">
+    <select id="selectMomentArchivePage" parameterType="MomentPageQueryParam" resultMap="MomentArchiveResult">
         select bmd.date, bm.id, bm.content, bm.create_at, bm.modify_at, bm.allow_comment, bm.hits, bm.comments
         from (select date_format(create_at, '%Y-%m-%d') as date from blog_moment group by date order by date desc limit #{offset,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}) bmd
         left join blog_moment bm on bmd.date = date_format(bm.create_at, '%Y-%m-%d') order by bm.create_at desc

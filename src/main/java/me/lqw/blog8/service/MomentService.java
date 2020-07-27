@@ -10,7 +10,7 @@ import me.lqw.blog8.model.CommentModule;
 import me.lqw.blog8.model.Moment;
 import me.lqw.blog8.model.MomentArchive;
 import me.lqw.blog8.model.dto.PageResult;
-import me.lqw.blog8.model.vo.MomentQueryParam;
+import me.lqw.blog8.model.vo.MomentPageQueryParam;
 import me.lqw.blog8.util.JacksonUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
@@ -68,7 +68,7 @@ public class MomentService extends BaseService<Moment> implements CommentModuleH
     }
 
     @Transactional(readOnly = true)
-    public PageResult<Moment> selectPage(MomentQueryParam queryParam) {
+    public PageResult<Moment> selectPage(MomentPageQueryParam queryParam) {
         Integer count = momentMapper.count(queryParam);
         if(count == null || count == 0){
             return new PageResult<>(queryParam, 0, new ArrayList<>());
@@ -121,7 +121,7 @@ public class MomentService extends BaseService<Moment> implements CommentModuleH
         return moment;
     }
 
-    public PageResult<MomentArchive> selectMomentArchivePage(MomentQueryParam queryParam) {
+    public PageResult<MomentArchive> selectMomentArchivePage(MomentPageQueryParam queryParam) {
         int count = momentMapper.countMomentArchive();
         if(count == 0){
             return new PageResult<>(queryParam, 0, new ArrayList<>());

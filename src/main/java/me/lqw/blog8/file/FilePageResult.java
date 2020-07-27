@@ -1,7 +1,7 @@
 package me.lqw.blog8.file;
 
 import me.lqw.blog8.model.dto.PageResult;
-import me.lqw.blog8.model.vo.QueryParam;
+import me.lqw.blog8.model.vo.PageQueryParam;
 
 import java.io.Serializable;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class FilePageResult extends PageResult<FileInfo> implements Serializable {
 
-    public FilePageResult(QueryParam queryParam, Integer totalRow, List<FileInfo> data) {
-        super(queryParam, totalRow, data);
+    public FilePageResult(PageQueryParam pageQueryParam, Integer totalRow, List<FileInfo> data) {
+        super(pageQueryParam, totalRow, data);
     }
 }

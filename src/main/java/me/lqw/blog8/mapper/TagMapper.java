@@ -1,7 +1,7 @@
 package me.lqw.blog8.mapper;
 
 import me.lqw.blog8.model.Tag;
-import me.lqw.blog8.model.vo.TagQueryParam;
+import me.lqw.blog8.model.vo.TagPageQueryParam;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,10 +19,10 @@ public interface TagMapper {
 
     void update(Tag tag);
 
-    int count(TagQueryParam queryParam);
+    int count(TagPageQueryParam queryParam);
 
 
-    List<Tag> selectPage(TagQueryParam queryParam);
+    List<Tag> selectPage(TagPageQueryParam queryParam);
 
     void delete(@Param("id") Integer id);
 

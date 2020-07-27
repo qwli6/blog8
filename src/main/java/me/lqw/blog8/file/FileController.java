@@ -88,7 +88,7 @@ public class FileController extends BaseController {
 
     @GetMapping("files/query")
     @ResponseBody
-    public FilePageResult selectPage(FileQueryParam queryParam) throws Exception {
+    public FilePageResult selectPage(FilePageQueryParam queryParam) throws Exception {
         return fileService.selectPage(queryParam);
     }
 

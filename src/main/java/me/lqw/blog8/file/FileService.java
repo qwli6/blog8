@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -32,6 +33,15 @@ import java.util.stream.Collectors;
 
 /**
  * 文件服务接口处理类
+ * 1. 图片|视频文件的处理以及缩放，并且获取文件信息
+ * 2. 文件|文件夹的重命名
+ * 3. 文件的拷贝
+ * 4. 文件|文件夹的移动
+ * 5. 文件|文件夹的删除
+ * 6. 部分文件可在线编辑
+ * 7. 文件保护（私有|密码）
+ * 8. 文件检索
+ * 9. 文件上传
  * @author liqiwen
  * @version 1.0
  */
@@ -66,8 +76,13 @@ public class FileService implements InitializingBean {
         }
     }
 
-
-    public FilePageResult selectPage(FileQueryParam queryParam) throws Exception {
+    /**
+     * 文件检索
+     * @param queryParam queryParam
+     * @return FilePageResult
+     * @throws Exception Exception
+     */
+    public FilePageResult selectPage(FilePageQueryParam queryParam) throws Exception {
 
         List<FileInfo> fileInfos = new ArrayList<>();
 
@@ -77,99 +92,11 @@ public class FileService implements InitializingBean {
         int visitDepth = queryParam.getContainChildDir() ? Integer.MAX_VALUE : 1;
 
 
-
-
-//        Set<FileVisitOption> optionSet = new HashSet<>();
-//        optionSet.add(FileVisitOption.FOLLOW_LINKS);
-//        Path path = Files.walkFileTree(rootPath, optionSet, visitDepth, new SimpleFileVisitor<Path>() {
-//
-//            // dir pre
-//            @Override
-//            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-//                boolean directory = dir.toFile().isDirectory();
-//                System.out.println("文件夹：" + directory);
-//
-//
-//                String s = dir.toRealPath(LinkOption.values()).toString();
-//                System.out.println("文件夹路径：" + s);
-//
-//                return super.preVisitDirectory(dir, attrs);
-//            }
-//
-//            // only file
-//            @Override
-//            public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-//
-//                FileInfo fileInfo = new FileInfo();
-//
-//                File file = path.toFile();
-//                String fileName = file.getName();
-//
-//                if (!CollectionUtils.isEmpty(fileSuffixes)) {
-//
-//                    String fileSuffix = fileName.substring(fileName.lastIndexOf(".") + 1);
-//                    if (!fileSuffixes.contains(fileSuffix)) {
-//                        return FileVisitResult.CONTINUE;
-//                    }
-//                }
-//
-//
-//                if (!StringUtils.isEmpty(queryParam.getFileName())) {
-//                    if (fileName.contains(queryParam.getFileName())) {
-////                            fileInfo.setFileName(fileName.getFileName().toString());
-//
-//                        long lastModified = file.lastModified();
-//                        fileInfo.setLastModified(lastModified);
-//
-//                        fileInfo.setFileName(fileName);
-//                        fileInfo.setFileSuffix(fileName.substring(fileName.lastIndexOf(".") + 1));
-//
-//                        fileInfo.setDir(false);
-//                        fileInfo.setSize(file.length());
-//
-//                        fileInfo.setCanEdit(FileTypeEnum.canEdit(fileName));
-//
-//                        fileInfos.add(fileInfo);
-//                    }
-//                } else {
-//                    long lastModified = file.lastModified();
-//                    fileInfo.setLastModified(lastModified);
-//
-//                    fileInfo.setFileName(fileName);
-//                    fileInfo.setFileSuffix(fileName.substring(fileName.lastIndexOf(".") + 1));
-//
-//                    fileInfo.setDir(false);
-//                    fileInfo.setSize(file.length());
-//                    fileInfo.setCanEdit(FileTypeEnum.canEdit(fileName));
-//                    fileInfos.add(fileInfo);
-//
-//                }
-//                return FileVisitResult.CONTINUE;
-//            }
-//        });
-
-//
-//        Files.walkFileTree(rootPath, new FilterFileVisitor(fileInfos));
-//
-//        // sort by modified desc
-//        fileInfos.sort((o1, o2) -> {
-//            Long lastModified = o1.getLastModified();
-//            Long lastModified1 = o2.getLastModified();
-//            return lastModified1.compareTo(lastModified);
-//        });
-//
-//        //dir sort head
-//        fileInfos.sort((o1, o2) -> {
-//            Boolean dir = o1.getDir();
-//            Boolean dir2 = o2.getDir();
-//            return dir2.compareTo(dir);
-//        });
-
         return doQuery(rootPath, queryParam);
     }
 
 
-    public FilePageResult doQuery(Path path, FileQueryParam queryParam) throws IOException {
+    public FilePageResult doQuery(Path path, FilePageQueryParam queryParam) throws IOException {
 
         boolean needQuery = !CollectionUtils.isEmpty(queryParam.getExtensions()) || !StringUtils.isEmpty(queryParam.getFileName());
 
@@ -219,7 +146,7 @@ public class FileService implements InitializingBean {
     }
 
 
-    public boolean matchParam(FileQueryParam queryParam, String queryFileName) {
+    public boolean matchParam(FilePageQueryParam queryParam, String queryFileName) {
         Optional<String> extOp = FileUtils.getExtension(queryFileName);
         if(extOp.isPresent() && !CollectionUtils.isEmpty(queryParam.getExtensions()) &&
                 queryParam.getExtensions().stream().noneMatch(ex -> ex.equalsIgnoreCase(extOp.get()))){
@@ -231,28 +158,32 @@ public class FileService implements InitializingBean {
 
 
     public FileInfoDetail getFileInfoDetail(String path){
+        lock.readLock().lock();
+        try {
+            Path filePath = Paths.get(this.fileProperties.getFileRootPath(), path);
+            return getFileInfoDetail(filePath);
+        } finally {
+            lock.readLock().unlock();
+        }
 
-        System.out.println("根目录的地址：" + this.rootPath.toString());
-
-//        Path filePath = this.rootPath.resolve(path);
+    }
 
 
-        Path filePath = Paths.get(this.fileProperties.getFileRootPath(), path);
+    public FileInfoDetail getFileInfoDetail(Path path) {
 
+        logger.info("filePath:[{}]", path.toString());
 
+        FileInfoDetail fid = new FileInfoDetail(getFileInfo(path));
 
-        logger.info("filePath:[{}]", filePath.toString());
-
-        FileInfoDetail fid = new FileInfoDetail(getFileInfo(filePath));
-
-        if(fid.getCanEdit() && Files.isReadable(filePath)){
+        if(fid.getCanEdit() && Files.isReadable(path)){
             try {
-                fid.setContent(String.join("", Files.readAllLines(filePath, Charset.defaultCharset())));
+                fid.setContent(String.join("", Files.readAllLines(path, Charset.defaultCharset())));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         return fid;
+
     }
 
 
@@ -429,9 +360,66 @@ public class FileService implements InitializingBean {
     }
 
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        logger.info("文件系统服务处理类已初始化");
+    private Path resolve(Path root, String path){
+        Path resolve;
+        if(StringUtils.isEmpty(path)){
+            resolve = root;
+        } else {
+            String cleanPath = StringUtils.cleanPath(path);
+            resolve = StringUtils.isEmpty(cleanPath) ? root : root.resolve(path);
+        }
+        return resolve;
+    }
+
+
+    /**
+     * 找出两个 Path 之间的路径
+     * @param root root 根目录
+     * @param dir dir 磁盘目录
+     * @return List<Path>
+     */
+    private List<Path> betweenPaths(Path root, Path dir){
+        if(root.equals(dir)){
+            return Collections.emptyList();
+        }
+        Path parent = dir;
+        List<Path> paths = new ArrayList<>();
+        while ((parent = parent.getParent()) != null){
+            if(parent.getParent().equals(root)){
+                if(!paths.isEmpty()){
+                    Collections.reverse(paths);
+                }
+                return paths;
+            }
+            paths.add(parent);
+        }
+        throw new RuntimeException("无法找出两个 Path 之间的路径");
+    }
+
+
+    private Optional<Path> lookup(Lookup lookup){
+        Path p;
+        try {
+            p = resolve(this.rootPath, lookup.path);
+        } catch (InvalidPathException e) {
+            return Optional.empty();
+        }
+//        if (!StringUtils.isSub(p, this.rootPath)) {
+//            return Optional.empty();
+//        }
+        if (lookup.mustExists && !Files.exists(p)) {
+            return Optional.empty();
+        }
+        if (lookup.ignoreRoot && p == this.rootPath) {
+            return Optional.empty();
+        }
+        if (lookup.mustRegularFile && !Files.isRegularFile(p)) {
+            return Optional.empty();
+        }
+        if (lookup.mustDir && !Files.isDirectory(p)) {
+            return Optional.empty();
+        }
+        return Optional.of(p);
     }
 
     private static class _ReadablePath implements ReadablePath {
@@ -468,6 +456,13 @@ public class FileService implements InitializingBean {
 //            return FileUtils.lastModified(path);
             return 0;
         }
+    }
+
+
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        logger.info("文件系统服务处理类已初始化");
     }
 
 

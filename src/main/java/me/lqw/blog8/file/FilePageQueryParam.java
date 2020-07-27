@@ -1,6 +1,6 @@
 package me.lqw.blog8.file;
 
-import me.lqw.blog8.model.vo.QueryParam;
+import me.lqw.blog8.model.vo.PageQueryParam;
 
 import java.io.Serializable;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
  * @version 1.2
  * @since 1.2
  */
-public class FileQueryParam extends QueryParam implements Serializable {
+public class FilePageQueryParam extends PageQueryParam implements Serializable {
 
     private String fileName;
 

@@ -2,7 +2,7 @@ package me.lqw.blog8.model.vo;
 
 import java.io.Serializable;
 
-public class MomentQueryParam extends QueryParam implements Serializable {
+public class TagPageQueryParam extends PageQueryParam implements Serializable {
 
     private String query;
 

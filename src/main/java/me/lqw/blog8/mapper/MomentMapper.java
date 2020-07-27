@@ -2,7 +2,7 @@ package me.lqw.blog8.mapper;
 
 import me.lqw.blog8.model.Moment;
 import me.lqw.blog8.model.MomentArchive;
-import me.lqw.blog8.model.vo.MomentQueryParam;
+import me.lqw.blog8.model.vo.MomentPageQueryParam;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -15,9 +15,9 @@ public interface MomentMapper {
 
     void insert(Moment moment);
 
-    Integer count(MomentQueryParam queryParam);
+    Integer count(MomentPageQueryParam queryParam);
 
-    List<Moment> selectPage(MomentQueryParam queryParam);
+    List<Moment> selectPage(MomentPageQueryParam queryParam);
 
     Optional<Moment> findById(@Param("id") Integer id);
 
@@ -27,7 +27,7 @@ public interface MomentMapper {
 
     int countMomentArchive();
 
-    List<MomentArchive> selectMomentArchivePage(MomentQueryParam queryParam);
+    List<MomentArchive> selectMomentArchivePage(MomentPageQueryParam queryParam);
 
     void increaseHits(@Param("id") Integer id, @Param("hits") int hits);
 }

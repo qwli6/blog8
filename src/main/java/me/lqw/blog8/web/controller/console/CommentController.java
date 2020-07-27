@@ -1,6 +1,6 @@
 package me.lqw.blog8.web.controller.console;
 
-import me.lqw.blog8.model.vo.CommentQueryParam;
+import me.lqw.blog8.model.vo.CommentPageQueryParam;
 import me.lqw.blog8.service.CommentService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +24,7 @@ public class CommentController {
     }
 
     @GetMapping("comments")
-    public String index(CommentQueryParam queryParam, Model model){
+    public String index(CommentPageQueryParam queryParam, Model model){
         model.addAttribute("commentPage", commentService.selectPage(queryParam));
 
         return "console/comment/index";

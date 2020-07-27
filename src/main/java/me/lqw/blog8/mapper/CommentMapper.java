@@ -2,7 +2,7 @@ package me.lqw.blog8.mapper;
 
 import me.lqw.blog8.model.Comment;
 import me.lqw.blog8.model.CommentModule;
-import me.lqw.blog8.model.vo.CommentQueryParam;
+import me.lqw.blog8.model.vo.CommentPageQueryParam;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -26,9 +26,9 @@ public interface CommentMapper {
 
     void deleteChildren(@Param("id") Integer id);
 
-    int countByQueryParam(CommentQueryParam queryParam);
+    int countByQueryParam(CommentPageQueryParam queryParam);
 
-    List<Comment> selectPage(CommentQueryParam queryParam);
+    List<Comment> selectPage(CommentPageQueryParam queryParam);
 
     Optional<Comment> findParentCommentById(@Param("id") Integer id);
 }

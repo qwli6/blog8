@@ -6,7 +6,7 @@ package me.lqw.blog8.model.vo;
  * @version 1.2
  * @since 1.2
  */
-public abstract class QueryParam {
+public abstract class PageQueryParam {
 
     /**
      * 查询的当前页

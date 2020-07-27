@@ -2,7 +2,7 @@ package me.lqw.blog8.web.controller.console;
 
 import me.lqw.blog8.exception.ResourceNotFoundException;
 import me.lqw.blog8.model.Article;
-import me.lqw.blog8.model.vo.ArticleQueryParam;
+import me.lqw.blog8.model.vo.ArticlePageQueryParam;
 import me.lqw.blog8.service.ArticleService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +22,7 @@ public class ArticleController extends BaseController {
     }
 
     @GetMapping("articles")
-    public String index(Model model, ArticleQueryParam queryParam) {
+    public String index(Model model, ArticlePageQueryParam queryParam) {
         model.addAttribute("articlePage", articleService.selectPage(queryParam));
         return "console/article/index";
     }

@@ -1,7 +1,7 @@
 package me.lqw.blog8.web.controller.console;
 
 import me.lqw.blog8.model.Tag;
-import me.lqw.blog8.model.vo.TagQueryParam;
+import me.lqw.blog8.model.vo.TagPageQueryParam;
 import me.lqw.blog8.service.TagService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,7 +23,7 @@ public class TagController extends BaseController {
     }
 
     @GetMapping("tags")
-    private String index(Model model, TagQueryParam queryParam){
+    private String index(Model model, TagPageQueryParam queryParam){
         model.addAttribute("tagPage", tagService.selectPage(queryParam));
         return "/console/tag/index";
     }

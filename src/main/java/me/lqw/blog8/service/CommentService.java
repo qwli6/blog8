@@ -6,7 +6,7 @@ import me.lqw.blog8.exception.LogicException;
 import me.lqw.blog8.mapper.CommentMapper;
 import me.lqw.blog8.model.*;
 import me.lqw.blog8.model.dto.PageResult;
-import me.lqw.blog8.model.vo.CommentQueryParam;
+import me.lqw.blog8.model.vo.CommentPageQueryParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -186,7 +186,7 @@ public class CommentService implements InitializingBean {
         });
     }
 
-    public PageResult<Comment> selectPage(CommentQueryParam queryParam) {
+    public PageResult<Comment> selectPage(CommentPageQueryParam queryParam) {
         CommentModule module = queryParam.getModule();
         CommentModuleHandler<?> moduleHandler = handlers.stream().filter(h -> h.getModuleName().equals(module.getName()))
                 .findAny().orElseThrow(() -> new LogicException("comment.module.notExists", "评论模块不存在"));

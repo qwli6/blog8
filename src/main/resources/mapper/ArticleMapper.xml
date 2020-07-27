@@ -61,7 +61,7 @@
              #{allowComment,jdbcType=BOOLEAN}, #{status, typeHandler=EnumOrdinalTypeHandler}, #{category.id,jdbcType=INTEGER},
             now(), now())
     </insert>
-    <select id="count" parameterType="HandledArticleQueryParam" resultType="integer">
+    <select id="count" parameterType="HandledArticlePageQueryParam" resultType="integer">
         select count(ba.id) from blog_article ba
         <if test="category != null">
             left join blog_category bc on ba.fk_category_id = bc.id
@@ -73,7 +73,7 @@
         </where>
     </select>
 
-    <select id="selectPage" parameterType="HandledArticleQueryParam" resultMap="ArticlePageMap">
+    <select id="selectPage" parameterType="HandledArticlePageQueryParam" resultMap="ArticlePageMap">
         select
             ba.id,
             ba.title,
@@ -129,8 +129,13 @@
         delete from blog_article where id = #{id,jdbcType=INTEGER}
     </delete>
 
-    <select id="countArchive" parameterType="ArticleQueryParam" resultType="int">
-        select date_format(post_at, '%Y-%m-%d') as date from blog_article where status = #{status, typeHandler=EnumOrdinalTypeHandler}
+    <select id="selectCountByArchiveParams" parameterType="ArticleArchivePageQueryParam" resultType="int">
+        select date_format(post_at, '%Y-%m-%d') as date from blog_article
+        <where>
+            <if test="status != null">
+                and status = #{status, typeHandler=EnumOrdinalTypeHandler}
+            </if>
+        </where>
         group by date order by date desc
     </select>
 
@@ -157,8 +162,12 @@
             </association>
         </collection>
     </resultMap>
-    <select id="selectArchivePage" parameterType="ArticleQueryParam" resultMap="ArticleArchiveMap">
+    <select id="selectArchivePage" parameterType="ArticlePageQueryParam" resultMap="ArticleArchiveMap">
 
+        select ba.id, ba.title, ba.content, ba.post_at, ba.create_at, ba.comments, ba.status, ba.hits,
+        ba.allow_comment, bat2.tag_str, bc.name, bc.id as category_id from blog_article ba
+          left join blog_category bc on ba.fk_category_id = bc.id
+          left join (select bat.article_id, group_concat(bat.tag_id) as tag_str from blog_article_tag bat group by bat.article_id) bat2 on ba.id = bat2.article_id
     </select>
 
     <update id="increaseComments" parameterType="integer">

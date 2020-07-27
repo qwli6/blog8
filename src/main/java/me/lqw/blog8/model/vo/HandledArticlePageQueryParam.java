@@ -13,21 +13,21 @@ import java.time.LocalDateTime;
  * @author liqiwen
  * @version 1.0
  */
-public class HandledArticleQueryParam extends QueryParam implements Serializable {
+public class HandledArticlePageQueryParam extends PageQueryParam implements Serializable {
 
 
     private boolean queryPrivate;
 
     private boolean queryPasswordProtect;
 
-    private QueryParam queryParam;
+    private PageQueryParam pageQueryParam;
 
-    public QueryParam getQueryParam() {
-        return queryParam;
+    public PageQueryParam getPageQueryParam() {
+        return pageQueryParam;
     }
 
-    public void setQueryParam(QueryParam queryParam) {
-        this.queryParam = queryParam;
+    public void setPageQueryParam(PageQueryParam pageQueryParam) {
+        this.pageQueryParam = pageQueryParam;
     }
 
     public boolean isQueryPrivate() {
@@ -109,8 +109,8 @@ public class HandledArticleQueryParam extends QueryParam implements Serializable
         this.category = category;
     }
 
-    public HandledArticleQueryParam(ArticleQueryParam queryParam, Integer categoryId, Integer tagId) {
-        this.queryParam = queryParam;
+    public HandledArticlePageQueryParam(ArticlePageQueryParam queryParam, Integer categoryId, Integer tagId) {
+        this.pageQueryParam = queryParam;
         if(categoryId != null) {
             this.category = new Category();
             category.setId(categoryId);
@@ -124,6 +124,6 @@ public class HandledArticleQueryParam extends QueryParam implements Serializable
         }
     }
 
-    public HandledArticleQueryParam() {
+    public HandledArticlePageQueryParam() {
     }
 }

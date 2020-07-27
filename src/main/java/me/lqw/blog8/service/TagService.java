@@ -5,7 +5,7 @@ import me.lqw.blog8.mapper.ArticleTagMapper;
 import me.lqw.blog8.mapper.TagMapper;
 import me.lqw.blog8.model.Tag;
 import me.lqw.blog8.model.dto.PageResult;
-import me.lqw.blog8.model.vo.TagQueryParam;
+import me.lqw.blog8.model.vo.TagPageQueryParam;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -60,7 +60,7 @@ public class TagService extends BaseService<Tag> implements InitializingBean {
     }
 
     @Transactional(readOnly = true)
-    public PageResult<Tag> selectPage(TagQueryParam queryParam) {
+    public PageResult<Tag> selectPage(TagPageQueryParam queryParam) {
         int count = tagMapper.count(queryParam);
         if(count == 0){
             return new PageResult<>(queryParam, 0, new ArrayList<>());

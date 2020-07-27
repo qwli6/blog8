@@ -7,9 +7,10 @@ import me.lqw.blog8.model.CommentModule;
 import me.lqw.blog8.model.CommentSaved;
 import me.lqw.blog8.model.CommentStatus;
 import me.lqw.blog8.model.dto.PageResult;
-import me.lqw.blog8.model.vo.ArticleQueryParam;
-import me.lqw.blog8.model.vo.CommentQueryParam;
-import me.lqw.blog8.model.vo.MomentQueryParam;
+import me.lqw.blog8.model.vo.ArticleArchivePageQueryParam;
+import me.lqw.blog8.model.vo.ArticlePageQueryParam;
+import me.lqw.blog8.model.vo.CommentPageQueryParam;
+import me.lqw.blog8.model.vo.MomentPageQueryParam;
 import me.lqw.blog8.service.ArticleService;
 import me.lqw.blog8.service.CommentService;
 import me.lqw.blog8.service.MomentService;
@@ -43,7 +44,7 @@ public class MainController extends BaseController {
     }
 
     @GetMapping
-    public String index(ArticleQueryParam queryParam, Model model){
+    public String index(ArticlePageQueryParam queryParam, Model model){
         queryParam.setStatus(StatusEnum.POSTED);
         model.addAttribute("articlePage", articleService.selectPage(queryParam));
         model.addAttribute("latestMomentPage", momentService.selectLatestMoments());
@@ -59,7 +60,7 @@ public class MainController extends BaseController {
 
 
     @GetMapping("moments")
-    public String moments(MomentQueryParam queryParam, Model model){
+    public String moments(MomentPageQueryParam queryParam, Model model){
         model.addAttribute("momentPage", momentService.selectMomentArchivePage(queryParam));
         return "moments";
     }
@@ -71,7 +72,7 @@ public class MainController extends BaseController {
     }
 
     @GetMapping("archives")
-    public String archives(Model model, ArticleQueryParam queryParam){
+    public String archives(Model model, ArticleArchivePageQueryParam queryParam){
         model.addAttribute("articlePage", articleService.selectArchivePage(queryParam));
         return "archives";
     }
@@ -108,7 +109,7 @@ public class MainController extends BaseController {
     @GetMapping("api/module/{name}/{id}/comments")
     @ResponseBody
     public PageResult<Comment> selectPage(@PathVariable("name") String name,
-                                          @PathVariable("id") Integer id, CommentQueryParam queryParam) {
+                                          @PathVariable("id") Integer id, CommentPageQueryParam queryParam) {
         queryParam.setModule(new CommentModule(id, name));
 
         if(!BlogContext.isAuthorized()){

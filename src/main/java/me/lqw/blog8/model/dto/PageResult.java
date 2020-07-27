@@ -1,6 +1,6 @@
 package me.lqw.blog8.model.dto;
 
-import me.lqw.blog8.model.vo.QueryParam;
+import me.lqw.blog8.model.vo.PageQueryParam;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class PageResult<T> implements Serializable {
     /**
      * 查询参数
      */
-    private QueryParam queryParam;
+    private PageQueryParam pageQueryParam;
 
     /**
      * 当前页
@@ -70,23 +70,23 @@ public class PageResult<T> implements Serializable {
      */
     private Integer dataSize;
 
-    public void setQueryParam(QueryParam queryParam) {
-        this.queryParam = queryParam;
+    public void setPageQueryParam(PageQueryParam pageQueryParam) {
+        this.pageQueryParam = pageQueryParam;
     }
 
-    public QueryParam getQueryParam() {
-        return queryParam;
+    public PageQueryParam getPageQueryParam() {
+        return pageQueryParam;
     }
 
     public PageResult() {
         super();
     }
 
-    public PageResult(QueryParam queryParam, Integer totalRow, List<T> data) {
+    public PageResult(PageQueryParam pageQueryParam, Integer totalRow, List<T> data) {
         super();
-        this.queryParam = queryParam;
-        this.currentPage = queryParam.getCurrentPage();
-        this.pageSize = queryParam.getPageSize();
+        this.pageQueryParam = pageQueryParam;
+        this.currentPage = pageQueryParam.getCurrentPage();
+        this.pageSize = pageQueryParam.getPageSize();
         this.data = data;
         this.totalRow = totalRow;
         this.totalPage = (this.totalRow%this.pageSize == 0) ? (totalRow/this.pageSize) : (totalRow/this.pageSize)+1;

@@ -5,7 +5,7 @@ import me.lqw.blog8.model.CommentStatus;
 
 import java.io.Serializable;
 
-public class CommentQueryParam extends QueryParam implements Serializable {
+public class CommentPageQueryParam extends PageQueryParam implements Serializable {
 
     private CommentStatus status;
 

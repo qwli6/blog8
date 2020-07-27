@@ -2,8 +2,9 @@ package me.lqw.blog8.mapper;
 
 import me.lqw.blog8.model.Article;
 import me.lqw.blog8.model.ArticleArchive;
-import me.lqw.blog8.model.vo.ArticleQueryParam;
-import me.lqw.blog8.model.vo.HandledArticleQueryParam;
+import me.lqw.blog8.model.vo.ArticleArchivePageQueryParam;
+import me.lqw.blog8.model.vo.ArticlePageQueryParam;
+import me.lqw.blog8.model.vo.HandledArticlePageQueryParam;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -18,9 +19,9 @@ public interface ArticleMapper {
 
     Optional<Article> findByUrlName(@Param("urlName") String urlName);
 
-    int count(HandledArticleQueryParam queryParam);
+    int count(HandledArticlePageQueryParam queryParam);
 
-    List<Article> selectPage(HandledArticleQueryParam queryParam);
+    List<Article> selectPage(HandledArticlePageQueryParam queryParam);
 
     Optional<Article> findById(@Param("id") Integer id);
 
@@ -28,9 +29,19 @@ public interface ArticleMapper {
 
     void delete(@Param("id") Integer id);
 
-    int countArchive(ArticleQueryParam queryParam);
+    /**
+     * 查询归档的内容数量
+     * @param queryParam queryParam
+     * @return int
+     */
+    int selectCountByArchiveParams(ArticleArchivePageQueryParam queryParam);
 
-    List<ArticleArchive> selectArchivePage(ArticleQueryParam queryParam);
+    /**
+     * 查询文章归档的数据
+     * @param queryParam queryParam
+     * @return List<ArticleArchive>
+     */
+    List<ArticleArchive> selectArchivePage(ArticleArchivePageQueryParam queryParam);
 
     void increaseComments(@Param("id") Integer id);
 }

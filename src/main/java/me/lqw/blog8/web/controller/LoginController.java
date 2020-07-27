@@ -3,6 +3,8 @@ package me.lqw.blog8.web.controller;
 import me.lqw.blog8.BlogContext;
 import me.lqw.blog8.mapper.UserMapper;
 import me.lqw.blog8.model.User;
+import me.lqw.blog8.model.dto.CR;
+import me.lqw.blog8.model.dto.ResultDTO;
 import me.lqw.blog8.model.vo.LoginParam;
 import me.lqw.blog8.service.UserService;
 import me.lqw.blog8.web.controller.console.BaseController;
@@ -17,16 +19,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+/**
+ * 登录控制器
+ * @author liqiwen
+ * @version 1.0
+ * @since 1.0
+ */
 @Controller
 public class LoginController extends BaseController {
 
-
+    /**
+     * 用户 UserService
+     */
     private final UserService userService;
-    private final UserMapper userMapper;
 
-    public LoginController(UserService userService, UserMapper userMapper) {
+    public LoginController(UserService userService) {
         this.userService = userService;
-        this.userMapper = userMapper;
     }
 
     @GetMapping("login")
@@ -37,14 +45,15 @@ public class LoginController extends BaseController {
 
     @PostMapping(value = "login")
     @ResponseBody
-    public ResponseEntity<?> userAuth(@Valid @RequestBody LoginParam loginParam, HttpServletRequest request){
+    public CR<?> userAuth(@Valid @RequestBody LoginParam loginParam, HttpServletRequest request){
+
         HttpSession session = request.getSession();
 
         User user = userService.userAuth(loginParam.getUsername(), loginParam.getPassword());
 
         session.setAttribute("user", user);
 
-        return ResponseEntity.ok().build();
+        return ResultDTO.create();
     }
 
 
@@ -54,14 +63,4 @@ public class LoginController extends BaseController {
         return ResponseEntity.ok(BlogContext.isAuthorized());
     }
 
-
-    @GetMapping("test2")
-    @ResponseBody
-    public String index(){
-
-        User user = new User();
-        userMapper.update(user);
-
-        return "success";
-    }
 }

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * @author liqiwen
  * @version 1.0
  */
-public class ArticleQueryParam extends QueryParam implements Serializable {
+public class ArticlePageQueryParam extends PageQueryParam implements Serializable {
 
     private String query;
 

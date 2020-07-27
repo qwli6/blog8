@@ -5,8 +5,9 @@ import me.lqw.blog8.exception.LogicException;
 import me.lqw.blog8.mapper.*;
 import me.lqw.blog8.model.*;
 import me.lqw.blog8.model.dto.PageResult;
-import me.lqw.blog8.model.vo.ArticleQueryParam;
-import me.lqw.blog8.model.vo.HandledArticleQueryParam;
+import me.lqw.blog8.model.vo.ArticleArchivePageQueryParam;
+import me.lqw.blog8.model.vo.ArticlePageQueryParam;
+import me.lqw.blog8.model.vo.HandledArticlePageQueryParam;
 import me.lqw.blog8.util.JacksonUtil;
 import me.lqw.blog8.util.JsoupUtils;
 import me.lqw.blog8.validator.StatusEnum;
@@ -145,7 +146,7 @@ public class ArticleService extends BaseService<Article> implements CommentModul
 
 
     @Transactional(readOnly = true)
-    public PageResult<Article> selectPage(ArticleQueryParam queryParam) {
+    public PageResult<Article> selectPage(ArticlePageQueryParam queryParam) {
         String category = queryParam.getCategory();
 
         String tag = queryParam.getTag();
@@ -172,7 +173,7 @@ public class ArticleService extends BaseService<Article> implements CommentModul
             }
         }
 
-        HandledArticleQueryParam handledArticleQueryParam = new HandledArticleQueryParam(queryParam, categoryId, tagId);
+        HandledArticlePageQueryParam handledArticleQueryParam = new HandledArticlePageQueryParam(queryParam, categoryId, tagId);
 
         if(!BlogContext.isAuthorized()){
             handledArticleQueryParam.setStatus(StatusEnum.POSTED);
@@ -195,10 +196,23 @@ public class ArticleService extends BaseService<Article> implements CommentModul
 
     }
 
+    /**
+     * 文章按年月 归档
+     * @param queryParam queryParam
+     * @return PageResult<ArticleArchive>
+     */
     @Transactional(readOnly = true)
-    public PageResult<ArticleArchive> selectArchivePage(ArticleQueryParam queryParam){
+    public PageResult<ArticleArchive> selectArchivePage(ArticleArchivePageQueryParam queryParam) {
 
-        int count = articleMapper.countArchive(queryParam);
+        if(!BlogContext.isAuthorized()){
+            queryParam.setStatus(StatusEnum.POSTED);
+            queryParam.setQueryPrivate(true);
+        }
+
+        int count = articleMapper.selectCountByArchiveParams(queryParam);
+
+
+        PageResult<ArticleArchive> pageResult;
 
         if(count == 0){
             return new PageResult<>(queryParam, 0, Collections.emptyList());
@@ -210,13 +224,14 @@ public class ArticleService extends BaseService<Article> implements CommentModul
             return new PageResult<>(queryParam, 0, Collections.emptyList());
         }
 
-        for(ArticleArchive archive : data){
+        pageResult = new PageResult<>(queryParam, count, data);
+
+        for(ArticleArchive archive : pageResult.getData()){
             List<Article> articles = archive.getArticles();
             processArticles(articles, BlogContext.isAuthorized());
         }
 
         return new PageResult<>(queryParam, count, data);
-
     }
 
 
@@ -248,19 +263,26 @@ public class ArticleService extends BaseService<Article> implements CommentModul
 
         for(Article article : articles) {
             if(StringUtils.isEmpty(article.getContent())){
+                logger.info("文章内容为空, 跳过该内容:[{}]", article.getId());
                 continue;
             }
 
-            if(StringUtils.isEmpty(article.getFeatureImage())){
+            if(!StringUtils.isEmpty(article.getFeatureImage())){
+                logger.info("文章摘要为空, 跳过该内容:[{}]", article.getId());
                 continue;
             }
 
+            //获取文章的第一幅图片，如果存在，则设置为文章的特征图
             Optional<String> featureImageOp = JsoupUtils.getFirstImage(mdHandler.toHtml(article.getContent()));
             featureImageOp.ifPresent(article::setFeatureImage);
         }
     }
 
 
+    /**
+     * 处理文章的内容 articles
+     * @param articles articles
+     */
     private void processArticleContents(List<Article> articles) {
 
         Map<Integer, String> markdownMap = new HashMap<>();
@@ -273,13 +295,14 @@ public class ArticleService extends BaseService<Article> implements CommentModul
             }
         }
 
+
         if(!markdownMap.isEmpty()){
             Map<Integer, String> htmlMap = mdHandler.toHtmls(markdownMap);
             for(Article article: articles){
+                //展示内容的时候，需要过滤出 xss 字符，避免执行脚本
                 article.setDigest(htmlMap.get(-article.getId()));
                 article.setContent(htmlMap.get(article.getId()));
             }
-
         }
     }
 
@@ -350,7 +373,8 @@ public class ArticleService extends BaseService<Article> implements CommentModul
 
     @Override
     public void increaseComments(CommentModule module) throws LogicException {
-        articleMapper.findById(module.getId()).orElseThrow(() -> new LogicException("articleService.increaseComments.notExists", "内容不存在"));
+        articleMapper.findById(module.getId()).orElseThrow(()
+                -> new LogicException("articleService.increaseComments.notExists", "内容不存在"));
         articleMapper.increaseComments(module.getId());
     }
 

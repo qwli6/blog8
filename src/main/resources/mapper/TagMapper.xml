@@ -35,11 +35,11 @@
         where id = #{id,jdbcType=INTEGER}
     </update>
 
-    <select id="count" resultType="int" parameterType="TagQueryParam">
+    <select id="count" resultType="int" parameterType="TagPageQueryParam">
         select count(id) from blog_tag
     </select>
 
-    <select id="selectPage" parameterType="TagQueryParam" resultMap="TagMap">
+    <select id="selectPage" parameterType="TagPageQueryParam" resultMap="TagMap">
         select id, name, create_at, modify_at from blog_tag
         <where>
             <if test="query != null and query != ''">
