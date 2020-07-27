@@ -14,10 +14,9 @@
     <meta name="HandheldFriendly" content="True"/>
     <meta name="MobileOptimized" content="320"/>
     <meta name="robots" content="noindex,nofollow,noarchive"/>
-    <link rel="icon" href="./favicon.ico" type="image/x-icon"/>
-    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon"/>
+    <link  rel="shortcut icon" th:href="${blogConfigModel.favicon}" type="image/x-icon"/>
     <!-- CSS files -->
-    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/base1.css">
     <link href="/static/tabler/dist/css/tabler.min.css" rel="stylesheet"/>
     <link href="/static/tabler/dist/css/demo.min.css" rel="stylesheet"/>
 </head>
@@ -26,10 +25,10 @@
     <div class="container-tight py-6">
         <div class="empty">
             <div class="empty-icon">
-                <div class="display-4">404</div>
+                <div class="display-4" th:text="${#response.status}">401</div>
             </div>
-            <p class="empty-title h3" th:text="${error.msg}">Oops… You just found an error page</p>
-            <p class="empty-subtitle text-muted">
+            <p class="empty-title h3" th:text="${errors.get('errors').msg}">Oops… You just found an error page</p>
+            <p class="empty-subtitle text-muted" th:text="${errors.get('errors').code}">
                 We are sorry but the page you are looking for was not found
             </p>
             <div class="empty-action">
