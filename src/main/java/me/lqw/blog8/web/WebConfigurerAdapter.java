@@ -1,5 +1,7 @@
 package me.lqw.blog8.web;
 
+import me.lqw.blog8.exception.BlogMessageCodeResolver;
+import me.lqw.blog8.exception.ExtendsDefaultMessageSourceResolvable;
 import me.lqw.blog8.exception.resolver.BlogHandlerExceptionResolver;
 import me.lqw.blog8.file.FileService;
 import me.lqw.blog8.service.BlackIpService;
@@ -7,12 +9,21 @@ import me.lqw.blog8.service.BlogConfigService;
 import me.lqw.blog8.web.filter.BlackIpFilter;
 import me.lqw.blog8.web.filter.ContextFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.MessageCodesResolver;
+import org.springframework.validation.Validator;
+import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
+import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.validation.Validation;
+import javax.validation.ValidationProviderResolver;
+import javax.validation.spi.ValidationProvider;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,15 +34,24 @@ public class WebConfigurerAdapter implements WebMvcConfigurer {
 
     private final BlogConfigService configService;
 
+    private BlogHandlerExceptionResolver handlerExceptionResolver;
 
-    public WebConfigurerAdapter(FileService fileService, BlogConfigService configService) {
+
+    public WebConfigurerAdapter(FileService fileService, BlogConfigService configService,
+                                BlogHandlerExceptionResolver exceptionResolver) {
         this.fileService = fileService;
         this.configService = configService;
+        this.handlerExceptionResolver = exceptionResolver;
 //        handlerExceptionResolvers.add(new BlogHandlerExceptionResolver());
     }
 
+    @Override
+    public MessageCodesResolver getMessageCodesResolver() {
+        return new BlogMessageCodeResolver();
+    }
 
-//    @Override
+
+    //    @Override
 //    public void addInterceptors(InterceptorRegistry registry) {
 //
 //        registry.addInterceptor(new HandlerInterceptor() {
@@ -83,7 +103,7 @@ public class WebConfigurerAdapter implements WebMvcConfigurer {
 
     @Override
     public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
-        resolvers.add(new BlogHandlerExceptionResolver());
+        resolvers.add(handlerExceptionResolver);
     }
 
     @Override
