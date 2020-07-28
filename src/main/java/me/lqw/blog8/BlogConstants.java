@@ -15,7 +15,7 @@ public class BlogConstants implements Serializable {
         super();
     }
 
-    public static final String AUTH_USER = "user";
+    public static final String AUTH_USER = "auth_user";
     public static final Message SYSTEM_ERROR = new Message("system.internal.error", "系统内部异常");
     public static final Message AUTH_FAILED = new Message("auth.failed","用户认证失败");
     public static final int MAX_PAGE_SIZE = 50;
@@ -23,7 +23,7 @@ public class BlogConstants implements Serializable {
 
     public static final String DEFAULT_AVATAR = "";
 
-
+    public static final String REMEMBER_ME = "user.remember.token";
 
 
     //审核策略
