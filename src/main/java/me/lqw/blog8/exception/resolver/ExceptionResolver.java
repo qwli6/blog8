@@ -10,9 +10,27 @@ import java.util.Map;
  * @since 1.2
  */
 public interface ExceptionResolver {
+
+    /**
+     * 异常是否匹配
+     * @param ex ex
+     * @return boolean
+     */
     boolean match(Exception ex);
 
+    /**
+     * 从异常中读取错误信息
+     * @param request request
+     * @param ex ex
+     * @return Map
+     */
     Map<String, Object> readErrors(HttpServletRequest request, Exception ex);
 
+    /**
+     * 获取异常的状态码
+     * @param request request
+     * @param ex ex
+     * @return int
+     */
     int getStatus(HttpServletRequest request, Exception ex);
 }
