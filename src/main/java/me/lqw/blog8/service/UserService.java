@@ -24,7 +24,7 @@ public class UserService implements InitializingBean {
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     /**
-     * 用户操作密码持久类
+     * 用户操作持久类
      */
     private final UserMapper userMapper;
 
@@ -33,9 +33,6 @@ public class UserService implements InitializingBean {
     }
 
     public User userAuth(String username, String password) throws LogicException {
-
-//        password = SecurityUtil.encodePassword(password);
-
 
         Optional<User> userOp = userMapper.findUser(username, password);
         if(userOp.isPresent()){
