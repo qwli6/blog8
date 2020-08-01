@@ -2,12 +2,23 @@ package me.lqw.blog8.exception;
 
 import java.io.Serializable;
 
+/**
+ * 消息实体，用于给前端返回
+ * @author liqiwen
+ * @since 1.0
+ * @version 1.0
+ */
 public class Message implements Serializable {
 
+    /**
+     * 业务码
+     */
     private String code;
 
+    /**
+     * 业务描述
+     */
     private String msg;
-
 
     public Message(String code, String msg) {
         this.code = code;
