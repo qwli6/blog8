@@ -11,10 +11,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.SearcherManager;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
 import org.slf4j.Logger;
@@ -57,12 +54,15 @@ public class ArticleIndexer implements InitializingBean {
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(createAnalyzer());
         this.directory = createDirectory();
         this.indexWriter = new IndexWriter(createDirectory(), indexWriterConfig);
-
-        searcherManager = new SearcherManager(indexWriter, null);
+        searcherManager = new SearcherManager(indexWriter, new SearcherFactory());
     }
 
 
-
+    /**
+     * 删除文档
+     * @param ids ids
+     * @throws IOException IOException
+     */
     public void deleteDocument(int ...ids) throws IOException {
         BooleanQuery.Builder builder = new BooleanQuery.Builder();
         for(int id : ids){
@@ -72,6 +72,11 @@ public class ArticleIndexer implements InitializingBean {
         searcherManager.maybeRefresh();
     }
 
+    /**
+     * 更新文档
+     * @param articles article
+     * @throws IOException IOException
+     */
     public void updateDocument(Article... articles) throws IOException {
         for (Article article : articles) {
             Document document = createDocument(article);
@@ -80,6 +85,11 @@ public class ArticleIndexer implements InitializingBean {
         searcherManager.maybeRefresh();
     }
 
+    /**
+     * 重构整个内容的索引
+     * @param articles articles
+     * @throws IOException IOException
+     */
     public void rebuild(List<Article> articles) throws IOException {
         indexWriter.deleteAll();
         indexWriter.addDocuments(articles.stream().map(this::createDocument).collect(Collectors.toList()));
@@ -87,14 +97,22 @@ public class ArticleIndexer implements InitializingBean {
         searcherManager.maybeRefreshBlocking();
     }
 
-
+    /**
+     * 添加文档
+     * @param articles articles
+     * @throws IOException IOException
+     */
     public void addDocument(Article...articles) throws IOException {
         indexWriter.addDocuments(Arrays.stream(articles).map(this::createDocument).collect(Collectors.toList()));
         searcherManager.maybeRefresh();
     }
 
-
-    public Document createDocument(Article article){
+    /**
+     * 创建文档
+     * @param article article
+     * @return Document
+     */
+    private Document createDocument(Article article) {
         Document document = new Document();
 
         document.add(new StringField(TITLE, article.getTitle(), Field.Store.NO));
@@ -111,11 +129,19 @@ public class ArticleIndexer implements InitializingBean {
         return document;
     }
 
+    /**
+     * 创建索引分词器
+     * @return Analyzer
+     */
     public Analyzer createAnalyzer(){
         return new SmartChineseAnalyzer();
     }
 
-
+    /**
+     * 创建索引目录
+     * @return Directory
+     * @throws IOException IOException
+     */
     public Directory createDirectory() throws IOException {
         return new MMapDirectory(indexPath);
     }
@@ -123,6 +149,6 @@ public class ArticleIndexer implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        logger.info("ArticleIndexer afterPropertiesSet()...");
+        logger.info("ArticleIndexer#afterPropertiesSet()...");
     }
 }

@@ -11,15 +11,23 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * 文章持久类处理
+ * @author liqiwen
+ * @version 1.0
+ */
 @Mapper
 public interface ArticleMapper {
 
-
+    /**
+     * 插入内容
+     * @param article article
+     */
     void insert(Article article);
 
     Optional<Article> findByUrlName(@Param("urlName") String urlName);
 
-    int count(HandledArticlePageQueryParam queryParam);
+    Integer selectCount(HandledArticlePageQueryParam queryParam);
 
     List<Article> selectPage(HandledArticlePageQueryParam queryParam);
 
@@ -44,4 +52,10 @@ public interface ArticleMapper {
     List<ArticleArchive> selectArchivePage(ArticleArchivePageQueryParam queryParam);
 
     void increaseComments(@Param("id") Integer id);
+
+    /**
+     * 更新内容，根据主键更新
+     * @param article article
+     */
+    void update(Article article);
 }
