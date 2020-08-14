@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.lqw.blog8.mapper.OperateLogMapper">
+
+
+    <resultMap id="OperateLogResultMap" type="OperateLog">
+        <id property="id" column="id" />
+        <result property="username" column="username" />
+        <result property="ip" column="ip"/>
+        <result property="type" column="type"/>
+        <result property="createAt" column="create_at" />
+    </resultMap>
+
+
+
+    <insert id="insert" parameterType="OperateLog">
+        insert into blog_operate_log(
+        username, content, ip, type, create_at, modify_at
+        ) value (#{username,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
+            #{ip,jdbcType=VARCHAR}, #{type}, now(), now())
+    </insert>
+
+    <delete id="delete">
+        delete from blog_operate_log where
+            create_at <![CDATA[ <= ]]> #{end}
+    </delete>
+
+    <select id="selectLatestOperateLogs" resultType="me.lqw.blog8.model.OperateLog">
+        select id, username, content, ip, type, create_at, modify_at from blog_operate_log
+        order by create_at desc limit #{count}
+    </select>
+</mapper>
