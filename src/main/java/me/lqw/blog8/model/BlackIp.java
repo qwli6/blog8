@@ -5,6 +5,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 黑名单实体类
+ * @author liqiwen
+ * @since 1.2
+ * @version 1.2
+ */
 public class BlackIp implements Serializable {
 
     private Integer id;
