@@ -10,7 +10,7 @@
     </resultMap>
 
 
-    <select id="findByName" parameterType="string" resultMap="TagMap">
+    <select id="selectByName" parameterType="string" resultMap="TagMap">
         select id, name from blog_tag where name = #{tagName,jdbcType=VARCHAR}
     </select>
 
@@ -19,7 +19,7 @@
             values (#{tagName,jdbcType=VARCHAR})
     </insert>
 
-    <select id="findById" parameterType="integer" resultMap="TagMap">
+    <select id="selectById" parameterType="integer" resultMap="TagMap">
         select id, name, create_at, modify_at from blog_tag where id = #{id,jdbcType=INTEGER}
     </select>
 
@@ -50,7 +50,7 @@
         limit #{offset,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
     </select>
 
-    <delete id="delete" parameterType="integer">
+    <delete id="deleteById" parameterType="integer">
         delete from blog_tag where id = #{id,jdbcType=INTEGER}
     </delete>
 
