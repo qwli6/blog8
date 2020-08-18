@@ -10,6 +10,10 @@ import java.io.Serializable;
  */
 public class QR extends CR<PageResult<?>> implements Serializable {
 
+    /**
+     * 查询结果数据返回
+     * @param pageResult pageResult
+     */
     public QR(PageResult<?> pageResult){
         super(pageResult);
     }

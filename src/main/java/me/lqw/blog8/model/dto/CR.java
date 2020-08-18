@@ -11,6 +11,9 @@ import java.io.Serializable;
  */
 public class CR<T> extends BaseResponse implements Serializable {
 
+    /**
+     * 返回数据
+     */
     private T data;
 
     public CR() {
@@ -18,6 +21,7 @@ public class CR<T> extends BaseResponse implements Serializable {
     }
 
     public CR(T t){
+        super();
         this.data = t;
     }
 
