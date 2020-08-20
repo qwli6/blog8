@@ -8,18 +8,21 @@
         <setting name="logImpl" value="STDOUT_LOGGING"/>
     </settings>
 
-
+    <!-- 配置别名 -->
     <typeAliases>
         <typeAlias type="org.apache.ibatis.type.EnumOrdinalTypeHandler" alias="EnumOrdinalTypeHandler"/>
-        <typeAlias type="me.lqw.blog8.mapper.TagIdsTypeHandler" alias="TagIdsTypeHandler" />
+        <typeAlias type="org.apache.ibatis.type.EnumTypeHandler" alias="EnumTypeHandler" />
+        <typeAlias type="me.lqw.blog8.plugins.mybatis.TagIdsTypeHandler" alias="TagIdsTypeHandler" />
         <package name="me.lqw.blog8.model"/>
+        <package name="me.lqw.blog8.mapper.vo" />
     </typeAliases>
 
     <!-- 禁用 update delete 插件 -->
     <plugins>
-        <plugin interceptor="me.lqw.blog8.plugins.BatchUpdateOrDeleteForbiddenPlugins" />
+        <plugin interceptor="me.lqw.blog8.plugins.mybatis.BatchUpdateOrDeleteForbiddenPlugins" />
     </plugins>
 
+    <!-- mapper 配置 -->
     <mappers>
         <mapper resource="mapper/UserMapper.xml" />
         <mapper resource="mapper/CategoryMapper.xml" />
@@ -30,8 +33,7 @@
         <mapper resource="mapper/CommentMapper.xml" />
         <mapper resource="mapper/BlackIpMapper.xml" />
         <mapper resource="mapper/BlogConfigMapper.xml" />
+        <mapper resource="mapper/OperateLogMapper.xml" />
     </mappers>
-
-
 
 </configuration>
