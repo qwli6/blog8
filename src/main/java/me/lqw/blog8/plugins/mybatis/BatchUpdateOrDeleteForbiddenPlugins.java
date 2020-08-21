@@ -1,4 +1,4 @@
-package me.lqw.blog8.plugins;
+package me.lqw.blog8.plugins.mybatis;
 
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
@@ -10,12 +10,13 @@ import java.util.Properties;
 
 /**
  * Mybatis 拦截器
+ *
  * @author liqiwen
  * @version 1.0
- *
+ * <p>
  * 用于监控执行的 sql 中 update 和 delete 没有 where 条件的情况
  */
-@Intercepts({ @Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class }) })
+@Intercepts({@Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class})})
 public class BatchUpdateOrDeleteForbiddenPlugins implements Interceptor {
 
 
@@ -49,7 +50,7 @@ public class BatchUpdateOrDeleteForbiddenPlugins implements Interceptor {
 
     private Object getMappedStatement(MappedStatement mappedStatement, BoundSql boundSql) {
         final BoundSql newBoundSql = new BoundSql(
-                mappedStatement.getConfiguration(),boundSql.getSql(),
+                mappedStatement.getConfiguration(), boundSql.getSql(),
                 boundSql.getParameterMappings(), boundSql.getParameterObject());
 
 
@@ -70,7 +71,6 @@ public class BatchUpdateOrDeleteForbiddenPlugins implements Interceptor {
         builder.useCache(mappedStatement.isUseCache());
         return builder.build();
     }
-
 
 
     private boolean isUpdateOrDeleteMethod(Invocation invocation) {
