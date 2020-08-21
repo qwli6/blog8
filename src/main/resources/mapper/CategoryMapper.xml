@@ -23,15 +23,15 @@
     </insert>
 
 
-    <select id="findAll" resultMap="CategoryMap">
+    <select id="selectAll" resultMap="CategoryMap">
         <include refid="full" />
         order by sort desc
     </select>
-    <select id="findByName" resultMap="CategoryMap" parameterType="string">
+    <select id="selectByName" resultMap="CategoryMap" parameterType="string">
         <include refid="full" />
         where name = #{name,jdbcType=VARCHAR}
     </select>
-    <select id="findById" resultMap="CategoryMap" parameterType="integer">
+    <select id="selectById" resultMap="CategoryMap" parameterType="integer">
         <include refid="full" />
         where id = #{id,jdbcType=INTEGER}
     </select>
