@@ -7,16 +7,41 @@ import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
+/**
+ * 文章标签关联 Mapper
+ *
+ * @author liqiwen
+ * @version 1.2
+ * @since 1.2
+ */
 @Mapper
 public interface ArticleTagMapper {
 
-
-//    @Delete("delete from blog_article_tag where article_id = #{id}")
+    /**
+     * 根据文章删除关联关系
+     *
+     * @param article article
+     */
     void deleteByArticle(Article article);
 
+    /**
+     * 插入关联关系
+     *
+     * @param articleTag articleTag
+     */
     void insert(ArticleTag articleTag);
 
+    /**
+     * 批量插入关联关系
+     *
+     * @param articleTags articleTags
+     */
     void batchInsert(List<ArticleTag> articleTags);
 
+    /**
+     * 根据 tag 删除关联关系
+     *
+     * @param tag tag
+     */
     void deleteByTag(Tag tag);
 }

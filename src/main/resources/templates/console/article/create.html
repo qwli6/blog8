@@ -4,412 +4,474 @@
     <meta charset="UTF-8">
     <title th:text="新文章">新文章</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="/static/images/favicon.ico" rel="shortcut icon">
-    <link rel="stylesheet" href="/static/css/base.css">
-    <link href="/static/tabler/dist/libs/selectize/dist/css/selectize.css" rel="stylesheet"/>
-    <link href="/static/tabler/dist/libs/flatpickr/dist/flatpickr.min.css" rel="stylesheet"/>
-    <link href="/static/tabler/dist/libs/nouislider/distribute/nouislider.min.css" rel="stylesheet"/>
-    <link href="/static/tabler/dist/css/tabler.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="/static/tabler/dist/css/tabler-buttons.min.css">
-    <link href="/static/tabler/dist/css/demo.min.css" rel="stylesheet"/>
-<!--    <link rel="stylesheet" href="/static/codemirror-5.52.0/lib/codemirror.css">-->
-    <style>
-        body {
-            display: none;
-        }
-
-        .form-check-inline{
-            margin-right: 0 !important;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/static/blog/libs/editor/editor.css}">
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css}">
+    <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
 </head>
-<body class="antialiased">
-    <div class="page">
-        <div th:replace="/console/common/head-navbar::headnav('article')"></div>
-        <div class="content">
-            <div class="container-xl">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="mb-3">
-                            <label for="title" class="form-label">标题</label>
-                            <input type="text" id="title" class="form-control" autocomplete="off" name="title" placeholder="请输入标题">
-                        </div>
-                        <div class="mb-3">
-                            <label for="content" class="form-label">正文
-                                <span class="form-label-description">
-                                    <label class="form-check form-check-inline cursor-pointer">
-                                      <input class="form-check-input" type="checkbox">
-                                      <span class="form-check-label">启用配图</span>
-                                    </label>
-                                </span>
-                            </label>
-                            <textarea name="content" id="content" cols="30" rows="20" class="form-control" style="resize: none;"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="select-tags" class="form-label">标签（输入标签，用英文逗号分隔）</label>
-                            <select name="select-tags" id="select-tags" class="form-select" multiple></select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="digest" class="form-label">摘要</label>
-                            <textarea name="content" id="digest" cols="30" rows="5" style="resize: none;" class="form-control"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <div class="row row-sm">
-                                <div class="col-5">
-                                    <label class="form-label" for="urlName">别名（不要包含 / 字符）</label>
-                                    <input type="text" autocomplete="off" class="form-control" id="urlName">
-                                </div>
-                                <div class="col-3">
-                                    <label class="form-label" for="select-categories">分类</label>
-                                    <select id="select-categories" class="form-select"></select>
-                                </div>
-                                <div class="col-4">
-                                    <label class="form-label" for="scheduledInput">
-                                        定时发布
-                                        <span class="form-label-description">
-                                            <label class="form-check form-check-inline cursor-pointer">
-                                                  <input class="form-check-input" id="scheduledEnable" type="checkbox">
-                                                  <span class="form-check-label">启用</span>
-                                            </label>
-                                        </span>
-                                    </label>
-                                    <input type="datetime-local" class="form-control" disabled id="scheduledInput">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="row row-sm">
-                                <div class="col-5">
-                                    <label class="form-label" for="passwordProtect">
-                                        密码保护
-                                        <span class="form-label-description">
-                                            <label class="form-check form-check-inline cursor-pointer">
-                                                  <input class="form-check-input" id="passwordProtectEnable" type="checkbox">
-                                                  <span class="form-check-label">启用</span>
-                                            </label>
-                                        </span>
-                                    </label>
-                                    <input type="text" class="form-control" disabled id="passwordProtect">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="form-label">评论设置</div>
-                            <label class="form-check form-check-inline cursor-pointer">
-                                <input class="form-check-input" id="allowComment" checked type="checkbox">
-                                <span class="form-check-label">开启评论</span>
-                            </label>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">签名档</label>
-                            <div class="form-selectgroup">
-                                <label class="form-selectgroup-item">
-                                    <input type="radio" name="icons" value="home" class="form-selectgroup-input">
-                                    <span class="form-selectgroup-label">签名档 1</span>
-                                </label>
-                                <label class="form-selectgroup-item">
-                                    <input type="radio" name="icons" value="user" class="form-selectgroup-input">
-                                    <span class="form-selectgroup-label">签名档 2</span>
-                                </label>
-                                <label class="form-selectgroup-item">
-                                    <input type="radio" name="icons" value="circle" class="form-selectgroup-input">
-                                    <span class="form-selectgroup-label">签名档 3</span>
-                                </label>
-                                <label class="form-selectgroup-item">
-                                    <input type="radio" name="icons" value="square" class="form-selectgroup-input" checked>
-                                    <span class="form-selectgroup-label">不使用</span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="btn-list mb-3">
-                            <a href="javascript:void(0);" id="btn-cancel" class="btn btn-outline-danger mr-auto">取消发布</a>
-                            <a href="javascript:void(0);" id="btn-draft" class="btn btn-warning">存为草稿</a>
-                            <a href="javascript:void(0);" id="btn-create" class="btn btn-success">立即发布</a>
-                        </div>
-                    </div>
+
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <label for="title" id="titleLabel">标题</label>
+                    <input type="text" id="title" class="form-control" placeholder="请输入标题">
                 </div>
             </div>
-            <footer class="footer footer-transparent">
-                <div class="container">
-                    <div class="row text-center align-items-center flex-row-reverse">
-                        <div class="col-12 justify-content-center">
-                            Powered By
-                            <a href="." class="link-secondary">Blog8</a>.
-                            1.2.0
-                        </div>
-                    </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">编辑器</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">预览</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <label for="editor" id="editorLabel">正文</label>
+                    <textarea name="editor" class="form-control" id="editor"></textarea>
                 </div>
-            </footer>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <button type="button" class="btn btn-primary">发布</button>
+            </div>
         </div>
     </div>
 
-    <script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
-
-    <!-- Libs JS -->
-    <script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<!--    <script type="text/javascript" src="/static/tabler/dist/libs/autosize/dist/autosize.min.js"></script>-->
-    <script type="text/javascript" src="/static/tabler/dist/libs/selectize/dist/js/standalone/selectize.min.js"></script>
-<!--    <script type="text/javascript" src="/static/tabler/dist/libs/nouislider/distribute/nouislider.min.js"></script>-->
-    <!-- Tabler Core -->
-    <script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
-    <script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/sweetalert2-2.9.js"></script>
-    <script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/Toast.js"></script>
-<!--    <script type="text/javascript" src="/static/codemirror-5.52.0/lib/codemirror.js"></script>-->
-<!--    <script type="text/javascript" src="/static/codemirror-5.52.0/mode/markdown/markdown.js"></script>-->
+    <script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
+    <script type="text/javascript" th:src="@{https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js}"></script>
+<!--    <script type="text/javascript" src="/static/blog/libs/editor/editor.js"></script>-->
     <script>
-        document.body.style.display='block';
-        window.onload = function(){
-            loadCategoryData();
-            loadTagData();
-        }
-
-        //创建内容
-        document.getElementById('btn-create').addEventListener('click', function(){
-
-            let status = 'POSTED';
-
-            let Article = getArticle(status);
-
-            if(Article.title == null || Article.title === '' || Article.title.trim().length === 0){
-                Swal.fire({
-                    title: '标题不能为空',
-                    text: "",
-                    icon: 'error',
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: '确定'
-                });
-                return;
-            }
-            if(Article.content == null || Article.content === '' || Article.content.trim().length === 0){
-                Swal.fire({
-                    title: '内容不能为空',
-                    text: "",
-                    icon: 'error',
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: '确定'
-                });
-                return;
-            }
-
-            fetch("/console/article/save",{
-                body: JSON.stringify(Article),
-                headers: new Headers({
-                    'Content-Type': 'application/json;charset=UTF-8',
-                }),
-                method: 'POST',
-                // mode: 'cors', // no-cors, cors, *same-origin
-                // redirect: 'follow', // manual, *follow, error
-                // referrer: 'no-referrer', // *client, no-referrer
-            }).then(res => res.json())
-                .catch(error => console.error('Error:', error))
-                .then(response => console.log('Success:', response));
-
-        });
-
-        //存为草稿
-        document.getElementById('btn-draft').addEventListener('click', function(){
-            let status = 'DRAFT';
-            let Article = getArticle(status);
-
-            if(Article.title == null || Article.title === '' || Article.title.trim().length === 0){
-                Swal.fire({
-                    title: '标题不能为空',
-                    text: "",
-                    icon: 'error',
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: '确定'
-                });
-                return;
-            }
-            if(Article.content == null || Article.content === '' || Article.content.trim().length === 0){
-                Swal.fire({
-                    title: '内容不能为空',
-                    text: "",
-                    icon: 'error',
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: '确定'
-                });
-                return;
-            }
-
-            fetch('/console/article/save', {
-                body: JSON.stringify(Article),
-                headers: new Headers({
-                    'Content-Type': 'application/json; Charset=UTF-8',
-                }),
-                method: 'POST'
-            }).then(res => res.json())
-            .catch(error => console.error('Error:', error))
-            .then(response => console.log('Success:', response));
-        })
+        (function() {
+            $(function() {
+                // marked
+                // let markedRender = new marked.Renderer();
+                // marked.setOptions({
+                //     renderer: markedRender,
+                //     gfm: true,
+                //     tables: true,
+                //     breaks: true,  // '>' 换行，回车换成 <br>
+                //     pedantic: false,
+                //     sanitize: true,
+                //     smartLists: true,
+                //     smartypants: false
+                // });
 
 
-        function getArticle(status){
+                let editor = new SimpleMDE({ element: document.getElementById("editor") });
 
-            let Article = {};
-
-            Article.title = document.getElementById('title').value;
-            Article.content = document.getElementById('content').value;
-            Article.digest = document.getElementById('digest').value;
-            Article.urlName = document.getElementById('urlName').value;
-
-            if(document.getElementById('scheduledEnable').checked){
-                Article.state = "SCHEDULED";
-                const scheduledInput = document.getElementById('scheduledInput').value;
-                if(scheduledInput == null || scheduledInput === '' || scheduledInput.trim().length === 0){
-                    Swal.fire({
-                        title: '计划发布时间必填',
-                        text: "",
-                        icon: 'error',
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: '确定'
-                    });
-                    return;
-                }
-                Article.postAt = document.getElementById('scheduledInput').value;
-            } else {
-                Article.status = status;
-            }
-
-            Article.allowComment = document.getElementById('allowComment').checked;
-
-            Article.category = {
-                "id": document.getElementById('select-categories').value,
-            }
-
-            const tagOptions = document.querySelector('#select-tags').options;
-
-            const tags = [];
-            if(tagOptions != null && tagOptions.length > 0){
-                for(let i = 0; i < tagOptions.length; i++){
-                    if(tagOptions[i].selected){
-                        const tag = {};
-                        tag.id = tagOptions[i].value;
-                        tags[i] = tag;
-                    }
-                }
-            }
-
-            Article.tags = tags;
-
-
-
-            return Article;
-        }
-
-        //返回
-        document.getElementById('btn-cancel').addEventListener('click', function(){
-            Swal.fire({
-                title: '确定要返回吗?',
-                text: '返回将不会保存您的任何数据，您的数据将会被丢失',
-                icon: 'warning',
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: '确定',
-                showCancelButton: true,
-                cancelButtonText: '取消'
-            }).then(function(result){
-                if(result){
-                    window.location.href = '/console/articles';
-                }
-            });
-        });
-
-
-        document.getElementById('scheduledEnable').addEventListener('click', function(){
-            if(this.checked){
-                document.getElementById('scheduledInput').disabled = '';
-
-                // interval = setInterval(function(){
-                //     document.getElementById('scheduledInput').value = new Date().format("yyyy-MM-dd hh:mm:ss");
-                // }, 1000);
-            } else {
-                document.getElementById('scheduledInput').disabled = 'disabled';
-                document.getElementById('scheduledInput').value = '';
-                // clearInterval(interval);
-            }
-        });
-
-
-        document.getElementById('passwordProtectEnable').addEventListener('click', function(){
-            if(this.checked){
-                document.getElementById('passwordProtect').disabled='';
-            } else {
-                document.getElementById('passwordProtect').disabled = 'disabled';
-                document.getElementById('passwordProtect').value = '';
-            }
-
-        });
-
-
-        function loadCategoryData(){
-            fetch('/console/categories/list')
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(data) {
-                console.log(JSON.stringify(data));
-                let categories = data.data;
-                let html = '';
-                for(let i = 0; i < categories.length; i++){
-                    html += '<option value="'+ categories[i].id +'">' + categories[i].name + '</option>';
-                }
-                document.getElementById('select-categories').innerHTML = html;
-                $('#select-categories').selectize({});
-            });
-        }
-
-        function loadTagData(){
-            fetch('/console/tags/list')
-            .then(function(response){
-                return response.json();
-            })
-            .then(function(data) {
-                console.log(JSON.stringify(data));
-                let tags = data;
-                let html = '';
-                for(let i = 0; i < tags.length; i++){
-                    html += '<option value="'+ tags[i].id+'">' + tags[i].tagName+ '</option>';
-                }
-
-                document.getElementById('select-tags').innerHTML = html;
-                $('#select-tags').selectize({
-                    "maxItems": 5,
-                    'plugins':['remove_button']
-                });
+                // // codemirror editor
+                // let editor = CodeMirror.fromTextArea($('#editor').get(0), {
+                //     mode: 'markdown',
+                //     lineNumbers: false,
+                //     autoCloseBrackets: true,
+                //     matchBrackets: true,
+                //     showCursorWhenSelecting: true,
+                //     lineWrapping: true,  // 长句子折行
+                //     keyMap: 'sublime',
+                //     extraKeys: {"Enter": "newlineAndIndentContinueMarkdownList"}
+                // });
+                // editor.on('change', editorOnHandler);
             });
 
-        }
+            // function editorOnHandler(cm, co) {
+            //     $('.markdown-body').html(marked(cm.getValue()));
+            //     $('.markdown-body pre code').each(function(i, block) {
+            //         Prism.highlightElement(block);
+            //     });
+            // }
+        })();
+    </script>
+<!--    <div class="page">-->
+<!--        <div th:replace="/console/common/head-navbar::headnav('article')"></div>-->
+<!--        <div class="content">-->
+<!--            <div class="container-xl">-->
+<!--                <div class="row">-->
+<!--                    <div class="col-12">-->
+<!--                        <div class="mb-3">-->
+<!--                            <label for="title" class="form-label">标题</label>-->
+<!--                            <input type="text" id="title" class="form-control" autocomplete="off" name="title" placeholder="请输入标题">-->
+<!--                        </div>-->
+<!--                        <div class="mb-3">-->
+<!--                            <label for="content" class="form-label">正文-->
+<!--                                <span class="form-label-description">-->
+<!--                                    <label class="form-check form-check-inline cursor-pointer">-->
+<!--                                      <input class="form-check-input" type="checkbox">-->
+<!--                                      <span class="form-check-label">启用配图</span>-->
+<!--                                    </label>-->
+<!--                                </span>-->
+<!--                            </label>-->
+<!--                            <textarea name="content" id="content" cols="30" rows="20" class="form-control" style="resize: none;"></textarea>-->
+<!--                        </div>-->
+<!--                        <div class="mb-3">-->
+<!--                            <label for="select-tags" class="form-label">标签（输入标签，用英文逗号分隔）</label>-->
+<!--                            <select name="select-tags" id="select-tags" class="form-select" multiple></select>-->
+<!--                        </div>-->
+<!--                        <div class="mb-3">-->
+<!--                            <label for="digest" class="form-label">摘要</label>-->
+<!--                            <textarea name="content" id="digest" cols="30" rows="5" style="resize: none;" class="form-control"></textarea>-->
+<!--                        </div>-->
+<!--                        <div class="mb-3">-->
+<!--                            <div class="row row-sm">-->
+<!--                                <div class="col-5">-->
+<!--                                    <label class="form-label" for="urlName">别名（不要包含 / 字符）</label>-->
+<!--                                    <input type="text" autocomplete="off" class="form-control" id="urlName">-->
+<!--                                </div>-->
+<!--                                <div class="col-3">-->
+<!--                                    <label class="form-label" for="select-categories">分类</label>-->
+<!--                                    <select id="select-categories" class="form-select"></select>-->
+<!--                                </div>-->
+<!--                                <div class="col-4">-->
+<!--                                    <label class="form-label" for="scheduledInput">-->
+<!--                                        定时发布-->
+<!--                                        <span class="form-label-description">-->
+<!--                                            <label class="form-check form-check-inline cursor-pointer">-->
+<!--                                                  <input class="form-check-input" id="scheduledEnable" type="checkbox">-->
+<!--                                                  <span class="form-check-label">启用</span>-->
+<!--                                            </label>-->
+<!--                                        </span>-->
+<!--                                    </label>-->
+<!--                                    <input type="datetime-local" class="form-control" disabled id="scheduledInput">-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="mb-3">-->
+<!--                            <div class="row row-sm">-->
+<!--                                <div class="col-5">-->
+<!--                                    <label class="form-label" for="passwordProtect">-->
+<!--                                        密码保护-->
+<!--                                        <span class="form-label-description">-->
+<!--                                            <label class="form-check form-check-inline cursor-pointer">-->
+<!--                                                  <input class="form-check-input" id="passwordProtectEnable" type="checkbox">-->
+<!--                                                  <span class="form-check-label">启用</span>-->
+<!--                                            </label>-->
+<!--                                        </span>-->
+<!--                                    </label>-->
+<!--                                    <input type="text" class="form-control" disabled id="passwordProtect">-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="mb-3">-->
+<!--                            <div class="form-label">评论设置</div>-->
+<!--                            <label class="form-check form-check-inline cursor-pointer">-->
+<!--                                <input class="form-check-input" id="allowComment" checked type="checkbox">-->
+<!--                                <span class="form-check-label">开启评论</span>-->
+<!--                            </label>-->
+<!--                        </div>-->
+<!--                        <div class="mb-3">-->
+<!--                            <label class="form-label">签名档</label>-->
+<!--                            <div class="form-selectgroup">-->
+<!--                                <label class="form-selectgroup-item">-->
+<!--                                    <input type="radio" name="icons" value="home" class="form-selectgroup-input">-->
+<!--                                    <span class="form-selectgroup-label">签名档 1</span>-->
+<!--                                </label>-->
+<!--                                <label class="form-selectgroup-item">-->
+<!--                                    <input type="radio" name="icons" value="user" class="form-selectgroup-input">-->
+<!--                                    <span class="form-selectgroup-label">签名档 2</span>-->
+<!--                                </label>-->
+<!--                                <label class="form-selectgroup-item">-->
+<!--                                    <input type="radio" name="icons" value="circle" class="form-selectgroup-input">-->
+<!--                                    <span class="form-selectgroup-label">签名档 3</span>-->
+<!--                                </label>-->
+<!--                                <label class="form-selectgroup-item">-->
+<!--                                    <input type="radio" name="icons" value="square" class="form-selectgroup-input" checked>-->
+<!--                                    <span class="form-selectgroup-label">不使用</span>-->
+<!--                                </label>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="btn-list mb-3">-->
+<!--                            <a href="javascript:void(0);" id="btn-cancel" class="btn btn-outline-danger mr-auto">取消发布</a>-->
+<!--                            <a href="javascript:void(0);" id="btn-draft" class="btn btn-warning">存为草稿</a>-->
+<!--                            <a href="javascript:void(0);" id="btn-create" class="btn btn-success">立即发布</a>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <footer class="footer footer-transparent">-->
+<!--                <div class="container">-->
+<!--                    <div class="row text-center align-items-center flex-row-reverse">-->
+<!--                        <div class="col-12 justify-content-center">-->
+<!--                            Powered By-->
+<!--                            <a href="." class="link-secondary">Blog8</a>.-->
+<!--                            1.2.0-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </footer>-->
+<!--        </div>-->
+<!--    </div>-->
 
-        Date.prototype.format = function(fmt){
-            const o = {
-                "M+" : this.getMonth()+1,                 //月份
-                "d+" : this.getDate(),                    //日
-                "h+" : this.getHours(),                   //小时
-                "m+" : this.getMinutes(),                 //分
-                "s+" : this.getSeconds(),                 //秒
-                "q+" : Math.floor((this.getMonth()+3)/3), //季度
-                "S"  : this.getMilliseconds()             //毫秒
-            };
+<!--    <script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>-->
+<!--    <script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>-->
+<!--    <script type="text/javascript" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>-->
+<!--    <script type="text/javascript" th:src="@{/static/blog/js/Toast.js}"></script>-->
+<!--    <script type="text/javascript" th:src="@{/static/blog/libs/prism/prism.js}"></script>-->
+<!--    <script type="text/javascript" src="/static/tabler/dist/libs/selectize/dist/js/standalone/selectize.min.js"></script>-->
+    <script>
+        // document.body.style.display='block';
+        // window.onload = function(){
+        //     loadCategoryData();
+        //     loadTagData();
+        // }
 
-            if(/(y+)/.test(fmt)){
-                fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
-            }
-
-            for(var k in o){
-                if(new RegExp("("+ k +")").test(fmt)){
-                    fmt = fmt.replace(
-                        RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
-                }
-            }
-
-            return fmt;
-        }
+        // //创建内容
+        // document.getElementById('btn-create').addEventListener('click', function(){
+        //
+        //     let status = 'POSTED';
+        //
+        //     let Article = getArticle(status);
+        //
+        //     if(Article.title == null || Article.title === '' || Article.title.trim().length === 0){
+        //         Swal.fire({
+        //             title: '标题不能为空',
+        //             text: "",
+        //             icon: 'error',
+        //             confirmButtonColor: '#3085d6',
+        //             cancelButtonColor: '#d33',
+        //             confirmButtonText: '确定'
+        //         });
+        //         return;
+        //     }
+        //     if(Article.content == null || Article.content === '' || Article.content.trim().length === 0){
+        //         Swal.fire({
+        //             title: '内容不能为空',
+        //             text: "",
+        //             icon: 'error',
+        //             confirmButtonColor: '#3085d6',
+        //             cancelButtonColor: '#d33',
+        //             confirmButtonText: '确定'
+        //         });
+        //         return;
+        //     }
+        //
+        //     fetch("/console/article/save",{
+        //         body: JSON.stringify(Article),
+        //         headers: new Headers({
+        //             'Content-Type': 'application/json;charset=UTF-8',
+        //         }),
+        //         method: 'POST',
+        //         // mode: 'cors', // no-cors, cors, *same-origin
+        //         // redirect: 'follow', // manual, *follow, error
+        //         // referrer: 'no-referrer', // *client, no-referrer
+        //     }).then(res => res.json())
+        //         .catch(error => console.error('Error:', error))
+        //         .then(response => console.log('Success:', response));
+        //
+        // });
+        //
+        // //存为草稿
+        // document.getElementById('btn-draft').addEventListener('click', function(){
+        //     let status = 'DRAFT';
+        //     let Article = getArticle(status);
+        //
+        //     if(Article.title == null || Article.title === '' || Article.title.trim().length === 0){
+        //         Swal.fire({
+        //             title: '标题不能为空',
+        //             text: "",
+        //             icon: 'error',
+        //             confirmButtonColor: '#3085d6',
+        //             cancelButtonColor: '#d33',
+        //             confirmButtonText: '确定'
+        //         });
+        //         return;
+        //     }
+        //     if(Article.content == null || Article.content === '' || Article.content.trim().length === 0){
+        //         Swal.fire({
+        //             title: '内容不能为空',
+        //             text: "",
+        //             icon: 'error',
+        //             confirmButtonColor: '#3085d6',
+        //             cancelButtonColor: '#d33',
+        //             confirmButtonText: '确定'
+        //         });
+        //         return;
+        //     }
+        //
+        //     fetch('/console/article/save', {
+        //         body: JSON.stringify(Article),
+        //         headers: new Headers({
+        //             'Content-Type': 'application/json; Charset=UTF-8',
+        //         }),
+        //         method: 'POST'
+        //     }).then(res => res.json())
+        //     .catch(error => console.error('Error:', error))
+        //     .then(response => console.log('Success:', response));
+        // })
+        //
+        //
+        // function getArticle(status){
+        //
+        //     let Article = {};
+        //
+        //     Article.title = document.getElementById('title').value;
+        //     Article.content = document.getElementById('content').value;
+        //     Article.digest = document.getElementById('digest').value;
+        //     Article.urlName = document.getElementById('urlName').value;
+        //
+        //     if(document.getElementById('scheduledEnable').checked){
+        //         Article.state = "SCHEDULED";
+        //         const scheduledInput = document.getElementById('scheduledInput').value;
+        //         if(scheduledInput == null || scheduledInput === '' || scheduledInput.trim().length === 0){
+        //             Swal.fire({
+        //                 title: '计划发布时间必填',
+        //                 text: "",
+        //                 icon: 'error',
+        //                 confirmButtonColor: '#3085d6',
+        //                 cancelButtonColor: '#d33',
+        //                 confirmButtonText: '确定'
+        //             });
+        //             return;
+        //         }
+        //         Article.postAt = document.getElementById('scheduledInput').value;
+        //     } else {
+        //         Article.status = status;
+        //     }
+        //
+        //     Article.allowComment = document.getElementById('allowComment').checked;
+        //
+        //     Article.category = {
+        //         "id": document.getElementById('select-categories').value,
+        //     }
+        //
+        //     const tagOptions = document.querySelector('#select-tags').options;
+        //
+        //     const tags = [];
+        //     if(tagOptions != null && tagOptions.length > 0){
+        //         for(let i = 0; i < tagOptions.length; i++){
+        //             if(tagOptions[i].selected){
+        //                 const tag = {};
+        //                 tag.id = tagOptions[i].value;
+        //                 tags[i] = tag;
+        //             }
+        //         }
+        //     }
+        //
+        //     Article.tags = tags;
+        //
+        //
+        //
+        //     return Article;
+        // }
+        //
+        // //返回
+        // document.getElementById('btn-cancel').addEventListener('click', function(){
+        //     Swal.fire({
+        //         title: '确定要返回吗?',
+        //         text: '返回将不会保存您的任何数据，您的数据将会被丢失',
+        //         icon: 'warning',
+        //         confirmButtonColor: '#3085d6',
+        //         cancelButtonColor: '#d33',
+        //         confirmButtonText: '确定',
+        //         showCancelButton: true,
+        //         cancelButtonText: '取消'
+        //     }).then(function(result){
+        //         if(result){
+        //             window.location.href = '/console/articles';
+        //         }
+        //     });
+        // });
+        //
+        //
+        // document.getElementById('scheduledEnable').addEventListener('click', function(){
+        //     if(this.checked){
+        //         document.getElementById('scheduledInput').disabled = '';
+        //
+        //         // interval = setInterval(function(){
+        //         //     document.getElementById('scheduledInput').value = new Date().format("yyyy-MM-dd hh:mm:ss");
+        //         // }, 1000);
+        //     } else {
+        //         document.getElementById('scheduledInput').disabled = 'disabled';
+        //         document.getElementById('scheduledInput').value = '';
+        //         // clearInterval(interval);
+        //     }
+        // });
+        //
+        //
+        // document.getElementById('passwordProtectEnable').addEventListener('click', function(){
+        //     if(this.checked){
+        //         document.getElementById('passwordProtect').disabled='';
+        //     } else {
+        //         document.getElementById('passwordProtect').disabled = 'disabled';
+        //         document.getElementById('passwordProtect').value = '';
+        //     }
+        //
+        // });
+        //
+        //
+        // function loadCategoryData(){
+        //     fetch('/console/categories/list')
+        //     .then(function(response) {
+        //         return response.json();
+        //     })
+        //     .then(function(data) {
+        //         console.log(JSON.stringify(data));
+        //         let categories = data.data;
+        //         let html = '';
+        //         for(let i = 0; i < categories.length; i++){
+        //             html += '<option value="'+ categories[i].id +'">' + categories[i].name + '</option>';
+        //         }
+        //         document.getElementById('select-categories').innerHTML = html;
+        //         $('#select-categories').selectize({});
+        //     });
+        // }
+        //
+        // function loadTagData(){
+        //     fetch('/console/tags/list')
+        //     .then(function(response){
+        //         return response.json();
+        //     })
+        //     .then(function(data) {
+        //         console.log(JSON.stringify(data));
+        //         let tags = data;
+        //         let html = '';
+        //         for(let i = 0; i < tags.length; i++){
+        //             html += '<option value="'+ tags[i].id+'">' + tags[i].tagName+ '</option>';
+        //         }
+        //
+        //         document.getElementById('select-tags').innerHTML = html;
+        //         $('#select-tags').selectize({
+        //             "maxItems": 5,
+        //             'plugins':['remove_button']
+        //         });
+        //     });
+        //
+        // }
+        //
+        // Date.prototype.format = function(fmt){
+        //     const o = {
+        //         "M+" : this.getMonth()+1,                 //月份
+        //         "d+" : this.getDate(),                    //日
+        //         "h+" : this.getHours(),                   //小时
+        //         "m+" : this.getMinutes(),                 //分
+        //         "s+" : this.getSeconds(),                 //秒
+        //         "q+" : Math.floor((this.getMonth()+3)/3), //季度
+        //         "S"  : this.getMilliseconds()             //毫秒
+        //     };
+        //
+        //     if(/(y+)/.test(fmt)){
+        //         fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+        //     }
+        //
+        //     for(var k in o){
+        //         if(new RegExp("("+ k +")").test(fmt)){
+        //             fmt = fmt.replace(
+        //                 RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+        //         }
+        //     }
+        //
+        //     return fmt;
+        // }
     </script>
 
 </body>

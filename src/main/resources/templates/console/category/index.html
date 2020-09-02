@@ -3,86 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="分类管理">分类管理</title>
-    <link href="/static/images/favicon.ico" rel="shortcut icon">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="/static/css/base.css">
-    <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
-    <link rel="stylesheet" href="/static/tabler/dist/css/tabler-buttons.min.css"/>
-    <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
+    <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
 </head>
-<body class="antialiased">
-<!--    <div th:replace="/console/common/left-menu::leftMenu('category')"></div>-->
-    <div class="page">
-        <div th:replace="/console/common/head-navbar::headnav('category')"></div>
-        <div class="content">
-            <div class="container-xl">
-                <!-- Page title -->
-                <div class="page-header">
-                    <div class="row row-sm align-items-center">
-                        <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
-                            <a href="javascript:void(0);" class="btn btn-primary" id="create-btn" aria-label="Button">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                                新分类
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="table-responsive">
-                        <table class="table card-table table-vcenter text-nowrap datatable">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>分类名称</th>
-                                    <th>创建时间</th>
-                                    <th>修改时间</th>
-                                    <th>是否可见</th>
-                                    <th class="w-1"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="category: ${categories}">
-                                    <td th:text="${category.id}"></td>
-                                    <td><a href="javascript:void(0);" th:text="${category.name}"></a></td>
-                                    <td th:text="${#temporals.format(category.getCreateAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
-                                    <td th:text="${#temporals.format(category.getModifyAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
-                                    <td>
-                                        <span th:text="${category.show ? '可见' : '隐藏'}" class="badge" th:classappend="${category.show ? 'bg-primary' : 'bg-danger'}"></span>
-                                    </td>
-                                    <td>
-                                        <div class="btn-list text-right flex-nowrap">
-                                            <a href="javascript:void(0);" th:data-edit="${category.id}" th:data-name="${category.name}" class="btn btn-icon btn-primary">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><path d="M9 7 h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3"></path><path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3"></path><line x1="16" y1="5" x2="19" y2="8"></line></svg>
-                                            </a>
-                                            <a href="javascript:void(0);" th:data-trash="${category.id}" class="btn btn-icon btn-outline-danger">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="4" y1="7" x2="20" y2="7"></line><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+<body>
+    <div th:replace="/console/common/head-navbar::headnav('config')"></div>
+    <div class="container">
+        <div class="row mt-3">
+            <div class="col-12">
+                <button type="button" class="btn btn-primary" id="btn-create">新分类</button>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-9">
+                <div class="table-responsive">
+                    <table class="table table-bordered rounded">
+                        <thead>
+                            <tr><th>分类名称</th><th>创建时间</th><th>是否可见</th><th>操作</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="category: ${categories}">
+                            <td><a href="javascript:void(0);" class="badge badge-light" th:text="${category.name}"></a></td>
+                            <td th:text="${#temporals.format(category.getCreateAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
+                            <td>
+                                <span th:text="${category.show ? '可见' : '隐藏'}" class="badge" th:classappend="${category.show ? 'badge-success' : 'badge-danger'}"></span>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0);" th:data-edit="${category.id}" th:data-name="${category.name}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="text-primary" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><path d="M9 7 h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3"></path><path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3"></path><line x1="16" y1="5" x2="19" y2="8"></line></svg>
+                                </a>
+                                <a href="javascript:void(0);" th:data-trash="${category.id}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="text-danger" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="4" y1="7" x2="20" y2="7"></line><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-
     </div>
 
 
-    <script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
-    <script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
-    <script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/sweetalert2-2.9.js"></script>
-    <script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/Toast.js"></script>
+    <script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/js/Toast.js}"></script>
 
     <script>
 
-        document.body.style.display = "block";
         const rootPath = '[[@{/}]]';
 
-        document.getElementById('create-btn').addEventListener('click', function(){
+        document.getElementById('btn-create').addEventListener('click', function(){
             (async function getName(){
                 const { value : name} = await Swal.fire({
                     title: '分类名称',
@@ -187,7 +159,6 @@
                 })();
             })
         }
-
     </script>
 </body>
 </html>

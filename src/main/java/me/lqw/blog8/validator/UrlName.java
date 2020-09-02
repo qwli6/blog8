@@ -11,9 +11,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * 文章 url name 校验
+ *
  * @author liqiwen
- * @since 1.4
  * @version 1.4
+ * @since 1.4
  */
 @Target({FIELD})
 @Retention(RUNTIME)

@@ -54,7 +54,7 @@
         delete from blog_tag where id = #{id,jdbcType=INTEGER}
     </delete>
 
-    <select id="listAll" resultMap="TagMap">
+    <select id="selectAll" resultMap="TagMap">
         select id, name from blog_tag order by create_at desc
     </select>
 </mapper>

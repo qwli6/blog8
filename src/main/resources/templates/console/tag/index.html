@@ -4,117 +4,82 @@
     <meta charset="UTF-8">
     <title th:text="标签列表">标签列表</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="/static/images/favicon.ico" rel="shortcut icon">
-    <link rel="stylesheet" href="/static/css/base.css">
-    <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
-    <link rel="stylesheet" href="/static/tabler/dist/css/tabler-buttons.min.css">
-    <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
+    <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
 </head>
-<body class="antialiased">
-    <div class="page">
-        <div th:replace="/console/common/head-navbar::headnav('tag')"></div>
-        <form th:action="@{/console/tags}" id="queryForm" method="get">
-            <div class="content">
-                <div class="container-xl">
-                    <div class="page-header">
-                        <div class="row row-sm align-items-center">
-                            <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
-                                <a href="javascript:void(0);" id="btn-create" class="btn btn-primary btn-block">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                                    新标签
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="table-responsive">
-                            <table class="table card-table table-vcenter text-nowrap datatable">
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            ID
-                                        </th>
-                                        <th>
-                                            标签名称
-                                        </th>
-                                        <th>
-                                            创建时间
-                                        </th>
-                                        <th>
-                                            修改时间
-                                        </th>
-                                        <th class="w-1"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="tag: ${tagPage.data}">
-                                        <td th:text="${tag.id}"></td>
-                                        <td>
-                                            <a href="javascript:void(0);" th:text="${tag.tagName}"></a>
-                                        </td>
-                                        <td th:text="${#temporals.format(tag.getCreateAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
-                                        <td th:text="${#temporals.format(tag.getModifyAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
-                                        <td>
-                                          <div class="btn-list text-right flex-nowrap">
-                                              <a href="javascript:void(0);" th:data-edit="${tag.id}" th:data-name="${tag.tagName}" class="btn btn-icon btn-primary">
-                                                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><path d="M9 7 h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3"></path><path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3"></path><line x1="16" y1="5" x2="19" y2="8"></line></svg>
-                                              </a>
-                                              <a href="javascript:void(0);" th:data-trash="${tag.id}" class="btn btn-icon btn-outline-danger">
-                                                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="4" y1="7" x2="20" y2="7"></line><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>
-                                              </a>
-                                          </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="card-footer d-flex align-items-center">
-                            <p class="m-0 text-muted">显示 <span>1</span> 到 <span th:text="${tagPage.totalPage}">8</span> 页, 共 <span th:text="${tagPage.totalRow}">16</span> 条记录</p>
-                            <ul class="pagination m-0 ml-auto" th:if="${tagPage.totalPage > 0}">
-                                <li class="page-item" th:classappend="${tagPage.currentPage == 1 ? 'disabled' : ''}">
-                                    <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(1);'" tabindex="-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><polyline points="11 7 6 12 11 17"></polyline><polyline points="17 7 12 12 17 17"></polyline></svg>
-                                        首页
-                                    </a>
-                                </li>
-                                <li class="page-item" th:classappend="${tagPage.currentPage == 1 ? 'disabled' : ''}">
-                                    <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${tagPage.currentPage - 1} + ');'" tabindex="-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18" /></svg>
-                                        上一页
-                                    </a>
-                                </li>
-                                <li class="page-item" th:classappend="${tagPage.currentPage == item ? 'active' : ''}" th:each="item: ${#numbers.sequence(1, tagPage.totalPage)}">
-                                    <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${item} + ');'" th:text="${item}">1</a>
-                                </li>
-                                <li class="page-item" th:classappend="${tagPage.currentPage == tagPage.totalPage ? 'disabled' : ''}">
-                                    <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${tagPage.currentPage + 1} + ');'">
-                                        下一页 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="9 6 15 12 9 18" /></svg>
-                                    </a>
-                                </li>
-                                <li class="page-item" th:classappend="${tagPage.currentPage == tagPage.totalPage ? 'disabled' : ''}">
-                                    <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${tagPage.totalPage} + ');'">
-                                        尾页
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><polyline points="7 7 12 12 7 17"></polyline><polyline points="13 7 18 12 13 17"></polyline></svg>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <input type="hidden" id="currentPage" name="currentPage" th:value="${tagPage.currentPage}">
-        </form>
+<body>
+<div th:replace="/console/common/head-navbar::headnav('config')"></div>
+<div class="container">
+    <div class="row mt-3">
+        <div class="col-12">
+            <button type="button" class="btn btn-primary" id="btn-create">新标签</button>
+        </div>
     </div>
+    <form th:action="@{/console/tags}" id="queryForm" method="get">
+        <div class="row mt-3">
+            <div class="col-9 table-responsive">
+                <div class="table-responsive">
+                    <table class="table table-bordered rounded">
+                    <thead>
+                        <tr><th>标签名称</th><th>创建时间</th><th>操作</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="tag: ${tagPage.data}">
+                            <td>
+                                <a href="javascript:void(0);" class="badge badge-warning" th:text="${tag.tagName}"></a>
+                            </td>
+                            <td th:text="${#temporals.format(tag.getCreateAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
+                            <td>
+                                <a href="javascript:void(0);" th:data-edit="${tag.id}" th:data-name="${tag.tagName}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="text-primary" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><path d="M9 7 h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3"></path><path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3"></path><line x1="16" y1="5" x2="19" y2="8"></line></svg>
+                                </a>
+                                <a href="javascript:void(0);" th:data-trash="${tag.id}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="text-danger" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="4" y1="7" x2="20" y2="7"></line><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center" th:if="${tagPage.totalPage > 0}">
+                        <li class="page-item" th:classappend="${tagPage.currentPage == 1 ? 'disabled' : ''}">
+                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(1);'" tabindex="-1">
+                                <<
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${tagPage.currentPage == 1 ? 'disabled' : ''}">
+                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${tagPage.currentPage - 1} + ');'" tabindex="-1">
+                                <
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${tagPage.currentPage == item ? 'active' : ''}" th:each="item: ${#numbers.sequence(1, tagPage.totalPage)}">
+                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${item} + ');'" th:text="${item}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${tagPage.currentPage == tagPage.totalPage ? 'disabled' : ''}">
+                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${tagPage.currentPage + 1} + ');'">
+                                >
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${tagPage.currentPage == tagPage.totalPage ? 'disabled' : ''}">
+                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${tagPage.totalPage} + ');'">
+                                >>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
 
-    <script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
-    <script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
-    <script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/sweetalert2-2.9.js"></script>
-    <script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/Toast.js"></script>
+        </div>
+        <input type="hidden" id="currentPage" name="currentPage" th:value="${tagPage.currentPage}">
+    </form>
+</div>
+
+<script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
+<script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
+<script type="text/javascript" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>
+<script type="text/javascript" th:src="@{/static/blog/js/Toast.js}"></script>
 
     <script>
-        document.body.style.display = 'block';
         const rootPath = '[[@{/}]]';
         function toPage(i){
             document.getElementById('currentPage').value = i;
@@ -124,7 +89,6 @@
         //删除
         for(const ele of document.querySelectorAll('[data-trash]')) {
             ele.addEventListener('click', function () {
-
                 Swal.fire({
                     title: '您确定吗?',
                     text: "此操作不可逆, 您确定要把该标签从标签中移除吗? 移除后, 所有跟该标签关联的文章将不再关联该标签",
@@ -228,9 +192,6 @@
                 }
             })();
         });
-
-
     </script>
-
 </body>
 </html>

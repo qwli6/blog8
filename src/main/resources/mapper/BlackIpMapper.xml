@@ -12,13 +12,13 @@
 
 
 
-    <select id="findByIp" parameterType="string" resultMap="BlackIpMap">
+    <select id="selectByIp" parameterType="string" resultMap="BlackIpMap">
         select id, ip, address, create_at, modify_at
         from blog_blackip where ip = #{ip,jdbcType=INTEGER}
     </select>
 
 
-    <select id="findById" parameterType="integer" resultMap="BlackIpMap">
+    <select id="selectById" parameterType="integer" resultMap="BlackIpMap">
         select id, ip, address, create_at, modify_at from blog_blackip
         where id = #{id}
     </select>
@@ -32,13 +32,24 @@
                now(), now())
     </insert>
 
-    <delete id="delete" parameterType="integer">
+    <delete id="deleteById" parameterType="integer">
         delete from blog_blackip where id = #{id,jdbcType=INTEGER}
     </delete>
 
-    <select id="findAll" resultMap="BlackIpMap">
+    <select id="selectAll" resultMap="BlackIpMap">
         select id, ip, address, create_at, modify_at from blog_blackip order by create_at desc
     </select>
+
+    <update id="update" parameterType="BlackIp">
+        update blog_blackip
+            <set>
+                <if test="ip != null and ip != ''">
+                    ip = #{ip,jdbcType=VARCHAR},
+                </if>
+                modify_at = now(),
+            </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
 
 
 </mapper>

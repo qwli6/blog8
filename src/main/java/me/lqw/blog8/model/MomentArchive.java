@@ -6,13 +6,20 @@ import java.util.List;
 
 /**
  * 动态归档
+ *
  * @author liqiwen
  * @version 1.0
  */
 public class MomentArchive implements Serializable {
 
+    /**
+     * 归档时间
+     */
     private LocalDate date;
 
+    /**
+     * 归档动态列表
+     */
     private List<Moment> moments;
 
     public LocalDate getDate() {

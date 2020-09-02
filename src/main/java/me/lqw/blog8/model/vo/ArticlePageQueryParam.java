@@ -1,7 +1,6 @@
 package me.lqw.blog8.model.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import me.lqw.blog8.validator.StatusEnum;
+import me.lqw.blog8.model.enums.ArticleStatusEnum;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
@@ -9,25 +8,51 @@ import java.time.LocalDateTime;
 
 /**
  * 内容查询参数
+ *
  * @author liqiwen
  * @version 1.0
+ * @since 1.0
  */
-public class ArticlePageQueryParam extends PageQueryParam implements Serializable {
+public class ArticlePageQueryParam extends AbstractQueryParam implements Serializable {
 
+    /**
+     * 关键字
+     */
     private String query;
 
+    /**
+     * 查询标签
+     */
     private String tag;
 
+    /**
+     * 查询分类
+     */
     private String category;
 
-    private StatusEnum status;
+    /**
+     * 查询状态
+     */
+    private ArticleStatusEnum status;
+
+    /**
+     * 结束查询时间
+     */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime end;
+
+    /**
+     * 开始查询时间
+     */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime begin;
 
 
-    public StatusEnum getStatus() {
+    public ArticleStatusEnum getStatus() {
         return status;
     }
 
-    public void setStatus(StatusEnum status) {
+    public void setStatus(ArticleStatusEnum status) {
         this.status = status;
     }
 
@@ -46,14 +71,6 @@ public class ArticlePageQueryParam extends PageQueryParam implements Serializabl
     public void setCategory(String category) {
         this.category = category;
     }
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
-    private LocalDateTime end;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
-    private LocalDateTime begin;
 
     public LocalDateTime getEnd() {
         return end;

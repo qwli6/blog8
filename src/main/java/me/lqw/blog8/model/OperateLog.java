@@ -1,16 +1,22 @@
 package me.lqw.blog8.model;
 
+import me.lqw.blog8.model.enums.OperateType;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * 操作日志
+ *
  * @author liqiwen
- * @since 1.4
  * @version 1.4
+ * @since 1.4
  */
 public class OperateLog implements Serializable {
 
+    /**
+     * 操作日志 id
+     */
     private Integer id;
 
     /**
@@ -23,15 +29,37 @@ public class OperateLog implements Serializable {
      */
     private OperateType type;
 
+    /**
+     * 操作内容
+     */
     private String content;
 
+    /**
+     * 操作日志产生的 ip
+     */
     private String ip;
 
+    /**
+     * 操作人名称
+     */
     private String username;
 
+    /**
+     * 日志操作的创建时间
+     */
     private LocalDateTime createAt;
 
+    /**
+     * 日志操作的修改时间
+     */
     private LocalDateTime modifyAt;
+
+    /**
+     * 构造方法
+     */
+    public OperateLog() {
+        super();
+    }
 
     public String getUsername() {
         return username;

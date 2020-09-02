@@ -4,9 +4,8 @@ import me.lqw.blog8.exception.LogicException;
 import me.lqw.blog8.mapper.ArticleTagMapper;
 import me.lqw.blog8.mapper.TagMapper;
 import me.lqw.blog8.model.Tag;
-import me.lqw.blog8.model.dto.PageResult;
+import me.lqw.blog8.model.dto.page.PageResult;
 import me.lqw.blog8.model.vo.TagPageQueryParam;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,12 +15,13 @@ import java.util.List;
 
 /**
  * 标签实现类
+ *
  * @author liqiwen
- * @since 1.2
  * @version 1.2
+ * @since 1.2
  */
 @Service
-public class TagService extends BaseService<Tag> implements InitializingBean {
+public class TagService extends AbstractBaseService<Tag> {
 
     /**
      * 标签操作 Mapper
@@ -35,7 +35,8 @@ public class TagService extends BaseService<Tag> implements InitializingBean {
 
     /**
      * 构造方法注入
-     * @param tagMapper tagMapper
+     *
+     * @param tagMapper        tagMapper
      * @param articleTagMapper articleTagMapper
      */
     public TagService(TagMapper tagMapper, ArticleTagMapper articleTagMapper) {
@@ -45,10 +46,11 @@ public class TagService extends BaseService<Tag> implements InitializingBean {
 
     /**
      * 保存标签
+     *
      * @param tag tag
      * @return Tag
      * @throws LogicException LogicException
-     * 1. 标签名称存在异常
+     *                        1. 标签名称存在异常
      */
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
@@ -62,9 +64,10 @@ public class TagService extends BaseService<Tag> implements InitializingBean {
 
     /**
      * 删除标签
+     *
      * @param id id
      * @throws LogicException LogicException
-     * 1. 标签不存在异常
+     *                        1. 标签不存在异常
      */
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
@@ -80,10 +83,11 @@ public class TagService extends BaseService<Tag> implements InitializingBean {
 
     /**
      * 更新标签
+     *
      * @param tag tag
      * @throws LogicException LogicException
-     * 1. 标签不存在异常
-     * 2. 名称已存在异常
+     *                        1. 标签不存在异常
+     *                        2. 名称已存在异常
      */
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
@@ -91,7 +95,7 @@ public class TagService extends BaseService<Tag> implements InitializingBean {
         Tag old = tagMapper.selectById(tag.getId()).orElseThrow(()
                 -> new LogicException("tagService.update.notExists", "标签不存在"));
 
-        if(old.getTagName().equals(tag.getTagName())){
+        if (old.getTagName().equals(tag.getTagName())) {
             return;
         }
         //不能更新名称已存在的标签
@@ -103,17 +107,18 @@ public class TagService extends BaseService<Tag> implements InitializingBean {
 
     /**
      * 分页查找标签
+     *
      * @param queryParam queryParam
      * @return 标签列表
      */
     @Transactional(readOnly = true)
     public PageResult<Tag> selectPage(TagPageQueryParam queryParam) {
         int count = tagMapper.count(queryParam);
-        if(count == 0){
+        if (count == 0) {
             return new PageResult<>(queryParam, 0, new ArrayList<>());
         }
         List<Tag> tags = tagMapper.selectPage(queryParam);
-        if(tags.isEmpty()){
+        if (tags.isEmpty()) {
             return new PageResult<>(queryParam, 0, new ArrayList<>());
         }
         return new PageResult<>(queryParam, count, tags);
@@ -121,18 +126,12 @@ public class TagService extends BaseService<Tag> implements InitializingBean {
 
     /**
      * 获取所有标签
+     *
      * @return list
      */
-    public List<Tag> listAll() {
-        return tagMapper.listAll();
+    @Transactional(readOnly = true)
+    public List<Tag> selectAll() {
+        return tagMapper.selectAll();
     }
 
-    /**
-     * 初始化完毕调用
-     * @throws Exception Exception
-     */
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        logger.info("TagService afterPropertiesSet");
-    }
 }

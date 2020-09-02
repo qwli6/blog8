@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 /**
  * Lookup
+ *
  * @author liqiwen
  * @version 1.2
  * @since 1.2
@@ -38,33 +39,34 @@ public class Lookup implements Serializable {
 
     /**
      * 给定路径，返回一个 Lookup 对象
+     *
      * @param path path
      */
     public Lookup(String path) {
         this.path = path;
     }
 
-    public static Lookup newLookup(String path){
+    public static Lookup newLookup(String path) {
         return new Lookup(path);
     }
 
 
-    public Lookup setMustExists(boolean mustExists){
+    public Lookup setMustExists(boolean mustExists) {
         this.mustExists = mustExists;
         return this;
     }
 
-    public Lookup setMustDir(boolean mustDir){
+    public Lookup setMustDir(boolean mustDir) {
         this.mustDir = mustDir;
         return this;
     }
 
-    public Lookup setMustRegularFile(boolean mustRegularFile){
+    public Lookup setMustRegularFile(boolean mustRegularFile) {
         this.mustRegularFile = mustRegularFile;
         return this;
     }
 
-    public Lookup setIgnoreRoot(boolean ignoreRoot){
+    public Lookup setIgnoreRoot(boolean ignoreRoot) {
         this.ignoreRoot = ignoreRoot;
         return this;
     }

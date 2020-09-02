@@ -1,18 +1,32 @@
 package me.lqw.blog8.exception;
 
-public class LogicException extends RuntimeException {
+import me.lqw.blog8.constants.Message;
 
-    private final Message error;
+/**
+ * 系统逻辑异常
+ *
+ * @author liqiwen
+ * @version 1.0
+ * @since 1.0
+ */
+public class LogicException extends AbstractBlogException {
 
+    /**
+     * 构造方法
+     *
+     * @param error error
+     */
     public LogicException(Message error) {
-        this.error = error;
+        super(error.getMsg(), null, false, false, error);
     }
 
-    public LogicException(String code, String msg) {
-        this.error = new Message(code, msg);
-    }
-
-    public Message getError() {
-        return error;
+    /**
+     * 构造方法
+     *
+     * @param code    code
+     * @param message message
+     */
+    public LogicException(String code, String message) {
+        super(message, null, false, false, new Message(code, message));
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 系统文件属性
+ *
  * @author liqiwen
  * @version 1.2
  * @since 1.2
@@ -14,6 +15,11 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "blog.file")
 public class FileProperties {
+
+    /**
+     * 是否开启文件配置
+     */
+    private boolean enabled;
 
     /**
      * 文件上传路径
@@ -39,5 +45,13 @@ public class FileProperties {
 
     public void setUploadPath(String uploadPath) {
         this.uploadPath = uploadPath;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

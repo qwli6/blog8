@@ -3,8 +3,18 @@ package me.lqw.blog8.file;
 import java.io.Serializable;
 import java.util.Map;
 
+/**
+ * 文件统计
+ *
+ * @author liqiwen
+ * @version 1.2
+ * @since 1.2
+ */
 public class FileStatistic implements Serializable {
 
+    /**
+     * 大小
+     */
     private long size;
 
     private long yy;

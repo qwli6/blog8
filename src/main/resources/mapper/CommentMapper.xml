@@ -10,7 +10,6 @@
         <result property="content" column="content" />
         <result property="admin" column="admin" />
         <result property="avatar" column="avatar" />
-<!--        <result property="check" column="check" />-->
         <result property="address" column="address" />
         <result property="ip" column="ip" />
         <result property="fromClient" column="fromClient" />
@@ -41,7 +40,7 @@
         delete from blog_comment where module_id = #{id,jdbcType=INTEGER} and module_name = #{name,jdbcType=VARCHAR}
     </delete>
 
-    <select id="findById" parameterType="integer" resultMap="CommentMap">
+    <select id="selectById" parameterType="integer" resultMap="CommentMap">
         select id, content, email, username, module_name, module_id, status, path,
                fk_parent_id, admin, ip, address, from_client, create_at,
                modify_at from blog_comment
@@ -55,7 +54,7 @@
         where ip = #{ip,jdbcType=VARCHAR} order by create_at desc limit 1
     </select>
 
-    <select id="findLatestByModuleAndIp" resultMap="CommentMap">
+    <select id="selectLatestByModuleAndIp" resultMap="CommentMap">
         select id, content, email, username, module_name, module_id, status, path,
                fk_parent_id, admin, ip, address, from_client,
                create_at, modify_at from blog_comment
@@ -63,7 +62,7 @@
         and module_name = #{module.name,jdbcType=VARCHAR} order by create_at desc limit 1
     </select>
 
-    <delete id="delete" parameterType="integer">
+    <delete id="deleteById" parameterType="integer">
         delete from blog_comment where id = #{id,jdbcType=INTEGER}
     </delete>
 
@@ -71,40 +70,56 @@
         delete from blog_comment where fk_parent_id = #{id,jdbcType=INTEGER}
     </delete>
 
-    <select id="countByQueryParam" parameterType="CommentPageQueryParam" resultType="int">
+    <select id="selectCount" parameterType="HandledCommentPageQueryParam" resultType="int">
         select count(id) from blog_comment
         <where>
-            <if test="module != null">
-                and module_id = #{module.id,jdbcType=INTEGER}
-                and module_name = #{module.name,jdbcType=VARCHAR}
+            <if test="commentModule != null">
+                and module_id = #{commentModule.id,jdbcType=INTEGER}
+                and module_name = #{commentModule.name,jdbcType=VARCHAR}
             </if>
-            <if test="status != null">
-                and status = #{status, typeHandler=EnumOrdinalTypeHandler}
+            <if test="commentStatus != null">
+                and status = #{commentStatus, typeHandler=EnumOrdinalTypeHandler}
             </if>
         </where>
     </select>
 
-    <select id="selectPage" parameterType="CommentPageQueryParam" resultMap="CommentMap">
+    <select id="selectPage" parameterType="HandledCommentPageQueryParam" resultMap="CommentMap">
         select id, content, email, username, module_name,
             module_id, status, path, fk_parent_id, admin, ip,
             address, from_client, create_at, modify_at, avatar
         from blog_comment
         <where>
-            <if test="module != null">
-                and module_id = #{module.id,jdbcType=INTEGER}
-                and module_name = #{module.name,jdbcType=VARCHAR}
+            <if test="commentModule != null">
+                and module_id = #{commentModule.id,jdbcType=INTEGER}
+                and module_name = #{commentModule.name,jdbcType=VARCHAR}
             </if>
-            <if test="status != null">
-                and status = #{status, typeHandler=EnumOrdinalTypeHandler}
+            <if test="commentStatus != null">
+                and status = #{commentStatus, typeHandler=EnumOrdinalTypeHandler}
             </if>
         </where>
 
         order by create_at desc
-        limit #{offset,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+        <if test="!ignorePaging">
+            limit #{offset,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+        </if>
     </select>
 
-    <select id="findParentCommentById" parameterType="integer" resultMap="CommentMap">
+    <select id="selectParentById" parameterType="integer" resultMap="CommentMap">
         select id, email, username, avatar from blog_comment
         where fk_parent_id = #{id,jdbcType=INTEGER}
     </select>
+
+    <update id="update" parameterType="comment">
+        update blog_comment
+            <set>
+                <if test="content != null and content != ''">
+                    content = #{content,jdbcType=VARCHAR},
+                </if>
+                <if test="status != null and status != ''">
+                    status = #{status, typeHandler=EnumOrdinalTypeHandler}
+                </if>
+                modify_at = now(),
+            </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
 </mapper>

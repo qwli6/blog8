@@ -5,20 +5,36 @@ import java.util.Objects;
 
 /**
  * 缩放比例
+ *
  * @author liqiwen
- * @version 1.0
+ * @version 1.2
+ * @since 1.2
  */
 public class Resize implements Serializable {
 
-
+    /**
+     * 缩放大小
+     */
     private Integer size;
 
+    /**
+     * 缩放高度
+     */
     private Integer height;
 
+    /**
+     * 缩放宽度
+     */
     private Integer width;
 
+    /**
+     * 缩放比例
+     */
     private Boolean keepRatio;
 
+    /**
+     * 缩放质量
+     */
     private Integer quality;
 
 
@@ -65,9 +81,9 @@ public class Resize implements Serializable {
 
     @Override
     public String toString() {
-        if(size != null){
+        if (size != null) {
             return String.valueOf(size);
         }
-        return width + "_" + "x" + Objects.toString(height, "_") + (keepRatio ? "!": "");
+        return width + "_" + "x" + Objects.toString(height, "_") + (keepRatio ? "!" : "");
     }
 }

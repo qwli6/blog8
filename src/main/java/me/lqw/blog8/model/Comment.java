@@ -2,76 +2,154 @@ package me.lqw.blog8.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import me.lqw.blog8.model.enums.CommentStatus;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.URL;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * 评论内容
+ *
  * @author liqiwen
  * @version 1.0
+ * @since 1.0
  */
 public class Comment implements Serializable {
 
+    /**
+     * 评论 id
+     */
+    private Integer id;
+
+    /**
+     * 评论内容
+     */
+    @NotBlank(message = "请提供评论内容")
+    @Length(max = 1024, min = 0, message = "评论内容长度必须在 {min}~{max} 之间")
+    private String content;
+
+    /**
+     * 评论创建时间
+     */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
+    @FutureOrPresent(message = "评论的创建时间必须是一个未来时间")
+    private LocalDateTime createAt;
+
+
+    /**
+     * 评论修改时间
+     */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
+    @FutureOrPresent(message = "评论的修改时间必须是一个未来时间")
+    @JsonIgnore
+    private LocalDateTime modifyAt;
+
+    /**
+     * 评论邮箱
+     */
+    @Length(max = 64, message = "邮箱的长度不能超过 {max} 个字符")
+    @Email(message = "请提供一个有效的邮箱地址")
+    @NotBlank(message = "用户邮箱不能为空")
+    private String email;
+
+    /**
+     * 评论人名称
+     */
+    @NotBlank(message = "评论人昵称不能为空")
+    @Length(message = "用户的长度必须在 {min}~{max} 之间", max = 16, min = 1)
+    private String username;
+
+    /**
+     * 评论网站
+     */
+    @URL(message = "请提供一个有效的网站地址")
+    @Length(max = 64, min = 0, message = "用户的网站地址长度必须在 {min}~{max} 之间")
+    private String website;
+
+    /**
+     * 是否管理员评论
+     */
+    private Boolean admin;
+
+    /**
+     * 评论邮箱 md5，如果没有邮箱，则默认为默认头像
+     */
+    private String avatar;
+
+    /**
+     * 评论地址的深度，最大 255，不建议太深
+     */
+    private String path;
+
+    /**
+     * 上一级父评论
+     */
+    private Comment parent;
+
+    /**
+     * 评论模块
+     */
+    private CommentModule module;
+
+    /**
+     * 评论状态
+     */
+    private CommentStatus status;
+
+    /**
+     * 评论人 ip
+     */
+    private String ip;
+
+    /**
+     * 根据 ip 解析出来的地址
+     */
+    private String address;
+
+    /**
+     * 评论客户端信息
+     */
+    private String fromClient;
+
+    /**
+     * 构造方法
+     */
     public Comment() {
         super();
     }
 
+    /**
+     * 构造方法
+     *
+     * @param id id
+     */
     public Comment(Integer id) {
         super();
         this.id = id;
     }
 
-    private Integer id;
-
-    @NotBlank(message = "please provide a content")
-    private String content;
-
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
-    private LocalDateTime createAt;
-
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
-    @JsonIgnore
-    private LocalDateTime modifyAt;
-
-
-//    @Email(message = "please provide a valid email")
-    private String email;
-
-    @NotBlank(message = "please provide an username")
-    @Length(message = "username length must between [1,16]", max = 16, min = 1)
-    private String username;
-
-//    @URL(message = "please provide a valid website")
-    private String website;
-
-    private Boolean admin;
-
-    private String avatar;
-
-    private String path;
-
-    private Comment parent;
-
-    private CommentModule module;
-
     /**
-     * 状态
+     * 构造方法
+     *
+     * @param content  content
+     * @param email    email
+     * @param username username
+     * @param website  website
      */
-    private CommentStatus status;
-
-    private String ip;
-
-    private String address;
-
-    private String fromClient;
+    public Comment(@NotBlank(message = "请提供评论内容") @Length(max = 1024, min = 0, message = "评论内容长度必须在 {min}~{max} 之间") String content, @Length(max = 64, message = "邮箱的长度不能超过 {max} 个字符") @Email(message = "请提供一个有效的邮箱地址") @NotBlank(message = "用户邮箱不能为空") String email, @NotBlank(message = "评论人昵称不能为空") @Length(message = "用户的长度必须在 {min}~{max} 之间", max = 16, min = 1) String username, @URL(message = "请提供一个有效的网站地址") @Length(max = 64, min = 0, message = "用户的网站地址长度必须在 {min}~{max} 之间") String website) {
+        this.content = content;
+        this.email = email;
+        this.username = username;
+        this.website = website;
+    }
 
     public String getPath() {
         return path;

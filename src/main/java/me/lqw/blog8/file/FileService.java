@@ -1,32 +1,31 @@
 package me.lqw.blog8.file;
 
+import me.lqw.blog8.exception.AbstractBlogException;
 import me.lqw.blog8.exception.LogicException;
+import me.lqw.blog8.exception.ResourceNotFoundException;
+import me.lqw.blog8.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileAttributeView;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -42,122 +41,213 @@ import java.util.stream.Collectors;
  * 7. 文件保护（私有|密码）
  * 8. 文件检索
  * 9. 文件上传
+ *
  * @author liqiwen
  * @version 1.0
  */
 @Conditional(FileCondition.class)
 @Service
-public class FileService implements InitializingBean {
+public class FileService {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+    /**
+     * 日志记录
+     */
+    private final Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
 
+    /**
+     * 读写锁
+     */
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
+    /**
+     * 附件名称最大长度
+     */
     private final int MAX_NAME_LENGTH = 255; //附件名称最大长度
+
+    /**
+     * 查询最大深度
+     */
     private final int MAX_DEEPTH = 10;  //查询最大深度
 
+    /**
+     * 根路径
+     */
     private final Path rootPath;
 
+    /**
+     * 文件属性配置
+     */
     private final FileProperties fileProperties;
 
+    /**
+     * 构造方法注入
+     * @param fileProperties fileProperties
+     * @throws IOException IOException
+     */
     public FileService(FileProperties fileProperties) throws IOException {
         this.fileProperties = fileProperties;
         String uploadPath = fileProperties.getUploadPath();
         String fileRootPath = fileProperties.getFileRootPath();
-        if (StringUtils.isEmpty(fileRootPath)) {
-            throw new RuntimeException("文件系统已开启, 请提供在系统配置文件[application.yml]中一个上传文件的个路径, 参考key:[blog.file.file-root-path]");
+        if (StringUtil.isBlank(fileRootPath)) {
+            throw new RuntimeException("文件系统已开启, 请提供在系统配置文件[application.yml]中一个上传文件的根路径, " +
+                    "参考key: [blog.file.file-root-path]");
         }
 
         this.rootPath = Paths.get(fileRootPath);
-        if(!this.rootPath.toFile().exists()){
-//            FileUtils.forceMkdir(this.rootPath);
+        if (!this.rootPath.toFile().exists()) {
             Files.createDirectories(rootPath);
             logger.info("上传文件夹创建成功");
         }
     }
 
+
     /**
-     * 文件检索
-     * @param queryParam queryParam
-     * @return FilePageResult
-     * @throws Exception Exception
+     * 保存文件到本地
+     * @param uploadModel uploadModel
+     * @return FileInfo
+     * @throws AbstractBlogException 系统异常
      */
-    public FilePageResult selectPage(FilePageQueryParam queryParam) throws Exception {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+    public List<FileInfo> uploadedFiles(UploadModel uploadModel) throws AbstractBlogException {
 
-        List<FileInfo> fileInfos = new ArrayList<>();
+        MultipartFile[] files = uploadModel.getFiles();
 
-//        List<String> fileSuffixes = queryParam.getFileSuffixes();
+        List<FileInfo> fileInfos = new ArrayList<>(files.length);
 
+        try {
+            for (MultipartFile multipartFile : files) {
+                Path file = Paths.get(fileProperties.getUploadPath(), multipartFile.getOriginalFilename());
 
-        int visitDepth = queryParam.getContainChildDir() ? Integer.MAX_VALUE : 1;
-
-
-        return doQuery(rootPath, queryParam);
+                if(Files.exists(file)){
+                    throw new FileAlreadyException("file.alreadyExists", "文件已经存在");
+                }
+                fileInfos.add(getFileInfo(file));
+                Files.copy(multipartFile.getInputStream(), file);
+            }
+        } catch (IOException ex){
+            ex.printStackTrace();
+            logger.error("上传文件异常,[{}]", ex.getMessage(), ex);
+            throw new FileException("file.uploadFailed", "文件上传失败");
+        }
+        return fileInfos;
     }
 
 
-    public FilePageResult doQuery(Path path, FilePageQueryParam queryParam) throws IOException {
+    /**
+     * 分页查询文件
+     * @param queryParam queryParam
+     * @return FilePageResult
+     */
+    public FilePageResult selectPage(FilePageQueryParam queryParam) {
 
-        boolean needQuery = !CollectionUtils.isEmpty(queryParam.getExtensions()) || !StringUtils.isEmpty(queryParam.getFileName());
+        return doSearchWithParams2(Paths.get(fileProperties.getUploadPath()), queryParam);
+    }
 
-
+    /**
+     * 查询目录下的文件
+     * @param path path
+     * @param queryParam queryParam
+     * @return FilePageResult
+     * @throws LogicException 逻辑异常
+     */
+    private FilePageResult doSearchWithParams2(Path path, FilePageQueryParam queryParam) throws AbstractBlogException {
         FilePageResult filePageResult;
 
-        Predicate<Path> predicate = p -> {
-            if(!p.endsWith(path)){
 
-                return true;
-            }
-            return false;
-        };
 
-        if(needQuery){
-            predicate = predicate.and(p -> matchParam(queryParam, p.getFileName().toString()));
-        }
-
-//        if(queryParam.isHidden()){
-//            predicate = predicate.and(p -> qu)
-//        }
-
-        //是否根据最近修改时间来排序
-        if(!queryParam.isSortByLastModify()) {
-
-            if(queryParam.isIgnorePaging()) {
-                List<FileInfo> fileInfos = Files.walk(path, 1).filter(predicate)
-                        .map(this::getFileInfo).collect(Collectors.toList());
-
-                filePageResult =  new FilePageResult(queryParam, fileInfos.size(), fileInfos);
-
-                return filePageResult;
-            }
-
-            List<FileInfo> fileInfos = Files.walk(path, 1).filter(predicate).skip(queryParam.getOffset())
+        try {
+            List<FileInfo> fileInfos = Files.walk(path, 1).skip(queryParam.getOffset())
                     .limit(queryParam.getPageSize()).map(this::getFileInfo).collect(Collectors.toList());
+            Boolean sortBySize = queryParam.isSortBySize();
+            if(sortBySize != null && sortBySize){
+                //默认是从小到大, 改变一下，从大到小
+                fileInfos = fileInfos.stream().sorted(Comparator.comparingLong(FileInfo::getSize).reversed()).collect(Collectors.toList());
+            }
 
-            int count = (int) Files.walk(path, 1).filter(predicate).count();
-
+            int count = (int) Files.walk(path, 1).count();
             filePageResult = new FilePageResult(queryParam, count, fileInfos);
 
             return filePageResult;
+        } catch (IOException ex){
+            logger.error("查询文件列表异常:[{}]", ex.getMessage(), ex);
+            ex.printStackTrace();
+            throw new LogicException("", "");
+        }
+    }
 
+
+    /**
+     * 查询目录下的文件
+     * @param path path
+     * @param queryParam queryParam
+     * @return FilePageResult
+     * @throws LogicException 逻辑异常
+     */
+    private FilePageResult doSearchWithParams(Path path, FilePageQueryParam queryParam) throws AbstractBlogException {
+
+        boolean needQuery = !CollectionUtils.isEmpty(queryParam.getExtensions()) || !StringUtil.isBlank(queryParam.getFileName());
+
+        FilePageResult filePageResult;
+
+        Predicate<Path> predicate = p -> !p.endsWith(path);
+
+        if (needQuery) {
+            predicate = predicate.and(p -> matchParam(queryParam, p.getFileName().toString()));
+        }
+
+        //是否根据最近修改时间来排序
+        if (!queryParam.isSortByLastModify()) {
+
+            if (queryParam.isIgnorePaging()) {
+                try {
+                    List<FileInfo> fileInfos = Files.walk(path, 1).filter(predicate)
+                            .map(this::getFileInfo).collect(Collectors.toList());
+                    filePageResult = new FilePageResult(queryParam, fileInfos.size(), fileInfos);
+                    return filePageResult;
+                } catch (IOException ex){
+                    throw new LogicException("", "");
+                }
+            }
+            try {
+                List<FileInfo> fileInfos = Files.walk(path, 1).filter(predicate).skip(queryParam.getOffset())
+                        .limit(queryParam.getPageSize()).map(this::getFileInfo).collect(Collectors.toList());
+
+                int count = (int) Files.walk(path, 1).filter(predicate).count();
+                filePageResult = new FilePageResult(queryParam, count, fileInfos);
+
+                return filePageResult;
+            } catch (IOException ex){
+                throw new LogicException("", "");
+            }
         }
 
         return new FilePageResult(queryParam, 0, Collections.emptyList());
     }
 
 
-    public boolean matchParam(FilePageQueryParam queryParam, String queryFileName) {
-        Optional<String> extOp = FileUtils.getExtension(queryFileName);
-        if(extOp.isPresent() && !CollectionUtils.isEmpty(queryParam.getExtensions()) &&
-                queryParam.getExtensions().stream().noneMatch(ex -> ex.equalsIgnoreCase(extOp.get()))){
+    /**
+     * 是否匹配参数
+     * @param queryParam queryParam
+     * @param queryFileName queryFileName
+     * @return true | false
+     */
+    private boolean matchParam(FilePageQueryParam queryParam, String queryFileName) {
+        Optional<String> extOp = FileUtil.getExtension(queryFileName);
+        if (extOp.isPresent() && !CollectionUtils.isEmpty(queryParam.getExtensions()) &&
+                queryParam.getExtensions().stream().noneMatch(ex -> ex.equalsIgnoreCase(extOp.get()))) {
             return false;
         }
         String fileName = queryParam.getFileName();
-        return StringUtils.isEmpty(fileName) || queryFileName.contains(fileName);
+        return StringUtil.isBlank(fileName) || queryFileName.contains(fileName);
     }
 
 
-    public FileInfoDetail getFileInfoDetail(String path){
+    /**
+     * 获取文件详细信息
+     * @param path path
+     * @return FileInfoDetail
+     */
+    public FileInfoDetail getFileInfoDetail(String path) {
         lock.readLock().lock();
         try {
             Path filePath = Paths.get(this.fileProperties.getFileRootPath(), path);
@@ -168,14 +258,20 @@ public class FileService implements InitializingBean {
 
     }
 
-
+    /**
+     * 获取文件详细信息
+     * @param path path
+     * @return FileInfoDetail
+     */
     public FileInfoDetail getFileInfoDetail(Path path) {
 
         logger.info("filePath:[{}]", path.toString());
 
         FileInfoDetail fid = new FileInfoDetail(getFileInfo(path));
 
-        if(fid.getCanEdit() && Files.isReadable(path)){
+        fid.setFileAttributes(getFileAttributes(path));
+
+        if (fid.getCanEdit() && Files.isReadable(path)) {
             try {
                 fid.setContent(String.join("", Files.readAllLines(path, Charset.defaultCharset())));
             } catch (IOException e) {
@@ -186,83 +282,122 @@ public class FileService implements InitializingBean {
 
     }
 
-
+    /**
+     * 获取文件信息
+     * @param path path
+     * @return FileInfo
+     */
     public FileInfo getFileInfo(Path path) {
 
         FileInfo fileInfo = new FileInfo();
-        FileUtils.getExtension(path).ifPresent(e -> fileInfo.setExt(FileTypeEnum.getType(e)));
+        FileUtil.getExtension(path).ifPresent(e -> fileInfo.setExt(FileTypeEnum.getType(e)));
 
         fileInfo.setFileName(path.getFileName().toString());
 
         fileInfo.setDirectory(Files.isDirectory(path));
-        fileInfo.setCanEdit(FileTypeEnum.canEdit(path));
+        fileInfo.setCanEdit(Files.isDirectory(path) || FileTypeEnum.canEdit(path));
+//        fileInfo.setFilePath(Files.isRegularFile(path) ? "/"+ path);
 
-        if(Files.isDirectory(path)){
-
+        if (Files.isRegularFile(path)) {
+            fileInfo.setSize(path.toFile().length());
         }
-
-//        return getFileInfoDetail(path);
-
-//        BasicFileAttributes fileAttributes = Files.readAttributes(path, BasicFileAttributes.class);
-
         return fileInfo;
     }
 
 
-//    private Map<String, Object> getFileProperties(Path path){
-//        Map<String, Object> propMap = new LinkedHashMap<>();
-//
-//        if(Files.isDirectory(path)){
-//
-//        }
-//
-//        if(Files.isRegularFile(path)){
-//
-//
-//        }
-//    }
-//
-//
-//    private FileStatistic getFileStatistic(Path path) throws LogicException {
-//
-//        if (!Files.exists(path)) {
-//            return new FileStatistic(0, 0, 0, null);
-//        }
-//
-//        Files.walk(path).parallel().forEach(p -> {
-//            if(Files.isRegularFile(p)){
-//
-//            }
-//        });
-//
-//    }
+    /**
+     * 获取文件属性
+     * @param path path
+     * @return FileAttributes
+     */
+    private FileAttributes getFileAttributes(Path path) {
 
+        Assert.notNull(path, "path not be null");
 
-    private void writeFile(Path file, String content) throws LogicException {
+        FileAttributes fileAttributes = new FileAttributes();
 
-        if(!FileTypeEnum.canEdit(file)){
-            throw new LogicException("fileService.file.unable", "文件不能被编辑");
+        fileAttributes.setOsReadPermission(path.toFile().canRead());
+        fileAttributes.setOsExecutePermission(path.toFile().canExecute());
+        fileAttributes.setOsWritePermission(path.toFile().canWrite());
+
+        //文件
+        if(path.toFile().isDirectory()){
+            BasicFileAttributeView fileAttributeView = Files.getFileAttributeView(path, BasicFileAttributeView.class);
+            try {
+                BasicFileAttributes basicFileAttributes = fileAttributeView.readAttributes();
+
+                fileAttributes.setHumanCanReadSize(String.valueOf(basicFileAttributes.size()));
+
+                fileAttributes.setLastAccess(FileUtil.transferFileTime(basicFileAttributes.lastAccessTime()));
+                fileAttributes.setLastModified(FileUtil.transferFileTime(basicFileAttributes.lastModifiedTime()));
+                return fileAttributes;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else { //目录
+
         }
 
-        if(!Files.isWritable(file)){
-            throw new LogicException("fileService.file.unwriteable", "文件不可被写");
+
+        return fileAttributes;
+    }
+
+
+
+    /**
+     * 写文件
+     * @param file file
+     * @param content content
+     * @throws AbstractBlogException 逻辑异常
+     */
+    public void writeFile(Path file, String content) throws AbstractBlogException {
+
+        if (!FileTypeEnum.canEdit(file)) {
+            throw new LogicException("file.non.editing", "文件不能被编辑");
+        }
+
+        if(!Files.exists(file)){
+
+            try {
+                Files.createFile(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new LogicException("file.write.failed", "无法创建文件写入");
+            }
+        }
+
+        if (!Files.isWritable(file)) {
+            throw new LogicException("file.not.writeable", "文件无写权限");
         }
 
         try {
             Files.write(file, content.getBytes(Charset.defaultCharset()));
         } catch (IOException e) {
             e.printStackTrace();
-            throw new LogicException("fileService.file.writeFail", "文件写入失败");
+            throw new LogicException("file.write.failed", "文件写入失败");
         }
+    }
+
+    public void writeFile(FileUpdated fileUpdated) throws AbstractBlogException {
+
+        String filePath = fileUpdated.getPath();
+
+        if(filePath.contains("/")){
+            throw new LogicException("file.format.error", "文件路径错误");
+        }
+
+        writeFile(getFilePath(filePath), fileUpdated.getContent());
 
     }
 
-
-
+    /**
+     * 保存上传文件
+     * @param files files
+     * @return List<FileInfo>
+     * @throws AbstractBlogException 逻辑异常
+     */
     @Transactional(propagation = Propagation.REQUIRED)
-    public List<FileInfo> saveUploadedFiles(List<MultipartFile> files) throws LogicException {
-
-
+    public List<FileInfo> saveUploadedFiles(List<MultipartFile> files) throws AbstractBlogException {
         List<FileInfo> fileInfos = new ArrayList<>();
 
         for (MultipartFile file : files) {
@@ -275,13 +410,12 @@ public class FileService implements InitializingBean {
                 byte[] bytes = file.getBytes();
                 Path path = Paths.get(fileProperties.getUploadPath() + file.getOriginalFilename());
 
-                if(Files.exists(path)){
-                    throw new LogicException("fileService.fileExists", "名称为[" + file.getOriginalFilename() +"]的文件已经存在");
+                if (Files.exists(path)) {
+                    throw new LogicException("fileService.fileExists", "名称为[" + file.getOriginalFilename() + "]的文件已经存在");
                 }
 
                 //写文件
                 Path filePath = Files.write(path, bytes);
-
 
 
                 FileInfo fileInfo = new FileInfo();
@@ -290,12 +424,11 @@ public class FileService implements InitializingBean {
                 fileInfo.setFileName(file.getOriginalFilename());
 
 
-                String ext = FileUtils.getExtension(file).orElseThrow(()
+                String ext = FileUtil.getExtension(file).orElseThrow(()
                         -> new LogicException("fileService.invalid.extension", "无效的文件扩展名"));
                 fileInfo.setExt(FileTypeEnum.getType(ext));
 
                 fileInfo.setCanEdit(FileTypeEnum.canEdit(file.getOriginalFilename()));
-
 
 
                 BasicFileAttributes fileAttributes = Files.readAttributes(path, BasicFileAttributes.class);
@@ -313,13 +446,13 @@ public class FileService implements InitializingBean {
 
 
                 fileInfos.add(fileInfo);
-            } catch (IOException ex){
+            } catch (IOException ex) {
                 logger.error("上传文件失败:[{}]", ex.getMessage(), ex);
                 throw new LogicException("fileService.upload.fail", "文件上传失败");
             }
         }
 
-        if(fileInfos.isEmpty()){
+        if (fileInfos.isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -360,13 +493,14 @@ public class FileService implements InitializingBean {
     }
 
 
-    private Path resolve(Path root, String path){
+    private Path resolve(Path root, String path) {
         Path resolve;
-        if(StringUtils.isEmpty(path)){
+        if (StringUtil.isBlank(path)) {
             resolve = root;
         } else {
-            String cleanPath = StringUtils.cleanPath(path);
-            resolve = StringUtils.isEmpty(cleanPath) ? root : root.resolve(path);
+//            String cleanPath = StringUtils.cleanPath(path);
+            String cleanPath = path;
+            resolve = StringUtil.isBlank(cleanPath) ? root : root.resolve(path);
         }
         return resolve;
     }
@@ -374,19 +508,20 @@ public class FileService implements InitializingBean {
 
     /**
      * 找出两个 Path 之间的路径
+     *
      * @param root root 根目录
-     * @param dir dir 磁盘目录
+     * @param dir  dir 磁盘目录
      * @return List<Path>
      */
-    private List<Path> betweenPaths(Path root, Path dir){
-        if(root.equals(dir)){
+    private List<Path> betweenPaths(Path root, Path dir) {
+        if (root.equals(dir)) {
             return Collections.emptyList();
         }
         Path parent = dir;
         List<Path> paths = new ArrayList<>();
-        while ((parent = parent.getParent()) != null){
-            if(parent.getParent().equals(root)){
-                if(!paths.isEmpty()){
+        while ((parent = parent.getParent()) != null) {
+            if (parent.getParent().equals(root)) {
+                if (!paths.isEmpty()) {
                     Collections.reverse(paths);
                 }
                 return paths;
@@ -397,7 +532,7 @@ public class FileService implements InitializingBean {
     }
 
 
-    private Optional<Path> lookup(Lookup lookup){
+    private Optional<Path> lookup(Lookup lookup) {
         Path p;
         try {
             p = resolve(this.rootPath, lookup.path);
@@ -420,6 +555,84 @@ public class FileService implements InitializingBean {
             return Optional.empty();
         }
         return Optional.of(p);
+    }
+
+    /**
+     * 文件编辑
+     * @param fileName fileName
+     * @return FileInfoDetail
+     * @throws AbstractBlogException
+     * <ul>
+     *     <li>文件未找到</li>
+     *     <li>文件无读权限</li>
+     *     <li>文件不可编辑</li>
+     * </ul>
+     */
+    public FileInfoDetail fileEdit(String fileName) throws AbstractBlogException {
+        Path filePath = getFilePath(fileName);
+
+        if(!filePath.toFile().exists()){
+            throw new ResourceNotFoundException("file.notFound", "未找到名称为" + fileName + "的文件");
+        }
+
+        if(filePath.toFile().isDirectory()){
+            throw new LogicException("directory.cannot.edit", "文件夹不可被编辑");
+        }
+
+        //操作系统的读权限
+        //文件必须要可读可写, 只要有一个条件不满足，就不能编辑文件
+        if(!(filePath.toFile().canRead() && filePath.toFile().canWrite())){
+            throw new LogicException("file.not.read", "文件无权限");
+        }
+
+        if(!filePath.toFile().isFile()){
+
+            throw new LogicException("regular.file", "不规则文件");
+
+        }
+        FileInfoDetail fid = getFileInfoDetail(filePath);
+
+        if(!fid.getCanEdit()){
+            throw new LogicException("file.cannot.edit", "文件不可被编辑(用户设置)");
+        }
+
+        return fid;
+    }
+
+    public FileInfoDetail fileCreate(FileCreate fileCreate) throws AbstractBlogException {
+        String targetPath = fileCreate.getTargetPath();
+        if(StringUtil.isBlank(targetPath)){
+            targetPath = fileProperties.getFileRootPath();
+        }
+
+        Integer fileType = fileCreate.getFileType();
+
+        Path filePath = getFilePath(fileCreate.getFileName());
+        boolean exists = filePath.toFile().exists();
+
+        if(exists){
+            throw new FileAlreadyException("directory.alreadyExists", "目录已经存在");
+        }
+        if(fileType == null || fileType == 0){
+            try {
+                Files.createDirectories(filePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new LogicException("directory.create.failed", "目录创建失败");
+            }
+        } else {
+
+            try {
+                Files.createFile(filePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new LogicException("file.create.failed", "文件创建失败");
+            }
+        }
+
+
+        return getFileInfoDetail(filePath);
+
     }
 
     private static class _ReadablePath implements ReadablePath {
@@ -459,30 +672,8 @@ public class FileService implements InitializingBean {
     }
 
 
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        logger.info("文件系统服务处理类已初始化");
+    private Path getFilePath(String path){
+        return Paths.get(fileProperties.getUploadPath(), path);
     }
 
-
-    public static void main(String[] args){
-
-        Path path1 = Paths.get("folder1", "sub1");
-        Path path2 = Paths.get("folder2", "sub2");
-
-        String s = path1.relativize(path2).toString();
-        System.out.println(s);
-
-        Path resolve = path1.resolve(path2);
-        System.out.println(resolve.toString());
-//        path1.resolve(path2); //folder1\sub1\folder2\sub2
-//        path1.resolveSibling(path2); //folder1\folder2\sub2
-//        path1.relativize(path2); //..\..\folder2\sub2
-//        path1.subpath(0, 1); //folder1
-//        path1.startsWith(path2); //false
-//        path1.endsWith(path2); //false
-//        Paths.get("folder1/./../folder2/my.text").normalize(); //folder2\my.te
-
-    }
 }

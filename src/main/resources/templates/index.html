@@ -2,78 +2,52 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${blogConfigModel.header}">李启文的博客</title>
+    <title>李启文</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link th:href="${blogConfigModel.favicon}" rel="shortcut icon">
-    <link rel="stylesheet" href="/static/css/front.css">
-    <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
-    <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
+    <link rel="shortcut icon" th:href="@{/static/blog/images/logoH.png}" >
+    <link rel="stylesheet" th:href="@{/static/blog/css/front.css}">
+    <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
 </head>
-<body class="antialiased">
-    <div class="page">
-        <div th:replace="header::head('index')"></div>
-        <div class="content">
-            <div class="container-xl">
-                <div class="row row-cards">
-                    <div class="col-md-6 col-xl-8">
-                        <div class="card" th:each="article : ${articlePage.data}">
-                            <div class="row row-0">
-                                <div class="col-3" th:if="${!#strings.isEmpty(article.getFeatureImage())}">
-<!--                                    <img th:src="${article.getFeatureImage()}" src="/static/tabler/photos/1b73704b282a8ec6.jpg" class="w-100 h-100 object-cover" alt="Card side image">-->
-                                    <img th:src="${article.featureImage}" class="w-100 h-100 object-cover" alt="Card side image">
-                                </div>
-                                <div class="col">
-                                    <div class="card-body">
-                                        <h2 class="article-list-title article-title-list-view">
-                                            <a th:href="${#strings.isEmpty(article.urlName) ? '/article/' + article.id : '/article/' + article.urlName}" th:text="${article.title}"></a>
-                                        </h2>
-                                        <div th:if="${!#strings.isEmpty(article.digest)}" th:utext="${article.digest}"></div>
-                                        <div>
-                                            <a th:href="@{/} + '?category=' + ${article.category.name}" class="badge badge-addon" th:text="${article.category.name}"></a>
-                                        </div>
-                                        <div>
-                                            <a th:if="${!#sets.isEmpty(article.tags)}" th:href="@{/} + '?tag=' + ${tag.tagName}" th:each="tag : ${article.tags}">
-                                                <span th:text="${#strings.concat('# ', tag.tagName)}"></span>
-                                            </a>
-                                        </div>
+<body>
+    <div th:replace="header::head('index')"></div>
 
-                                        <div class="d-flex align-items-center pt-5 mt-auto">
-                                            <div>
-                                                <small class="text-body" th:text="${#temporals.format(article.createAt, 'yyyy-MM-dd HH:mm:ss')}">2020-07-04 09:21:23</small>
-                                                <small class="d-block text-muted" >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><circle cx="12" cy="12" r="2"></circle><path d="M2 12l1.5 2a11 11 0 0 0 17 0l1.5 -2"></path><path d="M2 12l1.5 -2a11 11 0 0 1 17 0l1.5 2"></path></svg>
-                                                    <small th:text="${article.hits}" class="mr-2"></small>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><path d="M3 20l1.3 -3.9a9 8 0 1 1 3.4 2.9l-4.7 1"></path><line x1="12" y1="12" x2="12" y2="12.01"></line><line x1="8" y1="12" x2="8" y2="12.01"></line><line x1="16" y1="12" x2="16" y2="12.01"></line></svg>
-                                                    <small th:text="${article.comments}"></small>
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+    <!-- 主体部分 -->
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-8">
+                <div class="card mb-4" th:each="article : ${articlePage.data}">
+                    <div class="row">
+                        <div class="col-4" th:if="${!#strings.isEmpty(article.getFeatureImage())}">
+                            <img th:src="${article.featureImage}" class="w-100 h-100 object-cover" alt="Card side image">
                         </div>
-
-                        <ul class="pagination justify-content-center" th:if="${articlePage.totalPage > 1}">
-                            <li class="page-item" th:classappend="${articlePage.currentPage == item ? 'active' : ''}" th:each="item: ${#numbers.sequence(1, articlePage.totalPage)}">
-                                <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${item} + ');'" th:text="${item}">1</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-xl-4">
-                        <h3 th:text="${#temporals.format(latestMomentPage.date, 'yyyy-MM-dd')}"></h3>
-                        <div class="card cursor-pointer" th:data-momentid="${moment.id}" th:each="moment :${latestMomentPage.moments}">
-                            <div class="card-body d-flex flex-column">
-                                <div class="text-muted" th:utext="${moment.content}">Look, my liege! The Knights Who Say Ni demand a sacrifice! …Are you suggesting that coconuts migr...</div>
-                                <div class="d-flex align-items-center pt-5 mt-auto">
+                        <div class="col">
+                            <div class="card-body">
+                                <!--分类 -->
+                                <div>
+                                    <a th:href="@{/} + '?category=' + ${article.category.name}" class="badge badge-light"
+                                       th:text="${article.category.name}"></a>
+                                </div>
+                                <!-- 标题 -->
+                                <h2>
+                                    <a class="title-article title-article-index" th:href="${#strings.isEmpty(article.urlName) ? '/article/' + article.id : '/article/' + article.urlName}" th:text="${article.title}"></a>
+                                </h2>
+                                <!-- 摘要 -->
+                                <div th:if="${!#strings.isEmpty(article.digest)}" th:utext="${article.digest}"></div>
+                                <!-- 标签 -->
+                                <div>
+                                    <a th:if="${!#sets.isEmpty(article.tags)}" th:href="@{/} + '?tag=' + ${tag.tagName}" th:each="tag : ${article.tags}">
+                                        <span class="badge badge-dark" th:text="${#strings.concat('# ', tag.tagName)}"></span>
+                                    </a>
+                                </div>
+                                <!-- 阅读量 + 评论量 -->
+                                <div class="d-flex align-items-center mt-auto">
                                     <div>
-                                        <small class="text-body" th:text="${#temporals.format(moment.createAt, 'HH:mm')}">2020-07-04 09:21:23</small>
-                                    </div>
-                                    <div class="ml-auto">
-                                        <small class="d-block text-muted" >
+                                        <small class="text-body" th:text="${#temporals.format(article.createAt, 'yyyy-MM-dd HH:mm:ss')}">2020-07-04 09:21:23</small>
+                                        <small class="d-block text-muted">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><circle cx="12" cy="12" r="2"></circle><path d="M2 12l1.5 2a11 11 0 0 0 17 0l1.5 -2"></path><path d="M2 12l1.5 -2a11 11 0 0 1 17 0l1.5 2"></path></svg>
-                                            <small th:text="${moment.hits}" class="mr-2"></small>
+                                            <small th:text="${article.hits}" class="mr-2"></small>
                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><path d="M3 20l1.3 -3.9a9 8 0 1 1 3.4 2.9l-4.7 1"></path><line x1="12" y1="12" x2="12" y2="12.01"></line><line x1="8" y1="12" x2="8" y2="12.01"></line><line x1="16" y1="12" x2="16" y2="12.01"></line></svg>
-                                            <small th:text="${moment.comments}"></small>
+                                            <small th:text="${article.comments}"></small>
                                         </small>
                                     </div>
                                 </div>
@@ -81,52 +55,54 @@
                         </div>
                     </div>
                 </div>
+                <ul class="pagination justify-content-center" th:if="${articlePage.totalPage > 1}">
+                    <li class="page-item" th:classappend="${articlePage.currentPage == item ? 'active' : ''}" th:each="item: ${#numbers.sequence(1, articlePage.totalPage)}">
+                        <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${item} + ');'" th:text="${item}">1</a>
+                    </li>
+                </ul>
             </div>
-            <footer class="footer footer-transparent">
-                <div class="container">
-                    <div class="row text-center align-items-center flex-row-reverse">
-                        <div class="col-lg-auto ml-lg-auto">
-                            <ul class="list-inline list-inline-dots mb-0">
-                                <li class="list-inline-item"><a href="./docs/index.html" class="link-secondary">Documentation</a></li>
-                                <li class="list-inline-item"><a href="./faq.html" class="link-secondary">FAQ</a></li>
-                                <li class="list-inline-item"><a href="https://github.com/tabler/tabler" target="_blank" class="link-secondary">Source code</a></li>
-                            </ul>
+            <div class="col-md-4 d-none d-block">
+                <h4 th:text="${#temporals.format(latestMomentPage.date, 'yyyy-MM-dd')}"></h4>
+                <div class="card mb-3" th:each="moment: ${latestMomentPage.moments}">
+                    <img src="/static/images/dog.jpeg" class="card-img-top" alt="moment feature image">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${#temporals.format(moment.createAt, 'HH:mm')}">00:53</h5>
+                        <div class="card-text" th:utext="${moment.content}"></div>
+                        <div class="card-text">
+                            <span th:text="${moment.hits}">12</span>
+                            <span th:text="${moment.comments}">3</span>
                         </div>
-                        <div class="col-12 col-lg-auto mt-3 mt-lg-0">
-                            Copyright © 2020
-                            <a href="." class="link-secondary">Tabler</a>.
-                            All rights reserved.
-                        </div>
+
                     </div>
                 </div>
-            </footer>
+            </div>
         </div>
     </div>
-    <div id="queryForm" class="hide" th:action="@{/}">
-        <input type="hidden" value="" name="tag">
-        <input type="hidden" name="query">
-        <input type="hidden" th:value="${articlePage.pageQueryParam.currentPage}" id="currentPage" name="currentPage">
-    </div>
-<script type="text/javascript" th:src="@{/webjars/jquery/3.0.0/jquery.min.js}"></script>
-<!-- Libs JS -->
-<script src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Tabler Core -->
-<script src="/static/tabler/dist/js/tabler.min.js"></script>
-<script>
-    document.body.style.display = 'block';
-    function toPage(i){
-        document.getElementById('currentPage').value = i;
-        document.getElementById('queryForm').submit();
-    }
 
-</script>
-<script>
-    for(const elem of document.querySelectorAll('[data-momentid]')){
-        elem.addEventListener('click', function(){
-            let id = this.dataset.momentid;
-            window.location.href='/moment/' + id;
-        });
-    }
-</script>
+    <footer class="blog-footer">
+        <p>Blog template built for <a href="https://getbootstrap.com/">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+        <p>
+            <a href="#">Back to top</a>
+        </p>
+    </footer>
+    <script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/js/Toast.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/libs/prism/prism.js}"></script>
+
+    <script>
+        const rootPath = '[[@{/}]]';
+        function toPage(i){
+            document.getElementById('currentPage').value = i;
+            document.getElementById('queryForm').submit();
+        }
+        for(const elem of document.querySelectorAll('[data-momentid]')){
+            elem.addEventListener('click', function(){
+                let id = this.dataset.momentid;
+                window.location.href= rootPath + 'moment/' + id;
+            });
+        }
+    </script>
 </body>
 </html>

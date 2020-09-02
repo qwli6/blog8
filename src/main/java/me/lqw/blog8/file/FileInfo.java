@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 /**
  * 文件信息
+ *
  * @author liqiwen
  * @version 1.2
  */
@@ -25,11 +26,6 @@ public class FileInfo implements Serializable {
     private long size;
 
     /**
-     * 最近修改时间
-     */
-    private long lastModified;
-
-    /**
      * 是否可以编辑
      */
     private Boolean canEdit;
@@ -39,17 +35,38 @@ public class FileInfo implements Serializable {
      */
     private Boolean directory;
 
+    /**
+     * 文件路径
+     */
+    private String filePath;
+
+    /**
+     * 无参构造方法
+     */
     public FileInfo() {
+        super();
     }
 
+    /**
+     * 有参构造方法
+     *
+     * @param fileInfo fileInfo
+     */
     public FileInfo(FileInfo fileInfo) {
         super();
         this.fileName = fileInfo.fileName;
         this.ext = fileInfo.ext;
         this.size = fileInfo.size;
-        this.lastModified = fileInfo.lastModified;
         this.canEdit = fileInfo.canEdit;
         this.directory = fileInfo.directory;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     public Boolean getDirectory() {
@@ -90,13 +107,5 @@ public class FileInfo implements Serializable {
 
     public void setSize(long size) {
         this.size = size;
-    }
-
-    public long getLastModified() {
-        return lastModified;
-    }
-
-    public void setLastModified(long lastModified) {
-        this.lastModified = lastModified;
     }
 }

@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public interface ReadablePath {
-	InputStream getInputStream() throws IOException;
+    InputStream getInputStream() throws IOException;
 
-	String fileName();
+    String fileName();
 
-	long size();
+    long size();
 
-	long lastModified();
+    long lastModified();
 
-	String getExtension();
+    String getExtension();
 }

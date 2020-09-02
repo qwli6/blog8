@@ -6,15 +6,27 @@ import java.io.Serializable;
 
 /**
  * 上传模型
+ *
  * @author liqiwen
  * @version 1.2
  * @since 1.2
  */
 public class UploadModel implements Serializable {
 
+    /**
+     * 上传额外属性
+     */
     private String extraField;
 
+    /**
+     * 上传目标路径
+     */
     private String targetPath;
+
+    /**
+     * 上传文件内容
+     */
+    private MultipartFile[] files;
 
     public String getTargetPath() {
         return targetPath;
@@ -23,8 +35,6 @@ public class UploadModel implements Serializable {
     public void setTargetPath(String targetPath) {
         this.targetPath = targetPath;
     }
-
-    private MultipartFile[] files;
 
     public String getExtraField() {
         return extraField;

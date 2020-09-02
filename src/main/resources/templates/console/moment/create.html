@@ -4,77 +4,75 @@
     <meta charset="UTF-8">
     <title th:text="创建动态">新动态</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="/static/images/favicon.ico" rel="shortcut icon">
-    <link rel="stylesheet" href="/static/css/base.css">
-    <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
-    <link href="/static/tabler/dist/css/tabler-buttons.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
-    <style>
-        body {
-            display: none;
-        }
-        .form-check-inline{
-            margin-right: 0 !important;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
 </head>
-<body class="antialiased">
-<div class="page">
-    <div th:replace="/console/common/head-navbar::headnav('moment')"></div>
-    <div class="content">
-        <div class="container-xl">
-            <div class="row">
-               <div class="col-12">
-                   <div class="mb-3">
-                       <label for="content" class="form-label">正文</label>
-                       <textarea name="content" id="content" cols="30" rows="20" class="form-control" style="resize: none;"></textarea>
-                   </div>
-                   <div class="mb-3">
-                       <div class="row row-sm">
-                           <div class="col-5">
-                               <label class="form-label" for="passwordProtect">
-                                   密码保护
-                                   <span class="form-label-description">
-                                            <label class="form-check form-check-inline cursor-pointer">
-                                                  <input class="form-check-input" id="passwordProtectEnable" type="checkbox">
-                                                  <span class="form-check-label">启用</span>
-                                            </label>
-                                        </span>
-                               </label>
-                               <input type="text" class="form-control" disabled id="passwordProtect">
-                           </div>
-                       </div>
-                   </div>
-                   <div class="mb-3">
-                       <div class="form-label">评论设置</div>
-                       <div>
-                           <label class="form-check form-check-inline">
-                               <input id="allowComment" class="form-check-input" type="checkbox" checked>
-                               <span class="form-check-label form-label">开启</span>
-                           </label>
-                       </div>
-                   </div>
-                   <div class="btn-list mb-3 justify-content-end">
-                       <a href="javascript:void(0);" id="btn-cancel" class="btn btn-outline-danger">取消发布</a>
-                       <a href="javascript:void(0);" id="btn-create" class="btn btn-success">立即发布</a>
-                   </div>
-               </div>
-           </div>
+<body>
+<div th:replace="/console/common/head-navbar::headnav('moment')"></div>
+<div class="container">
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="btn-list mb-3 justify-content-end">
+                <a href="javascript:void(0);" id="btn-cancel" class="btn btn-outline-danger">取消发布</a>
+                <a href="javascript:void(0);" id="btn-create" class="btn btn-primary">立即发布</a>
+            </div>
+            <div class="mb-3">
+                <label for="content" class="form-label">正文</label>
+                <textarea name="content" id="content" cols="30" rows="20" class="form-control" style="resize: none;"></textarea>
+            </div>
+            <div class="mb-3">
+                <div class="row row-sm">
+                    <div class="col-5">
+                        <label class="form-label" for="passwordProtect">
+                            密码保护
+                            <span class="form-label-description">
+                                <label class="form-check form-check-inline cursor-pointer">
+                                      <input class="form-check-input" id="passwordProtectEnable" type="checkbox">
+                                      <span class="form-check-label">启用</span>
+                                </label>
+                            </span>
+                        </label>
+                        <input type="text" class="form-control" disabled id="passwordProtect">
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="form-label">评论设置</div>
+                <div>
+                    <label class="form-check form-check-inline">
+                        <input id="allowComment" class="form-check-input" type="checkbox" checked>
+                        <span class="form-check-label form-label">开启</span>
+                    </label>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
-<!-- Libs JS -->
-<script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Tabler Core -->
-<script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
-<script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/sweetalert2-2.9.js"></script>
-<script type="text/javascript" src="/static/tabler/dist/libs/sweetalert2/Toast.js"></script>
+<script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
+<script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
+<script type="text/javascript" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>
+<script type="text/javascript" th:src="@{/static/blog/js/Toast.js}"></script>
+<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/lib/codemirror.js"></script>
+<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/addon/edit/continuelist.js"></script>
+<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/addon/display/fullscreen.js"></script>
+<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/mode/markdown/markdown.js"></script>
+<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/addon/mode/overlay.js"></script>
+<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/addon/display/placeholder.js"> </script>
+<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/addon/selection/mark-selection.js"> </script>
+<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/mode/gfm/gfm.js"></script>
+<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/mode/xml/xml.js"></script>
+<script type="text/javascript" src="/static/blog/libs/editor/editor.js"></script>
+
 <script>
 
-    document.body.style.display = "block";
 
+    let blogEditor = new BlogEditor({
+        elem: document.getElementById("content"),
+        tableSize: 2,
+        tabSize: 2
+    });
+
+    const rootPath = '[[@{/}]]';
     document.getElementById('passwordProtectEnable').addEventListener('click', function(){
         if(this.checked){
             document.getElementById('passwordProtect').disabled='';
@@ -82,7 +80,6 @@
             document.getElementById('passwordProtect').disabled = 'disabled';
             document.getElementById('passwordProtect').value = '';
         }
-
     });
 
     document.getElementById('btn-create').addEventListener('click',function(){
@@ -99,7 +96,7 @@
             return ;
         }
 
-        fetch('/console/moment/save', {
+        fetch(rootPath + 'console/moment/save', {
             body: JSON.stringify({
                 'content': content,
                 'allowComment': document.getElementById('allowComment').checked
@@ -108,11 +105,14 @@
                 'Content-Type': 'application/json;charset=UTF-8',
             }),
             method: 'POST'
-        }).then(res => res.json()).catch(error => console.error('Error:',error)).then(response => {
+        }).then(res => res.json()).catch(error => {
+            console.log(error);
+            toast('发布失败');
+        }).then(response => {
             console.log(JSON.stringify(response));
             toast("发布成功");
             setTimeout(function(){
-                window.location.href='/console/moments';
+                window.location.href= rootPath + 'console/moments';
             }, 800);
         });
     });
@@ -128,8 +128,8 @@
             showCancelButton: true,
             cancelButtonText: '取消'
         }).then(function(result){
-            if(result){
-                window.location.href = '/console/moments';
+            if(result.value){
+                window.location.href = rootPath + 'console/moments';
             }
         });
     });

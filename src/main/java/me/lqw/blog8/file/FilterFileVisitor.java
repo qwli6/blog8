@@ -13,6 +13,7 @@ import java.util.List;
 
 /**
  * 自定义文件过滤
+ *
  * @author liqiwen
  * @version 1.2
  * @since 1.2
@@ -39,7 +40,8 @@ public class FilterFileVisitor extends SimpleFileVisitor<Path> {
 
     /**
      * 浏览文件
-     * @param file file
+     *
+     * @param file  file
      * @param attrs attrs
      * @return FileResult
      * @throws IOException IOException
@@ -50,7 +52,7 @@ public class FilterFileVisitor extends SimpleFileVisitor<Path> {
         logger.info("正在访问文件, 访问的文件名是: [{}], 文件大小为: [{}]", file.getFileName(), attrs.size());
 
 
-        return super.visitFile(file,attrs);
+        return super.visitFile(file, attrs);
     }
 
     @Override

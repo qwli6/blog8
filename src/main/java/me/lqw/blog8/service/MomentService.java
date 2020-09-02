@@ -1,6 +1,6 @@
 package me.lqw.blog8.service;
 
-import me.lqw.blog8.BlogContext;
+import me.lqw.blog8.constants.BlogContext;
 import me.lqw.blog8.exception.LogicException;
 import me.lqw.blog8.exception.ResourceNotFoundException;
 import me.lqw.blog8.mapper.CommentMapper;
@@ -9,34 +9,62 @@ import me.lqw.blog8.model.Comment;
 import me.lqw.blog8.model.CommentModule;
 import me.lqw.blog8.model.Moment;
 import me.lqw.blog8.model.MomentArchive;
-import me.lqw.blog8.model.dto.PageResult;
+import me.lqw.blog8.model.dto.page.PageResult;
 import me.lqw.blog8.model.vo.MomentPageQueryParam;
-import me.lqw.blog8.util.JacksonUtil;
-import org.springframework.beans.factory.InitializingBean;
+import me.lqw.blog8.plugins.md.MarkdownParser;
+import me.lqw.blog8.util.JsonUtil;
+import me.lqw.blog8.util.StringUtil;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+/**
+ * 动态业务处理类
+ *
+ * @author liqiwen
+ * @version 1.2
+ * @since 1.2
+ */
 @Service
-public class MomentService extends BaseService<Moment> implements CommentModuleHandler<Moment>, InitializingBean {
+public class MomentService extends AbstractBaseService<Moment> implements CommentModuleHandler<Moment> {
 
-
+    /**
+     * 动态 Mapper
+     */
     private final MomentMapper momentMapper;
+
+    /**
+     * 评论 Mapper
+     */
     private final CommentMapper commentMapper;
-    private final MarkdownHandler mdHandler;
 
+    /**
+     * MarkdownParser
+     */
+    private final MarkdownParser markdownParser;
 
+    /**
+     * 构造方法
+     *
+     * @param momentMapper   momentMapper
+     * @param commentMapper  commentMapper
+     * @param objectProvider objectProvider
+     */
     public MomentService(MomentMapper momentMapper, CommentMapper commentMapper,
-                         MarkdownHandler handler) {
+                         ObjectProvider<MarkdownParser> objectProvider) {
         this.momentMapper = momentMapper;
         this.commentMapper = commentMapper;
-        this.mdHandler = handler;
+        this.markdownParser = objectProvider.stream().min(Comparator.comparingInt(Ordered::getOrder)).get();
     }
 
+    /**
+     * 保存动态
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public Moment save(Moment moment) throws LogicException {
@@ -45,10 +73,18 @@ public class MomentService extends BaseService<Moment> implements CommentModuleH
         momentMapper.insert(moment);
         return moment;
     }
+
+
+    /**
+     * 删除动态
+     *
+     * @param id id
+     * @throws LogicException
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public void delete(Integer id) throws LogicException {
-        Moment moment = momentMapper.findById(id).orElseThrow(() -> new LogicException("momentService.delete.notExists", "动态不存在"));
+        Moment moment = momentMapper.selectById(id).orElseThrow(() -> new LogicException("momentService.delete.notExists", "动态不存在"));
         commentMapper.deleteByModule(new CommentModule(moment.getId(), getModuleName()));
     }
 
@@ -57,8 +93,27 @@ public class MomentService extends BaseService<Moment> implements CommentModuleH
         return null;
     }
 
+    /**
+     * 插入评论之前先检查
+     *
+     * @param comment       comment
+     * @param commentModule commentModule
+     * @throws LogicException 逻辑异常
+     *                        1. 动态不存在异常
+     *                        2. 动态设置了不允许访客评论
+     */
     @Override
     public void checkBeforeSaved(Comment comment, CommentModule commentModule) throws LogicException {
+        Integer id = commentModule.getId();
+
+        // 动态是否存在
+        Moment moment = momentMapper.selectById(id).orElseThrow(()
+                -> new LogicException("moment.notExits", "动态不存在"));
+
+        // 是否设置了允许访客评论
+        if (!moment.getAllowComment() && !BlogContext.isAuthorized()) {
+            throw new LogicException("comment.notAllow", "该动态设置了不允许访客评论");
+        }
 
     }
 
@@ -69,23 +124,37 @@ public class MomentService extends BaseService<Moment> implements CommentModuleH
 
     @Transactional(readOnly = true)
     public PageResult<Moment> selectPage(MomentPageQueryParam queryParam) {
-        Integer count = momentMapper.count(queryParam);
-        if(count == null || count == 0){
-            return new PageResult<>(queryParam, 0, new ArrayList<>());
+        int count = momentMapper.count(queryParam);
+        if (count == 0) {
+            return new PageResult<>(queryParam, 0, Collections.emptyList());
         }
         List<Moment> moments = momentMapper.selectPage(queryParam);
-        if(moments.isEmpty()){
-            return new PageResult<>(queryParam, 0, new ArrayList<>());
+        if (moments.isEmpty()) {
+            return new PageResult<>(queryParam, 0, Collections.emptyList());
         }
-        return new PageResult<>(queryParam, count, moments);
+        PageResult<Moment> pageResult = new PageResult<>(queryParam, count, moments);
+        processMomentContent(pageResult.getData());
+        return pageResult;
+    }
+
+    private void processMomentContent(List<Moment> data) {
+        if(!CollectionUtils.isEmpty(data)){
+            for(Moment moment: data){
+                String content = moment.getContent();
+                if(StringUtil.isBlank(content)){
+                    continue;
+                }
+                moment.setContent(markdownParser.parse(content));
+            }
+        }
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public void update(Moment moment) throws LogicException {
-        Moment old = momentMapper.findById(moment.getId()).orElseThrow(() -> new LogicException("momentService.update.notExists", "动态不存在"));
-        if(old.getContent().equals(moment.getContent()) && old.getAllowComment().equals(moment.getAllowComment())){
-            logger.info("修改内容一致, 不做处理! 原内容:[{}], 现内容:[{}]", JacksonUtil.toJsonString(old), JacksonUtil.toJsonString(moment));
+        Moment old = momentMapper.selectById(moment.getId()).orElseThrow(() -> new LogicException("momentService.update.notExists", "动态不存在"));
+        if (old.getContent().equals(moment.getContent()) && old.getAllowComment().equals(moment.getAllowComment())) {
+            logger.info("修改内容一致, 不做处理! 原内容:[{}], 现内容:[{}]", JsonUtil.toJsonString(old), JsonUtil.toJsonString(moment));
             return;
         }
         momentMapper.update(moment);
@@ -93,53 +162,51 @@ public class MomentService extends BaseService<Moment> implements CommentModuleH
 
     @Transactional(readOnly = true)
     public Optional<Moment> getMomentForEdit(Integer id) {
-        return momentMapper.findById(id);
+        return momentMapper.selectById(id);
     }
 
     @Override
     public String getModuleName() {
-        return Moment.class.getSimpleName().toUpperCase();
+        return Moment.class.getSimpleName().toLowerCase();
     }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        logger.info("MomentService afterPropertiesSet()...");
-    }
-
 
     @Transactional(readOnly = true)
     public MomentArchive selectLatestMoments() {
         MomentArchive momentArchive = momentMapper.selectLatestMoments();
-        momentArchive.getMoments().forEach(e -> e.setContent(mdHandler.toHtml(e.getContent())));
+        momentArchive.getMoments().forEach(e -> e.setContent(markdownParser.parse(e.getContent())));
 
         return momentArchive;
     }
 
-    public Moment getMomentForView(int id) throws ResourceNotFoundException {
-        Moment moment = momentMapper.findById(id).orElseThrow(() -> new ResourceNotFoundException("momentService.get.notExists", "资源不存在"));
-        moment.setContent(mdHandler.toHtml(moment.getContent()));
-        return moment;
+    public Optional<Moment> getMomentForView(int id) throws ResourceNotFoundException {
+        Optional<Moment> momentOp = momentMapper.selectById(id);
+        if (momentOp.isPresent()) {
+            Moment moment = momentOp.get();
+            moment.setContent(markdownParser.parse(moment.getContent()));
+            return Optional.of(moment);
+        }
+        return Optional.empty();
     }
 
     public PageResult<MomentArchive> selectMomentArchivePage(MomentPageQueryParam queryParam) {
         int count = momentMapper.countMomentArchive();
-        if(count == 0){
+        if (count == 0) {
             return new PageResult<>(queryParam, 0, new ArrayList<>());
         }
         List<MomentArchive> momentArchives = momentMapper.selectMomentArchivePage(queryParam);
-        if(momentArchives.isEmpty()){
+        if (momentArchives.isEmpty()) {
             return new PageResult<>(queryParam, 0, new ArrayList<>());
         }
-        momentArchives.forEach(e -> e.getMoments().forEach(y -> y.setContent(mdHandler.toHtml(y.getContent()))));
+        momentArchives.forEach(e -> e.getMoments().forEach(y -> y.setContent(markdownParser.parse(y.getContent()))));
         return new PageResult<>(queryParam, count, momentArchives);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void hit(Integer id) throws LogicException {
-        if(BlogContext.isAuthorized()){
+        if (BlogContext.isAuthorized()) {
             return;
         }
-        momentMapper.findById(id).orElseThrow(() ->
+        momentMapper.selectById(id).orElseThrow(() ->
                 new LogicException("momentService.hit.notExists", "点击动态不存在"));
         momentMapper.increaseHits(id, 1);
     }

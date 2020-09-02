@@ -1,22 +1,32 @@
 package me.lqw.blog8.exception;
 
-public class ResourceNotFoundException extends RuntimeException {
+import me.lqw.blog8.constants.Message;
 
-    private Message error;
+/**
+ * 资源未找到异常
+ *
+ * @author liqiwen
+ * @version 1.2
+ * @since 1.2
+ */
+public class ResourceNotFoundException extends AbstractBlogException {
 
+    /**
+     * 构造方法
+     *
+     * @param error error
+     */
     public ResourceNotFoundException(Message error) {
-        this.error = error;
+        super(error.getMsg(), null, false, false, error);
     }
 
-    public ResourceNotFoundException(String code, String msg){
-        this.error = new Message(code, msg);
-    }
-
-    public Message getError() {
-        return error;
-    }
-
-    public void setError(Message error) {
-        this.error = error;
+    /**
+     * 构造方法
+     *
+     * @param code    code
+     * @param message message
+     */
+    public ResourceNotFoundException(String code, String message) {
+        super(message, null, false, false, new Message(code, message));
     }
 }

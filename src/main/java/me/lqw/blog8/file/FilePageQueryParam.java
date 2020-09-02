@@ -1,48 +1,74 @@
 package me.lqw.blog8.file;
 
-import me.lqw.blog8.model.vo.PageQueryParam;
+import me.lqw.blog8.model.vo.AbstractQueryParam;
 
 import java.io.Serializable;
 import java.util.List;
 
 /**
  * 文件查询参数
+ *
  * @author liqiwen
  * @version 1.2
  * @since 1.2
  */
-public class FilePageQueryParam extends PageQueryParam implements Serializable {
+public class FilePageQueryParam extends AbstractQueryParam implements Serializable {
 
+    /**
+     * 文件名称
+     */
     private String fileName;
 
+    /**
+     * 目标路径
+     */
     private String targetPath;
 
-    private boolean sortByLastModify;
+    /**
+     * 是否按照最近修改时间排序
+     */
+    private Boolean sortByLastModify;
 
-    private boolean sortBySize;
+    /**
+     * 是否根据文件大小排序
+     */
+    private Boolean sortBySize;
 
     /**
      * 是否查看隐藏文件
      */
-    private boolean hidden;
+    private Boolean hidden;
 
-    public boolean isHidden() {
+    /**
+     * 查找时是否包含子目录
+     */
+    private Boolean containChildDir = false;
+
+    /**
+     * 查找时是否包含父目录
+     */
+    private Boolean containParentDir = false;
+
+    /**
+     * 文件扩展名列表
+     */
+    private List<String> extensions;
+
+    public Boolean isHidden() {
         return hidden;
     }
 
-    public void setHidden(boolean hidden) {
+    public void setHidden(Boolean hidden) {
         this.hidden = hidden;
     }
 
-    public boolean isSortBySize() {
+    public Boolean isSortBySize() {
         return sortBySize;
     }
 
-    public void setSortBySize(boolean sortBySize) {
+    public void setSortBySize(Boolean sortBySize) {
         this.sortBySize = sortBySize;
     }
-
-    private List<String> extensions;
 
     public List<String> getExtensions() {
         return extensions;
@@ -52,11 +78,11 @@ public class FilePageQueryParam extends PageQueryParam implements Serializable {
         this.extensions = extensions;
     }
 
-    public boolean isSortByLastModify() {
+    public Boolean isSortByLastModify() {
         return sortByLastModify;
     }
 
-    public void setSortByLastModify(boolean sortByLastModify) {
+    public void setSortByLastModify(Boolean sortByLastModify) {
         this.sortByLastModify = sortByLastModify;
     }
 
@@ -68,7 +94,6 @@ public class FilePageQueryParam extends PageQueryParam implements Serializable {
         this.targetPath = targetPath;
     }
 
-
     public String getFileName() {
         return fileName;
     }
@@ -76,16 +101,6 @@ public class FilePageQueryParam extends PageQueryParam implements Serializable {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
-
-    /**
-     * walk file is contain child dir
-     */
-    private Boolean containChildDir = false;
-
-    /**
-     * walk file is contain parent dir
-     */
-    private Boolean containParentDir = false;
 
     public Boolean getContainParentDir() {
         return containParentDir;

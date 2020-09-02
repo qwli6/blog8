@@ -41,7 +41,7 @@
                fk_category_id from blog_article
     </sql>
 
-    <select id="findByUrlName" parameterType="string" resultMap="ArticleMap">
+    <select id="selectByUrlName" parameterType="string" resultMap="ArticleMap">
         <include refid="full" />
         where url_name = #{urlName,jdbcType=VARCHAR}
     </select>
@@ -61,7 +61,7 @@
              #{allowComment,jdbcType=BOOLEAN}, #{status, typeHandler=EnumOrdinalTypeHandler}, #{category.id,jdbcType=INTEGER},
             now(), now())
     </insert>
-    <select id="count" parameterType="HandledArticlePageQueryParam" resultType="integer">
+    <select id="selectCount" parameterType="HandledArticlePageQueryParam" resultType="integer">
         select count(ba.id) from blog_article ba
         <if test="category != null">
             left join blog_category bc on ba.fk_category_id = bc.id
@@ -69,6 +69,9 @@
         <where>
             <if test="category != null">
                 and bc.id = #{category.id, jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and ba.status = #{status,  typeHandler=EnumOrdinalTypeHandler}
             </if>
         </where>
     </select>
@@ -91,6 +94,9 @@
             (select group_concat(bat.tag_id) from blog_article_tag bat where bat.article_id = ba.id group by bat.article_id) as tag_ids
         from blog_article ba
         left join blog_category bc on ba.fk_category_id = bc.id
+        <if test="category != null">
+            inner join (select id from blog_category where  id = #{category.id,jdbcType=INTEGER}) bc2 on bc2.id = ba.fk_category_id
+        </if>
         <if test="tag != null">
             inner join (select article_id from blog_article_tag where tag_id = #{tag.id,jdbcType=INTEGER}) as bat2 on bat2.article_id = ba.id
         </if>
@@ -98,8 +104,11 @@
             <if test="category != null">
                 and ba.fk_category_id = #{category.id, jdbcType=INTEGER}
             </if>
-            <if test="begin != null">
+            <if test="begin != null and end != null">
                 and ba.create_at between #{begin} and #{end}
+            </if>
+            <if test="status != null">
+                and ba.status = #{status, typeHandler=EnumOrdinalTypeHandler}
             </if>
         </where>
 
@@ -111,7 +120,7 @@
 
     </select>
 
-    <select id="findById" parameterType="integer" resultMap="ArticleMap">
+    <select id="selectById" parameterType="integer" resultMap="ArticleMap">
         select id, title, url_name, content, digest, create_at, modify_at,
                post_at, hits, comments, status, allow_comment,
                fk_category_id
@@ -125,7 +134,7 @@
         update blog_article set hits = hits + #{hits} where id = #{id}
     </update>
 
-    <delete id="delete" parameterType="integer">
+    <delete id="deleteById" parameterType="integer">
         delete from blog_article where id = #{id,jdbcType=INTEGER}
     </delete>
 
@@ -172,6 +181,23 @@
 
     <update id="increaseComments" parameterType="integer">
         update blog_article set comments = comments + 1 where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="update" parameterType="Article">
+        update blog_article
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="digest != null and digest != ''">
+                digest = #{digest,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+                    </set>
+
+        where id = #{id,jdbcType=INTEGER}
     </update>
 
 

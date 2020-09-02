@@ -15,16 +15,28 @@
         select id, username, password, name, email, avatar from blog_user
     </sql>
 
-    <select id="findByName" parameterType="string" resultMap="UserMap">
+    <select id="selectByName" parameterType="string" resultMap="UserMap">
         <include refid="full" />
         where username = #{username, jdbcType=VARCHAR}
     </select>
 
 
-    <select id="findUser" resultMap="UserMap">
+    <select id="selectByUser" parameterType="User" resultMap="UserMap">
         <include refid="full" />
-        where username = #{username, jdbcType=VARCHAR} and password = #{password,jdbcType=VARCHAR}
+
+        <where>
+            <if test="username != null and username != ''">
+                and username = #{username,jdbcType=VARCHAR}
+            </if>
+            <if test="name != null and name != ''">
+                and name  = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email,jdbcType=VARCHAR}
+            </if>
+        </where>
     </select>
+
     <select id="countUser" resultType="int">
         select count(id) from blog_user
     </select>
@@ -37,12 +49,30 @@
 
     <update id="update" parameterType="user">
         update blog_user
-        set username = 'admin'
-        <where>
-            <if test="username != null and username != ''">
-                and username = #{username,jdbcType=VARCHAR}
+        <set>
+            <if test="name != null and name != ''">
+                and name = #{name,jdbcType=VARCHAR},
             </if>
-        </where>
+            <if test="avatar != null and avatar != ''">
+                and avatar = #{avatar,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email,jdbcType=VARCHAR},
+            </if>
+            modify_at = now(),
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectById" parameterType="integer" resultType="User">
+        select id, username, password, name, email, avatar from blog_user
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <update id="updatePassword" parameterType="User">
+        update blog_user set password = #{password,jdbcType=VARCHAR},
+                             modify_at = now()
+        where id = #{id,jdbcType=INTEGER}
     </update>
 
 

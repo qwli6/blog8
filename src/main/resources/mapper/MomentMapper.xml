@@ -66,7 +66,7 @@
         limit #{offset}, #{pageSize}
     </select>
 
-    <select id="findById" parameterType="integer" resultMap="MomentResult">
+    <select id="selectById" parameterType="integer" resultMap="MomentResult">
         select content, hits, allow_comment, comments from blog_moment where id = #{id,jdbcType=INTEGER}
     </select>
 
@@ -103,6 +103,10 @@
 
     <update id="increaseHits">
         update blog_moment set hits = hits + #{hits} where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateCommentCount">
+        update blog_moment set comments = #{comments,jdbcType=INTEGER} where id = #{id,jdbcType=INTEGER}
     </update>
 
 

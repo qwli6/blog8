@@ -5,19 +5,37 @@ import java.time.LocalDateTime;
 
 /**
  * 系统设置
+ *
  * @author liqiwen
  * @version 1.0
+ * @since 1.0
  */
 public class BlogConfig implements Serializable {
 
+    /**
+     * 配置 id
+     */
     private Integer id;
 
+    /**
+     * 配置 key
+     */
     private String key;
 
+    /**
+     * 配置值
+     * 存储格式为 json 串
+     */
     private String value;
 
+    /**
+     * 创建时间
+     */
     private LocalDateTime createAt;
 
+    /**
+     * 修改时间
+     */
     private LocalDateTime modifyAt;
 
     public Integer getId() {

@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 /**
  * 上传的视频信息
+ *
  * @author liqiwen
  * @version 1.0
  */
@@ -24,7 +25,19 @@ public class VideoInfo implements Serializable {
      */
     private long duration;
 
+    public VideoInfo() {
+        super();
+    }
+
+    /**
+     * 构造方法
+     *
+     * @param width    width 宽度
+     * @param height   height 高度
+     * @param duration duration 时长
+     */
     public VideoInfo(int width, int height, long duration) {
+        super();
         this.width = width;
         this.height = height;
         this.duration = duration;

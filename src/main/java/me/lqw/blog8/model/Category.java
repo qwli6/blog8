@@ -1,33 +1,80 @@
 package me.lqw.blog8.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.hibernate.validator.constraints.Length;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 文章分类
+ *
+ * @author liqiwen
+ * @version 1.4
+ * @since 1.4
+ */
 public class Category implements Serializable {
 
+    /**
+     * 分类 id
+     */
     private Integer id;
 
-    @NotEmpty(message = "Please provide a name")
+    /**
+     * 分类名称
+     */
+    @NotBlank(message = "请提供一个分类名称")
+    @Length(max = 16, message = "分类名称的长度不能超过 {max} 个字符")
     private String name;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    /**
+     * 分类的创建时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @FutureOrPresent(message = "分类的创建时间必须是一个未来的时间")
     private LocalDateTime createAt;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    /**
+     * 分类的修改时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @FutureOrPresent(message = "分类的修改时间必须是一个未来的时间")
     private LocalDateTime modifyAt;
 
-    @NotNull(message = "Please provide a sort")
+    /**
+     * 分类排序字段
+     */
+    @NotNull(message = "请提供一个分类的排序字段")
     @Min(0)
     @Max(100)
     private Integer sort = 0;
 
+    /**
+     * 分类在前端页面是否显示
+     */
     private Boolean show = true;
+
+    /**
+     * 构造方法
+     */
+    public Category() {
+        super();
+    }
+
+    /**
+     * 构造方法
+     *
+     * @param id id
+     */
+    public Category(Integer id) {
+        super();
+        this.id = id;
+    }
+
 
     public Boolean getShow() {
         return show;

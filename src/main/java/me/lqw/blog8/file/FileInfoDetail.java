@@ -5,23 +5,40 @@ import java.time.LocalDateTime;
 
 /**
  * 文件详细信息
+ *
  * @author liqiwen
  * @version 1.2
  * @since 1.2
  */
 public class FileInfoDetail extends FileInfo implements Serializable {
 
-    private LocalDateTime createAt;
-
-    private LocalDateTime lastAccessAt;
-
-    private LocalDateTime lastModifiedAt;
-
     /**
      * 文件内容
+     *
      * @since 1.2
      */
     private String content;
+
+    /**
+     * 创建时间
+     */
+    private LocalDateTime createAt;
+
+
+    /**
+     * 文件属性
+     */
+    private FileAttributes fileAttributes;
+
+
+    /**
+     * 构造方法
+     *
+     * @param fileInfo fileInfo
+     */
+    public FileInfoDetail(FileInfo fileInfo) {
+        super(fileInfo);
+    }
 
     public String getContent() {
         return content;
@@ -39,24 +56,11 @@ public class FileInfoDetail extends FileInfo implements Serializable {
         this.createAt = createAt;
     }
 
-    public LocalDateTime getLastAccessAt() {
-        return lastAccessAt;
+    public FileAttributes getFileAttributes() {
+        return fileAttributes;
     }
 
-    public void setLastAccessAt(LocalDateTime lastAccessAt) {
-        this.lastAccessAt = lastAccessAt;
-    }
-
-    public LocalDateTime getLastModifiedAt() {
-        return lastModifiedAt;
-    }
-
-    public void setLastModifiedAt(LocalDateTime lastModifiedAt) {
-        this.lastModifiedAt = lastModifiedAt;
-    }
-
-    public FileInfoDetail(FileInfo fileInfo) {
-        super(fileInfo);
-
+    public void setFileAttributes(FileAttributes fileAttributes) {
+        this.fileAttributes = fileAttributes;
     }
 }

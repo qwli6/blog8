@@ -12,6 +12,7 @@ import java.util.List;
 
 /**
  * 文件资源解析器
+ *
  * @author liqiwen
  * @version 1.2
  * @since 1.2

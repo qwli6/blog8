@@ -1,22 +1,48 @@
 package me.lqw.blog8.model.vo;
 
-import me.lqw.blog8.model.CommentModule;
-import me.lqw.blog8.model.CommentStatus;
+import me.lqw.blog8.model.enums.CommentStatus;
 
 import java.io.Serializable;
 
-public class CommentPageQueryParam extends PageQueryParam implements Serializable {
+/**
+ * 分页查询评论入参
+ *
+ * @author liqiwen
+ * @version 1.2
+ * @since 1.2
+ */
+public class CommentPageQueryParam extends AbstractQueryParam implements Serializable {
 
+    /**
+     * 评论状态
+     */
     private CommentStatus status;
 
-    private CommentModule module;
+    /**
+     * 模块名称
+     */
+    private String moduleName;
 
-    public CommentModule getModule() {
-        return module;
+    /**
+     * 模块 id
+     */
+    private String moduleId;
+
+
+    public String getModuleId() {
+        return moduleId;
     }
 
-    public void setModule(CommentModule module) {
-        this.module = module;
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
     }
 
     public CommentStatus getStatus() {

@@ -1,10 +1,8 @@
 package me.lqw.blog8.model.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import me.lqw.blog8.model.Category;
 import me.lqw.blog8.model.Tag;
-import me.lqw.blog8.validator.StatusEnum;
+import me.lqw.blog8.model.enums.ArticleStatusEnum;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
@@ -13,10 +11,12 @@ import java.util.List;
 
 /**
  * 文章内容查询参数
+ *
  * @author liqiwen
  * @version 1.0
+ * @since 1.0
  */
-public class HandledArticlePageQueryParam extends PageQueryParam implements Serializable {
+public class HandledArticlePageQueryParam extends AbstractQueryParam implements Serializable {
 
     /**
      * 是否查询私人内容
@@ -31,23 +31,26 @@ public class HandledArticlePageQueryParam extends PageQueryParam implements Seri
     /**
      * 分页查询参数
      */
-    private PageQueryParam pageQueryParam;
+    private AbstractQueryParam abstractQueryParam;
 
+    /**
+     * 开始查询时间
+     */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
     private LocalDateTime begin;
 
+    /**
+     * 结束查询时间
+     */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
     private LocalDateTime end;
 
     /**
      * 文章 id，从 lucene 根据 query/category/tag 获取文章列表，
      * 查询出文章的 id，然后进行检索
-     *
+     * <p>
      * 返给前端的时候，忽略这个字段
      */
-    @JsonIgnoreProperties
     private List<Integer> ids;
 
     /**
@@ -71,14 +74,53 @@ public class HandledArticlePageQueryParam extends PageQueryParam implements Seri
      * 用户未登录|POSTED
      * 用户已登录|ALL
      */
-    private StatusEnum status;
+    private ArticleStatusEnum status;
 
-    public PageQueryParam getPageQueryParam() {
-        return pageQueryParam;
+    /**
+     * 构造方法
+     */
+    public HandledArticlePageQueryParam() {
+        super();
     }
 
-    public void setPageQueryParam(PageQueryParam pageQueryParam) {
-        this.pageQueryParam = pageQueryParam;
+    /**
+     * 构造方法
+     *
+     * @param queryParam queryParam
+     * @param categoryId categoryId
+     * @param tagId      tagId
+     */
+    public HandledArticlePageQueryParam(ArticlePageQueryParam queryParam, Integer categoryId, Integer tagId) {
+        super();
+        this.abstractQueryParam = queryParam;
+        if (categoryId != null) {
+            this.category = new Category(categoryId);
+        }
+        this.query = queryParam.getQuery();
+        this.status = queryParam.getStatus();
+        this.setCurrentPage(queryParam.getCurrentPage());
+        this.setPageSize(queryParam.getPageSize());
+        this.setOffset(queryParam.getOffset());
+
+        if (tag != null) {
+            this.tag = new Tag(tagId);
+        }
+
+        if (queryParam.getBegin() != null) {
+            this.begin = queryParam.getBegin();
+        }
+
+        if (queryParam.getEnd() != null) {
+            this.end = queryParam.getEnd();
+        }
+    }
+
+    public AbstractQueryParam getPageQueryParam() {
+        return abstractQueryParam;
+    }
+
+    public void setPageQueryParam(AbstractQueryParam abstractQueryParam) {
+        this.abstractQueryParam = abstractQueryParam;
     }
 
     public boolean isQueryPrivate() {
@@ -105,11 +147,11 @@ public class HandledArticlePageQueryParam extends PageQueryParam implements Seri
         this.query = query;
     }
 
-    public StatusEnum getStatus() {
+    public ArticleStatusEnum getStatus() {
         return status;
     }
 
-    public void setStatus(StatusEnum status) {
+    public void setStatus(ArticleStatusEnum status) {
         this.status = status;
     }
 
@@ -151,24 +193,6 @@ public class HandledArticlePageQueryParam extends PageQueryParam implements Seri
 
     public void setIds(List<Integer> ids) {
         this.ids = ids;
-    }
-
-    public HandledArticlePageQueryParam(ArticlePageQueryParam queryParam, Integer categoryId, Integer tagId) {
-        super();
-        this.pageQueryParam = queryParam;
-        if(categoryId != null) {
-            this.category = new Category();
-            category.setId(categoryId);
-        }
-        this.query = queryParam.getQuery();
-        this.status = queryParam.getStatus();
-        if(tag != null){
-            this.tag = new Tag(tagId);
-        }
-    }
-
-    public HandledArticlePageQueryParam() {
-        super();
     }
 
 }

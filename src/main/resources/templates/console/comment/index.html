@@ -2,113 +2,101 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="评论列表"></title>
+    <title th:text="评论列表">评论列表管理</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="/static/images/favicon.ico" rel="shortcut icon">
-    <link rel="stylesheet" href="/static/css/base.css">
-    <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
-    <link rel="stylesheet" href="/static/tabler/dist/css/tabler-buttons.min.css" />
-    <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
+    <link rel="stylesheet" th:href="@{/static/css/base.css}">
+    <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/static/blog/libs/markdown/github-markdown.css}">
 </head>
-<body class="antialiased">
-    <div class="page">
-        <div th:replace="/console/common/head-navbar::headnav('comment')"></div>
-        <form th:action="@{/console/comments}" id="queryForm" method="get">
-        <div class="content">
-        <div class="container-xl">
-            <!-- Page title -->
-            <div class="page-header">
-                <div class="row row-sm align-items-center">
-                    <div class="col-6 col-sm-4 col-md-2 col-xl-auto">
-                        <a href="javascript:void(0);" data-toggle="modal" data-target="#modal-team" class="btn btn-blue btn-block">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                            新标签
-                        </a>
+<body>
+    <!-- 头部导航部分 -->
+    <div th:replace="/console/common/head-navbar::headnav('comment')"></div>
+
+    <!-- 内容部分 -->
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-9">
+                <div class="media bg-white p-4 rounded shadow-sm">
+                    <img src="/static/blog/images/logoH.png" class="mr-3 rounded align-self-center" alt="...">
+                    <div class="media-body">
+                        <h3 class="mt-0" style="font-weight: 600; color: #222222;">石杉的架构笔记</h3>
+                        <div>Java 开发工程师 @湖北良品铺子食品有限公司</div>
+                        <div>Java、Android、Web</div>
                     </div>
                 </div>
+
+                <ul class="list-unstyled bg-white shadow-sm mt-4" style="border-radius: 4px;">
+                    <li class="media" style="padding: 15px; border-bottom: 1px solid #eeeeee;">
+                        <img src="/static/blog/images/logoH.png" style="height: 32px; width: 32px; margin-right: 10px" class="rounded" alt="...">
+                        <div class="media-body">
+                            <div class="mt-0">Redis 持久化</div>
+                            <div><small class="text-muted">2020-09-02 15:24:12</small></div>
+                            <div class="markdown-body">
+                                @PeterChu 后续应该可以支持不推送也能集成 VComment 的方案，只是在 v4.3.0 中暂时不考虑实现，等待收集反馈后再进一步做研究。
+                            </div>
+                        </div>
+                    </li>
+                    <li class="media" style="padding: 15px; border-bottom: 1px solid #eeeeee;">
+                        <img src="/static/blog/images/logoH.png" style="height: 32px; width: 32px; margin-right: 10px" class="rounded" alt="...">
+                        <div class="media-body">
+                            <div class="mt-0 mb-1">List-based media object</div>
+                            <div><small class="text-muted">2020-09-02 15:24:12</small></div>
+                            <div>
+                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                            </div>
+                        </div>
+                    </li>
+                    <li class="media" style="padding: 15px; border-bottom: 1px solid #eeeeee;">
+                        <img src="/static/blog/images/logoH.png" style="height: 32px; width: 32px; margin-right: 10px" class="rounded" alt="...">
+                        <div class="media-body">
+                            <div class="mt-0 mb-1">List-based media object</div>
+                            <div><small class="text-muted">2020-09-02 15:24:12</small></div>
+                            <div>
+                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                            </div>
+                        </div>
+                    </li>
+                    <li class="media" style="padding: 15px; border-bottom: 1px solid #eeeeee;">
+                        <img src="/static/blog/images/logoH.png" style="height: 32px; width: 32px; margin-right: 10px" class="rounded" alt="...">
+                        <div class="media-body">
+                            <div class="mt-0 mb-1">List-based media object</div>
+                            <div><small class="text-muted">2020-09-02 15:24:12</small></div>
+                            <div>
+                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="pagination justify-content-center m-0 ml-auto">
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:void(0);">1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:void(0);">2</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:void(0);">3</a>
+                    </li>
+                </ul>
             </div>
-
-            <div class="card">
-                <div class="table-responsive">
-                    <table class="table card-table table-vcenter text-nowrap datatable">
-                        <thead>
-                            <tr>
-                                <th>
-                                    ID
-                                </th>
-                                <th>
-                                    标签名称
-                                </th>
-                                <th>
-                                    创建时间
-                                </th>
-                                <th>
-                                    修改时间
-                                </th>
-                                <th class="w-1"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
-                    </table>
+            <div class="col-3">
+                <div class="card border-0 bg-white shadow-sm">
+                    <div class="card-header bg-white" style="font-weight: 600; color: #222222;">
+                        数据汇总
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item border-0">内容评论数<strong class="ml-2">723</strong></li>
+                        <li class="list-group-item border-0">动态评论数<strong class="ml-2">182,723</strong></li>
+                        <li class="list-group-item border-0">留言板评论数<strong class="ml-2">12,999</strong></li>
+                        <li class="list-group-item border-0">未审核评论<strong class="ml-2">2020-09-02</strong></li>
+                    </ul>
                 </div>
-<!--                <div class="card-footer d-flex align-items-center">-->
-<!--                    <p class="m-0 text-muted">显示 <span>1</span> 到 <span th:text="${tagPage.totalPage}">8</span> 页, 共 <span th:text="${tagPage.totalRow}">16</span> 条记录</p>-->
-<!--                    <ul class="pagination m-0 ml-auto" th:if="${tagPage.totalPage > 0}">-->
-<!--                        <li class="page-item" th:classappend="${tagPage.currentPage == 1 ? 'disabled' : ''}">-->
-<!--                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(1);'" tabindex="-1">-->
-<!--                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><polyline points="11 7 6 12 11 17"></polyline><polyline points="17 7 12 12 17 17"></polyline></svg>-->
-<!--                                首页-->
-<!--                            </a>-->
-<!--                        </li>-->
-<!--                        <li class="page-item" th:classappend="${tagPage.currentPage == 1 ? 'disabled' : ''}">-->
-<!--                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${tagPage.currentPage - 1} + ');'" tabindex="-1">-->
-<!--                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18" /></svg>-->
-<!--                                上一页-->
-<!--                            </a>-->
-<!--                        </li>-->
-<!--                        <li class="page-item" th:classappend="${tagPage.currentPage == item ? 'active' : ''}" th:each="item: ${#numbers.sequence(1, tagPage.totalPage)}">-->
-<!--                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${item} + ');'" th:text="${item}">1</a>-->
-<!--                        </li>-->
-<!--                        <li class="page-item" th:classappend="${tagPage.currentPage == tagPage.totalPage ? 'disabled' : ''}">-->
-<!--                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${tagPage.currentPage + 1} + ');'">-->
-<!--                                下一页 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="9 6 15 12 9 18" /></svg>-->
-<!--                            </a>-->
-<!--                        </li>-->
-<!--                        <li class="page-item" th:classappend="${tagPage.currentPage == tagPage.totalPage ? 'disabled' : ''}">-->
-<!--                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${tagPage.totalPage} + ');'">-->
-<!--                                尾页-->
-<!--                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><polyline points="7 7 12 12 7 17"></polyline><polyline points="13 7 18 12 13 17"></polyline></svg>-->
-<!--                            </a>-->
-<!--                        </li>-->
-<!--                    </ul>-->
-<!--                </div>-->
             </div>
         </div>
     </div>
-<!--        <input type="hidden" id="currentPage" name="currentPage" th:value="${tagPage.currentPage}">-->
-<!--        <input type="hidden" id="pageSize" name="pageSize" th:value="${tagPage.pageSize}">-->
-    </form>
-    </div>
 
-
-
-
-<script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
-<!-- Libs JS -->
-<script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Tabler Core -->
-<script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
-<script>
-    document.body.style.display = "block";
-</script>
-<script>
-    function toPage(i){
-        document.getElementById('currentPage').value = i;
-        document.getElementById('queryForm').submit();
-    }
-</script>
+    <script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
 
 
 </body>

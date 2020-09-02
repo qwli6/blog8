@@ -10,15 +10,17 @@ import java.util.Optional;
 
 /**
  * 标签持久化操作类
+ *
  * @author liqiwen
- * @since 1.4
  * @version 1.4
+ * @since 1.4
  */
 @Mapper
 public interface TagMapper {
 
     /**
      * 根据名称查找标签
+     *
      * @param tagName tagName
      * @return Tag
      */
@@ -26,12 +28,14 @@ public interface TagMapper {
 
     /**
      * 插入标签
+     *
      * @param tag tag
      */
     void insert(Tag tag);
 
     /**
      * 根据 id 查找标签
+     *
      * @param id id
      * @return Tag
      */
@@ -39,12 +43,14 @@ public interface TagMapper {
 
     /**
      * 更新标签, 这里只更新了标签名称
+     *
      * @param tag tag
      */
     void update(Tag tag);
 
     /**
      * 统计标签的数量, 用来分页
+     *
      * @param queryParam queryParam
      * @return int
      */
@@ -52,6 +58,7 @@ public interface TagMapper {
 
     /**
      * 分页查找标签
+     *
      * @param queryParam queryParam
      * @return list
      */
@@ -59,14 +66,16 @@ public interface TagMapper {
 
     /**
      * 删除标签, 根据 id 删除
+     *
      * @param id id
      */
     void deleteById(@Param("id") Integer id);
 
     /**
      * 查找全部标签
+     *
      * @return list
      */
-    List<Tag> listAll();
+    List<Tag> selectAll();
 
 }

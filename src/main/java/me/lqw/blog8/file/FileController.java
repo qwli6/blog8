@@ -1,146 +1,179 @@
 package me.lqw.blog8.file;
 
-import me.lqw.blog8.model.dto.CR;
-import me.lqw.blog8.model.dto.ResultDTO;
-import me.lqw.blog8.web.controller.console.BaseController;
+import me.lqw.blog8.exception.ResourceNotFoundException;
+import me.lqw.blog8.model.dto.common.CR;
+import me.lqw.blog8.model.dto.common.QR;
+import me.lqw.blog8.model.dto.common.ResultDTO;
+import me.lqw.blog8.util.JsonUtil;
+import me.lqw.blog8.web.controller.console.AbstractBaseController;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * 文件系统 controller
+ *
  * @author liqiwen
  * @version 1.2
  * @since 1.2
  */
+@Conditional({FileCondition.class})
+@ConditionalOnClass(FileService.class)
+@ConditionalOnWebApplication
 @Controller
 @RequestMapping("console")
-@Conditional({FileCondition.class})
-public class FileController extends BaseController {
+public class FileController extends AbstractBaseController {
 
+    /**
+     * 文件服务
+     */
     private final FileService fileService;
 
+    /**
+     * 构造函数注入
+     *
+     * @param fileService fileService
+     */
     public FileController(FileService fileService) {
         this.fileService = fileService;
     }
 
+    /**
+     * 获取文件管理页面
+     *
+     * @return String
+     */
     @GetMapping("files")
-    public String files(){
+    public String files() {
         return "console/file/index";
     }
 
 
-    @RequestMapping("file1/{name}")
-    public ResponseEntity<byte[]> getImage(@PathVariable("name") String name) throws Exception {
-        byte[] imageContent ;
-        String path = "your image path with image_name";
-        imageContent = fileToByte(new File("/Users/liqiwen/Downloads/upload/" + name));
-
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_PNG);
-        return new ResponseEntity<>(imageContent, headers, HttpStatus.OK);
-    }
-
-    public static byte[] fileToByte(File img) throws Exception {
-        byte[] bytes = null;
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            BufferedImage bi;
-            bi = ImageIO.read(img);
-            ImageIO.write(bi, "png", baos);
-            bytes = baos.toByteArray();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            baos.close();
-        }
-        return bytes;
-    }
-
-
-    @GetMapping("file/getQueryCriteriaNew")
+    /**
+     * 查询文件
+     *
+     * @param queryParam queryParam
+     * @return FilePageResult
+     */
+    @GetMapping("file/query")
     @ResponseBody
-    public Map<String, Object> getQueryCriteriaNew(){
-        Map<String, Object> dataMap = new HashMap<>();
-
-        dataMap.put("fileSuffixes", FileTypeEnum.getTypes());
-        dataMap.put("paths", new ArrayList<>());
-
-        return dataMap;
+    public QR selectPage(FilePageQueryParam queryParam) {
+        return ResultDTO.createQR(fileService.selectPage(queryParam));
     }
 
 
-    @GetMapping("files/query")
-    @ResponseBody
-    public FilePageResult selectPage(FilePageQueryParam queryParam) throws Exception {
-        return fileService.selectPage(queryParam);
-    }
-
-
+    /**
+     * 上传文件
+     * @param uploadModel uploadModel
+     * @return CR<?>
+     */
     @PostMapping("file/upload")
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile uploadFile){
-
-        if(uploadFile.isEmpty()){
-            return new ResponseEntity("please select a file!", HttpStatus.OK);
-        }
-
-        fileService.saveUploadedFiles(Arrays.asList(uploadFile));
-        return new ResponseEntity("Successfully uploaded - " +
-                uploadFile.getOriginalFilename(), new HttpHeaders(), HttpStatus.OK);
-
-    }
-
-    @PostMapping("file/upload/multi")
-    public ResponseEntity<String> uploadFileMulti(@RequestParam(value = "extraField", required = false) String extraField, @RequestParam("files") MultipartFile[] uploadFiles) {
-
-        logger.debug("Multiple file upload!");
-
-
-        // Get file name
-        String uploadedFileName = Arrays.stream(uploadFiles).map(MultipartFile::getOriginalFilename)
-                .filter(x -> !StringUtils.isEmpty(x)).collect(Collectors.joining(" , "));
-
-        if (StringUtils.isEmpty(uploadedFileName)) {
-            return new ResponseEntity<>("please select a file!", HttpStatus.OK);
-        }
-
-        for(MultipartFile file : uploadFiles){
-            String originalFilename = file.getOriginalFilename();
-            boolean flag = FileTypeEnum.checkSuffix(originalFilename);
-            if(!flag){
-                return new ResponseEntity<>("Illegal file type", HttpStatus.BAD_REQUEST);
-            }
-        }
-
-        fileService.saveUploadedFiles(Arrays.asList(uploadFiles));
-
-        return new ResponseEntity<>("Successfully uploaded - "
-                + uploadedFileName, HttpStatus.OK);
-
-    }
-
-    // 3.1.3 maps html form to a Model
-    @PostMapping("api/upload/multi/model")
     @ResponseBody
-    public CR<?> multiUploadFileModel(@ModelAttribute UploadModel model) {
+    public CR<?> fileUpload(@ModelAttribute UploadModel uploadModel) {
 
-        return ResultDTO.create(fileService.saveUploadedFiles(Arrays.asList(model.getFiles())));
+        List<FileInfo> fileInfos = fileService.uploadedFiles(uploadModel);
+
+        logger.info("upload success! [{}]", JsonUtil.toJsonString(fileInfos));
+        return ResultDTO.create(fileInfos);
+    }
+
+
+    /**
+     * 更新文件内容
+     * @param fileUpdated fileUpdated
+     * @return CR<?>
+     */
+    @PostMapping("file/update")
+    @ResponseBody
+    public CR<?> fileUpdate(@RequestBody FileUpdated fileUpdated){
+        fileService.writeFile(fileUpdated);
+
+        return ResultDTO.create();
+    }
+
+
+    @PostMapping("file/create")
+    @ResponseBody
+    public CR<?> fileCreate(@RequestBody FileCreate fileCreate) {
+        return ResultDTO.create(fileService.fileCreate(fileCreate));
+    }
+
+
+    /**
+     * 编辑文件
+     * @param fileName 文件名称
+     * @return String
+     */
+    @GetMapping("file/edit")
+    public ModelAndView fileEdit(@RequestParam("fileName") String fileName, Model model) {
+
+        FileInfoDetail fid = fileService.fileEdit(fileName);
+
+        model.addAttribute("fid", fid);
+
+        String ext = fid.getExt().getCode();
+        if(FileTypeEnum.HTM.getCode().equals(ext)){
+            ext = FileTypeEnum.HTML.getCode();
+        }
+
+        ModelAndView mav = getModelAndView();
+        mav.setViewName("console/file/edit/edit_" + ext);
+        return mav;
+    }
+
+
+    /**
+     * 文件重命名
+     * @return CR<?>
+     */
+    @PostMapping("file/rename")
+    @ResponseBody
+    public CR<?> fileRename(){
+
+        return ResultDTO.create();
+    }
+
+
+    /**
+     * 删除文件
+     * @param fileUpdated fileDelete
+     * @return CR<?>
+     */
+    @DeleteMapping("file/delete")
+    @ResponseBody
+    public CR<?> fileDelete(@RequestBody FileUpdated fileUpdated){
+
+        return ResultDTO.create();
+    }
+
+
+    /**
+     * 拷贝文件
+     * @param fileUpdated fileUpdated
+     * @return CR<?>
+     */
+    @PostMapping("file/copy")
+    @ResponseBody
+    public CR<?> fileCopy(@RequestBody FileUpdated fileUpdated){
+
+        return ResultDTO.create();
     }
 
 }

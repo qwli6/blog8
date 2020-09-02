@@ -4,14 +4,12 @@
     <meta charset="UTF-8">
     <title th:text="${article.title}"></title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="/static/images/favicon.ico" rel="shortcut icon">
-    <link rel="stylesheet" href="/static/css/front.css">
-    <link href="/static/tabler/dist/css/tabler.min.css" rel="stylesheet"/>
-    <link href="/static/tabler/dist/css/demo.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="/static/tabler/dist/libs/prism/prism.css">
-    <link rel="stylesheet" href="/static/css/github-markdown.css">
+    <link rel="shortcut icon" th:href="@{/static/blog/images/logoH.png}" >
+    <link rel="stylesheet" th:href="@{/static/blog/css/front.css}">
+    <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/static/blog/libs/prism/prism.css}">
+    <link rel="stylesheet" th:href="@{/static/blog/libs/markdown/github-markdown.css}">
     <style>
-
         @media (max-width: 767px) {
             .markdown-body {
                 padding: 15px;
@@ -19,60 +17,45 @@
         }
     </style>
 </head>
-<body class="antialiased">
-    <div class="page">
-        <div th:replace="header::head('index')"></div>
-        <div class="content">
-            <div class="container-xl">
-                <div class="row justify-content-center">
-                    <div class="col-12">
-                        <h1 th:text="${article.title}"></h1>
-                        <div class="markdown-body" th:utext="${article.content}"></div>
+<body>
+    <div th:replace="header::head('article')"></div>
+
+    <!-- 主体部分 -->
+    <main role="main">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12">
+                    <h2 class="my-3">
+                        <a class="title-article title-article-detail" href="javascript:void(0);" th:text="${article.title}">文章标题</a>
+                    </h2>
+                    <div class="markdown-body" th:utext="${article.content}">
+                        文章内容
                     </div>
                 </div>
 
-                <div class="row justify-content-center">
-                    <div class="col-lg-12 col-xl-12">
-                        <div class="mb-3">
-                            <label class="form-label">用户名</label>
-                            <input type="text" id="username" class="form-control" name="example-text-input" placeholder="Input placeholder">
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">内容</label>
-                            <textarea class="form-control" id="content" name="example-textarea" placeholder="Textarea placeholder"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">邮箱（用于显示头像）</label>
-                            <input type="text" id="email" class="form-control" name="example-password-input" placeholder="Input placeholder">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">网址</label>
-                            <input type="text" id="website" class="form-control" name="example-password-input" placeholder="Input placeholder">
-                        </div>
-                        <div class="mb-3 justify-content-end">
-                            <button type="button" id="btn-submit" class="btn btn-primary">提交</button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
-    <!-- Libs JS -->
-    <script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Tabler Core -->
-    <script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
-    <script type="text/javascript" src="/static/tabler/dist/libs/prism/prism.js"></script>
-    <script>
-        document.body.style.display = 'block';
-    </script>
+    <!-- 底部标注 -->
+    <footer class="site-footer">
+        <div class="container">
+            <p>京ICP备15031610号-30</p>
+        </div>
+    </footer>
+
+    <script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/js/Toast.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/libs/prism/prism.js}"></script>
+
     <script>
 
+        const rootPath = '[[@{/}]]';
         window.onload = function(){
 
-            fetch('/article/[[${article.id}]]/hits', {
+            fetch(rootPath + 'article/[[${article.id}]]/hits', {
                 method: 'PUT',
                 headers: new Headers({
                     'Content-Type': 'application/json;charset=UTF-8'
@@ -94,53 +77,53 @@
             comment.email = document.getElementById('email').value;
             comment.website = document.getElementById('website').value;
 
-            $.ajax({
-                url: '/module/article/' + '[[${article.id}]]' + '/comment/save',
-                data: JSON.stringify(comment),
-                dataType: 'json',
-                contentType: 'application/json;charset=utf8',
-                type: 'post',
-                success: function(res){
-                    console.log(res);
-                }
-            });
+            // $.ajax({
+            //     url: rootPath + 'module/article/' + '[[${article.id}]]' + '/comment/save',
+            //     data: JSON.stringify(comment),
+            //     dataType: 'json',
+            //     contentType: 'application/json;charset=utf8',
+            //     type: 'post',
+            //     success: function(res){
+            //         console.log(res);
+            //     }
+            // });
         })
 
         $(document).ready(function(){
 
-            $.ajax({
-                url: '/api/module/article/'+ '[[${article.id}]]' + '/comments',
-                type: 'get',
-                dataType: 'json',
-                success: function(res){
-                    let data = res.data;
-                    let html = '';
-                    for(let i = 0; i <data.length; i++){
-                        if(i === 0){
-                            html += '<div class="list list-row list-hoverable">';
-                        }
-                        html += '<div class="list-item">';
-                        html += '<a href="#">';
-                        html += '<span class="avatar" style="background-image: url(/static/tabler/avatars/000m.jpg)"></span> ';
-                        html += '</a> ';
-                        html += '<div class="text-truncate"> ';
-                        html += '<a href="#" class="text-body d-block">' + data[i].username+'</a> ';
-                        html += '<div class="d-block text-muted text-truncate mt-n1">';
-                        html += data[i].content ;
-                        html += '</div> ';
-                        html += '</div> ';
-                        html += '<a href="#" class="list-item-actions show"> ';
-                        html += '<svg xmlns="http://www.w3.org/2000/svg" class="icon text-muted" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M12 17.75l-6.172 3.245 1.179-6.873-4.993-4.867 6.9-1.002L12 2l3.086 6.253 6.9 1.002-4.993 4.867 1.179 6.873z" /></svg> ';
-                        html += '</a> ' ;
-                        html += '</div>';
-
-                        if(i === data.length-1){
-                            html += '</div>';
-                        }
-                        document.getElementById('commentContainer').innerHTML = html;
-                    }
-                }
-            })
+            // $.ajax({
+            //     url: rootPath + 'api/module/article/'+ '[[${article.id}]]' + '/comments',
+            //     type: 'get',
+            //     dataType: 'json',
+            //     success: function(res){
+            //         let data = res.data;
+            //         let html = '';
+            //         for(let i = 0; i <data.length; i++){
+            //             if(i === 0){
+            //                 html += '<div class="list list-row list-hoverable">';
+            //             }
+            //             html += '<div class="list-item">';
+            //             html += '<a href="#">';
+            //             html += '<span class="avatar" style="background-image: url(/static/tabler/avatars/000m.jpg)"></span> ';
+            //             html += '</a> ';
+            //             html += '<div class="text-truncate"> ';
+            //             html += '<a href="#" class="text-body d-block">' + data[i].username+'</a> ';
+            //             html += '<div class="d-block text-muted text-truncate mt-n1">';
+            //             html += data[i].content ;
+            //             html += '</div> ';
+            //             html += '</div> ';
+            //             html += '<a href="#" class="list-item-actions show"> ';
+            //             html += '<svg xmlns="http://www.w3.org/2000/svg" class="icon text-muted" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M12 17.75l-6.172 3.245 1.179-6.873-4.993-4.867 6.9-1.002L12 2l3.086 6.253 6.9 1.002-4.993 4.867 1.179 6.873z" /></svg> ';
+            //             html += '</a> ' ;
+            //             html += '</div>';
+            //
+            //             if(i === data.length-1){
+            //                 html += '</div>';
+            //             }
+            //             document.getElementById('commentContainer').innerHTML = html;
+            //         }
+            //     }
+            // })
 
         })
     </script>

@@ -1,47 +1,47 @@
 package me.lqw.blog8.util;
 
-import com.sun.xml.internal.ws.api.model.wsdl.editable.EditableWSDLService;
 
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 /**
- * 安全检查
+ * 安全工具类
+ *
  * @author liqiwen
- * @since 1.2
  * @version 1.2
+ * @since 1.2
  */
 public class SecurityUtil {
+
+    /**
+     * 构造方法
+     */
     private SecurityUtil() {
+        super();
     }
 
-
-    public static String encodePassword(String password, int length) {
-        MessageDigest digest = null;
+    /**
+     * 加密算法
+     * @param password password
+     * @return string
+     */
+    public static String encodePasswordUseMd5(String password) {
+        MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("MD5");
+
+            digest.digest(password.getBytes(Charset.defaultCharset()));
 
             digest.update(password.getBytes(Charset.defaultCharset()));
 
             byte[] bytes = digest.digest();
 
-
-            int i = 0;
-            StringBuilder stringBuffer = new StringBuilder();
-            for(int offset = 0; offset < bytes.length; i++){
-                i = bytes[offset];
-                if (i < 0) {
-                    i += 256;
-                }
-                if (i < 16) {
-                    stringBuffer.append(0);
-                }
-                stringBuffer.append(Integer.toHexString(i));//通过Integer.toHexString方法把值变为16进制
-            }
-            return stringBuffer.toString().substring(0, length);//从下标0开始，length目的是截取多少长度的值
+            return Arrays.toString(bytes);
 
         } catch (NoSuchAlgorithmException e) {
+            //理论上来说，不存在此错误
             e.printStackTrace();
         }
         return null;
