@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/static/blog/libs/markdown/github-markdown.css">
+
+</head>
+<body>
+<h1>hello world</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-9 col-sm-12" id="comment-container"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <form>
+                <input type="text" value="" id="parentCommentId">
+                <div class="form-group">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">@</div>
+                        </div>
+                        <input type="text" class="form-control" id="nickname" placeholder="如何称呼您?">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">@</div>
+                        </div>
+                        <input type="text" class="form-control" id="email" placeholder="如何联系您?">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <textarea class="form-control" id="content" style="resize: none;" rows="3" placeholder="理性评论"></textarea>
+                </div>
+                <button id="btn-comment-submit" type="button" class="btn btn-danger">提交评论</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
+<script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script>
+    const rootPath = '[[@{/}]]';
+    document.getElementById('btn-comment-submit').addEventListener('click', function(){
+        let nickname = document.getElementById('nickname').value;
+        let email = document.getElementById('email').value;
+        let content = document.getElementById('content').value;
+        let parentCommentId = document.getElementById('parentCommentId').value;
+
+        if(nickname == null || nickname.trim().length === 0){
+            alert('必须输入昵称');
+            return;
+        }
+        if(email == null || email.trim().length === 0){
+            alert('必须输入邮箱');
+            return;
+        }
+
+        if(content == null || content.trim().length === 0){
+            alert('必须输入内容');
+            return;
+        }
+
+        let url = 'api/module/template/52/comment/save';
+
+        let data = {
+            'content': content,
+            'email': email,
+            'username': nickname
+        }
+
+        if(parentCommentId != null && parentCommentId !== ""){
+
+            data.parent = {
+                'id': parentCommentId
+            }
+        }
+
+
+        fetch(rootPath + url, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: new Headers({
+                'Content-Type':'application/json;charset=UTF-8'
+            })
+        }).then(res => {
+            return res.json();
+        }).catch(error => {
+            console.error('Error:', error)
+        }).then(response => {
+            console.log('response:' + JSON.stringify(response));
+            if(response.code === 200){
+                localStorage.setItem('commentUsername', nickname);
+                localStorage.setItem('commentEmail', email);
+                document.getElementById('content').value = '';
+                loadComments(rootPath + 'api/module/template/52/comments');
+            }
+        });
+    });
+
+    window.onload = function(){
+        let queryUrl = rootPath + 'api/module/template/52/comments?currentPage=1'
+        loadComments(queryUrl);
+    }
+
+
+    /**
+     * 加载评论
+     * @param url url
+     */
+    function loadComments(url){
+
+        document.getElementById('nickname').value = localStorage.getItem('commentUsername');
+        document.getElementById('email').value=localStorage.getItem('commentEmail');
+
+
+        fetch(url, {
+            method: 'GET',
+            headers: new Headers({
+                'Content-Type': 'application/json;charset=UTF-8',
+            })
+        }).then(res => {
+            return res.json();
+        }).catch(error => {
+            console.log('error:' + error);
+        }).then(response => {
+            let html = '<ul class="list-unstyled">';
+            if(response.code === 200){
+
+                let commentsPageData = response.data;
+                let commentData = commentsPageData.data;
+                for(let i = 0; i < commentData.length; i++){
+                    html += "<li class='media py-2 border-bottom'>";
+                        html += "<img src='/static/blog/images/default-user.png' " +
+                            "style='height: 38px; width: 38px;' class='mr-3 rounded' alt='...'>";
+                    html +=  "<div class='media-body'>";
+
+
+                    html += "         <h5 class='mt-0 mb-1'>";
+                    if(commentData[i].admin){
+                        html += "<span class='badge badge-success' style='margin-right: 10px;'>管理员</span>";
+                    }
+                    html += commentData[i].nickname;
+
+                    html += '<small style="font-size: 12px; margin-left: 10px;" class="text-muted">'+commentData[i].createTime +'</small></h5>';
+                    if(commentData[i].parent != null){
+                        html += '<div>回复 @:<a href="javascript:void(0);">' + commentData[i].parent.nickname +'</a></div>';
+                    }
+                    html += '<div class="markdown-body">' + commentData[i].content + '</div>';
+
+                    html += '<div><a href="javascript:void(0);" class="float-right" data-commentid="'+ commentData[i].id+'">回复</a> </div>'
+                    html +=" </div>";
+                    html += "</li>";
+                }
+
+
+                html += '</ul>';
+                html += "<nav aria-label='...'>";
+                html += "<ul class='pagination pagination-sm justify-content-center'>";
+                if(commentsPageData.totalPage > 1){
+                    for(let i = 1; i <= commentsPageData.totalPage; i++){
+                        if(commentsPageData.currentPage === i) {
+                            html += "<li class='page-item disabled'><a class='page-link' href='javascript:void(0);'>" + i + "</a></li>";
+                        } else {
+                            html += "<li class='page-item'><a class='page-link' href='javascript:void(0);' data-commentpage='"+i+"'>" + i + "</a></li>";
+                        }
+                    }
+                } else {
+                    html+= "<li class='page-item disabled'><a class='page-link' href='javascript:void(0);'>1</a></li>";
+                }
+                html += "</ul></nav>";
+
+                document.getElementById('comment-container').innerHTML = html;
+
+               for(ele of document.querySelectorAll('a[data-commentid]')){
+                   ele.addEventListener('click', function(){
+                        let id = this.dataset.commentid;
+                        document.getElementById('parentCommentId').value=id;
+                   });
+               }
+
+               for(ele of document.querySelectorAll('a[data-commentpage]')){
+                   ele.addEventListener('click', function(){
+                       let toPage = this.dataset.commentpage;
+                       loadComments(rootPath + 'api/module/template/52/comments?currentPage=' + toPage);
+                   });
+               }
+            }
+        });
+
+    }
+
+</script>
+</body>
+</html>
