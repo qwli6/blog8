@@ -28,13 +28,33 @@
             <div class="media bg-white p-4 rounded shadow-sm">
                 <img src="/static/blog/images/logoH.png" class="mr-3 rounded align-self-center" alt="...">
                 <div class="media-body">
-                    <h3 class="mt-0" style="font-weight: 600; color: #222222;">石杉的架构笔记</h3>
+                    <h4 style="font-weight: 600; color: #222222;">石杉的架构笔记</h4>
                     <div>Java 开发工程师 @湖北良品铺子食品有限公司</div>
                     <div>Java、Android、Web</div>
                 </div>
             </div>
 
             <ul class="list-group list-group-flush bg-white shadow-sm mt-4">
+
+                <li class="list-group-item">
+                    <form method="get" th:action="@{/console/moment}">
+                        <div class="form-row">
+                            <div class="col-7">
+                                <input type="text" class="form-control" placeholder="City">
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="State">
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="Zip">
+                            </div>
+                            <div class="col">
+                                <button type="submit" class="btn btn-danger">搜索</button>
+                            </div>
+                        </div>
+                    </form>
+                </li>
+
                 <li class="list-group-item" th:each="article : ${articlePage.data}">
                     <div class="mb-1 text-muted">
                         <small class="text-muted badge badge-light" th:text="${article.category.name}"></small>
@@ -58,7 +78,10 @@
             </ul>
         </div>
         <div class="col-3">
-            <div class="card border-0 bg-white shadow-sm">
+
+            <a th:href="@{/console/article/create}" type="button" class="btn btn-danger btn-block">写文章</a>
+
+            <div class="card border-0 bg-white shadow-sm mt-3">
                 <div class="card-header bg-white" style="font-weight: 600; color: #222222;">
                     个人成就
                 </div>

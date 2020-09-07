@@ -41,7 +41,7 @@ public class HandledCommentPageQueryParam extends AbstractQueryParam implements 
      */
     public HandledCommentPageQueryParam(CommentPageQueryParam queryParam) {
         this.setCurrentPage(queryParam.getCurrentPage());
-        this.setCurrentPage(queryParam.getPageSize());
+        this.setPageSize(queryParam.getPageSize());
         this.setIgnorePaging(queryParam.isIgnorePaging());
         this.setOffset(queryParam.getOffset());
 

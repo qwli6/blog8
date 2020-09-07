@@ -25,44 +25,14 @@
                     </div>
                 </div>
 
-                <ul class="list-unstyled bg-white shadow-sm mt-4" style="border-radius: 4px;">
-                    <li class="media" style="padding: 15px; border-bottom: 1px solid #eeeeee;">
+                <ul class="list-unstyled bg-white shadow-sm mt-4">
+                    <li class="media" th:each="commentDto : ${commentPage.data}" style="border-radius: 4px; padding: 15px; border-bottom: 1px solid #eeeeee;">
                         <img src="/static/blog/images/logoH.png" style="height: 32px; width: 32px; margin-right: 10px" class="rounded" alt="...">
                         <div class="media-body">
-                            <div class="mt-0">Redis 持久化</div>
-                            <div><small class="text-muted">2020-09-02 15:24:12</small></div>
-                            <div class="markdown-body">
+                            <div class="mt-0" th:text="${commentDto.nickname}">Redis 持久化</div>
+                            <div><small class="text-muted" th:text="${#temporals.format(commentDto.createTime, 'yyyy-MM-dd HH:mm')}">2020-09-02 15:24:12</small></div>
+                            <div class="markdown-body" th:utext="${commentDto.content}">
                                 @PeterChu 后续应该可以支持不推送也能集成 VComment 的方案，只是在 v4.3.0 中暂时不考虑实现，等待收集反馈后再进一步做研究。
-                            </div>
-                        </div>
-                    </li>
-                    <li class="media" style="padding: 15px; border-bottom: 1px solid #eeeeee;">
-                        <img src="/static/blog/images/logoH.png" style="height: 32px; width: 32px; margin-right: 10px" class="rounded" alt="...">
-                        <div class="media-body">
-                            <div class="mt-0 mb-1">List-based media object</div>
-                            <div><small class="text-muted">2020-09-02 15:24:12</small></div>
-                            <div>
-                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                            </div>
-                        </div>
-                    </li>
-                    <li class="media" style="padding: 15px; border-bottom: 1px solid #eeeeee;">
-                        <img src="/static/blog/images/logoH.png" style="height: 32px; width: 32px; margin-right: 10px" class="rounded" alt="...">
-                        <div class="media-body">
-                            <div class="mt-0 mb-1">List-based media object</div>
-                            <div><small class="text-muted">2020-09-02 15:24:12</small></div>
-                            <div>
-                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                            </div>
-                        </div>
-                    </li>
-                    <li class="media" style="padding: 15px; border-bottom: 1px solid #eeeeee;">
-                        <img src="/static/blog/images/logoH.png" style="height: 32px; width: 32px; margin-right: 10px" class="rounded" alt="...">
-                        <div class="media-body">
-                            <div class="mt-0 mb-1">List-based media object</div>
-                            <div><small class="text-muted">2020-09-02 15:24:12</small></div>
-                            <div>
-                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
                             </div>
                         </div>
                     </li>

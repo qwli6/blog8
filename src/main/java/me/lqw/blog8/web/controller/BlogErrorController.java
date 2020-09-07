@@ -74,7 +74,7 @@ public class BlogErrorController extends AbstractBaseController implements Error
      * @return ModelAndView
      */
     @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
-    public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
+    public ModelAndView errorWithHtml(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mav = getModelAndView();
         HttpStatus status = getStatus(request);
 
@@ -98,7 +98,7 @@ public class BlogErrorController extends AbstractBaseController implements Error
      */
     @RequestMapping
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> errorJSON(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<Map<String, Object>> errorWithJson(HttpServletRequest request, HttpServletResponse response) {
         HttpStatus status = getStatus(request);
         if (!status.isError()) {
             //非 4xx 或者 5xx 的错误

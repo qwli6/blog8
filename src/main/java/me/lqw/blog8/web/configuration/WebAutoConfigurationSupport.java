@@ -16,6 +16,7 @@ import org.springframework.util.PathMatcher;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
@@ -148,6 +149,15 @@ public class WebAutoConfigurationSupport extends WebMvcConfigurationSupport {
         return blackIpFilterBean;
     }
 
+    @Override
+    protected void addCorsMappings(@NonNull CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowCredentials(true)
+                .allowedMethods("GET", "POST", "DELETE", "PUT","PATCH")
+                .maxAge(3600);
+    }
+
     /**
      * 上下文过滤器
      *
@@ -165,15 +175,15 @@ public class WebAutoConfigurationSupport extends WebMvcConfigurationSupport {
         return contextFilterBean;
     }
 
-//    /**
-//     * 配置自定义的异常解析器
-//     *
-//     * @param resolvers resolvers
-//     */
-//    @Override
-//    public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
-//        resolvers.add(0, handlerExceptionResolver);
-//    }
+    /**
+     * 配置自定义的异常解析器
+     *
+     * @param resolvers resolvers
+     */
+    @Override
+    public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
+        resolvers.add(0, handlerExceptionResolver);
+    }
 
 //    @Override
 //    public HandlerMapping resourceHandlerMapping(UrlPathHelper urlPathHelper, PathMatcher pathMatcher, ContentNegotiationManager contentNegotiationManager, FormattingConversionService conversionService, ResourceUrlProvider resourceUrlProvider) {

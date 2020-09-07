@@ -95,4 +95,11 @@ public interface CommentMapper {
      * @param comment comment
      */
     void update(Comment comment);
+
+    /**
+     * 根据 ids 查询评论列表
+     * @param ids ids
+     * @return 评论列表
+     */
+    List<Comment> selectByIds(@Param("ids") List<Integer> ids);
 }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,8 +34,6 @@ import javax.validation.Valid;
 @Controller
 public class LoginController extends AbstractBaseController {
 
-
-    private final BlogEventPublishHandler blogEventPublishHandler;
     /**
      * 用户 UserService
      */
@@ -45,11 +44,9 @@ public class LoginController extends AbstractBaseController {
      */
     private final RememberMeService rememberMeService;
 
-    public LoginController(UserService userService, RememberMeService rememberMeService,
-                           BlogEventPublishHandler blogEventPublishHandler) {
+    public LoginController(UserService userService, RememberMeService rememberMeService) {
         this.userService = userService;
         this.rememberMeService = rememberMeService;
-        this.blogEventPublishHandler = blogEventPublishHandler;
     }
 
     /**
@@ -70,21 +67,15 @@ public class LoginController extends AbstractBaseController {
      * @param request    request
      * @return CR<?>
      */
-    @PostMapping(value = "login")
+    @PostMapping(value = "api/token")
     @ResponseBody
     public CR<?> userAuth(@Valid @RequestBody LoginParam loginParam, HttpServletRequest request, HttpServletResponse response) {
 
-
         HttpSession session = request.getSession();
 
-        User user = userService.userLogin(loginParam.getUsername(), loginParam.getPassword());
+        User user = userService.userAuth(loginParam.getUsername(), loginParam.getPassword());
 
         session.setAttribute(BlogConstants.AUTH_USER, user);
-
-        Boolean rememberMe = loginParam.getRememberMe();
-//        if (rememberMe) {
-//            rememberMeService.remember(request, response, user);
-//        }
 
         return ResultDTO.create();
     }

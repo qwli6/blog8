@@ -3,6 +3,7 @@ package me.lqw.blog8.web.controller.console;
 import me.lqw.blog8.model.Article;
 import me.lqw.blog8.model.dto.common.CR;
 import me.lqw.blog8.model.dto.common.ResultDTO;
+import me.lqw.blog8.model.enums.ArticleStatusEnum;
 import me.lqw.blog8.model.vo.ArticlePageQueryParam;
 import me.lqw.blog8.service.ArticleService;
 import org.springframework.stereotype.Controller;
@@ -68,6 +69,8 @@ public class ArticleBackendController extends AbstractBaseController {
     @PostMapping("article/save")
     @ResponseBody
     public CR<?> save(@Valid @RequestBody Article article) {
+        article.setStatus(ArticleStatusEnum.POSTED);
+        article.setAllowComment(true);
         return ResultDTO.create(articleService.save(article).getId());
     }
 

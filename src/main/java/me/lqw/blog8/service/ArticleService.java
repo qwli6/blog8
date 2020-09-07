@@ -118,6 +118,8 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
     public Article save(Article article) throws LogicException {
         article.setHits(0);
         article.setComments(0);
+        article.setCreateAt(LocalDateTime.now());
+        article.setModifyAt(LocalDateTime.now());
 
         String urlName = article.getUrlName();
         //获取内容的 urlName，判断 urlName 是否存在
@@ -136,8 +138,7 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
 
         //判断内容的状态
         ArticleStatusEnum status = article.getStatus();
-        article.setCreateAt(LocalDateTime.now());
-        article.setModifyAt(LocalDateTime.now());
+
         switch (status) {
             case DRAFT:
                 //如果是草稿, 则直接设置 postAt 为空

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .media {
+            margin-top: 15px;
+        }
+
+        .media:first-child {
+            margin-top: 0;
+        }
+
+        .media-right, .media>.pull-right {
+            padding-left: 10px;
+        }
+
+        .media-left, .media>.pull-left {
+            padding-right: 10px;
+        }
+
+        .media-left, .media-right, .media-body {
+            display: table-cell;
+            vertical-align: top;
+        }
+
+        .media-body {
+            padding-left: 10px;
+        }
+
+        .media-middle {
+            vertical-align: middle;
+        }
+
+        .media-bottom {
+            vertical-align: bottom;
+        }
+
+        .media-heading {
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+
+        .media-list {
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .alert-success {
+            color: #3c763d;
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+
+        .comment-check {
+            background-color: #ff7e05;
+            font-weight: 600;
+            font-size: 16px;
+            color: #ffffff;
+            border-radius: 2px;
+            padding: 4px;
+        }
+        .divider {
+            margin-top: 8px;
+            margin-bottom: 8px;
+            background-color: #eeeeee;
+        }
+    </style>
+</head>
+<body>
+<div class="panel-body">
+    <div class="media">
+        <div class="media-body">
+            <h4 class="media-heading" th:if="${comment.parent == null}"
+                th:text="${comment.username}+'评论了你'">
+                测试评论了你
+            </h4>
+            <h4 class="media-heading" th:if="${comment.parent != null}" th:text="${comment.username}+'回复了你的评论'">
+                李莫愁回复了您的评论
+            </h4>
+            <div th:if="${comment.parent != null}" class="alert alert-success">
+                <div>您的评论为:</div>
+                <div th:utext="${comment.parent.content}">
+                    评论写的太重了，感觉还是要封装一下，将评论做成插件。这样灵活度也高一点。
+                </div>
+            </div>
+            <div th:utext="${comment.content}">我也感觉是这样的, 博主封装好了可以通知可以公布出来，学习一下。</div>
+
+            <hr class="divider">
+            <div style="margin-bottom: 8px;" th:text="${#temporals.format(comment.createAt, 'yyyy-MM-dd HH:mm')}">2020-09-07 17:23:21</div>
+            <div style="margin-bottom: 8px;" th:if="${comment.status == 'WAIT_CHECK'}">
+                评论状态: <span class="comment-check">待审核</span>
+            </div>
+            <div>
+                <a href="#">去审核</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

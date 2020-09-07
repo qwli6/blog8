@@ -26,26 +26,24 @@
     <!-- custom styles for login -->
     <link rel="stylesheet" th:href="@{/static/blog/css/login.css}">
 </head>
-<body class="text-center">
+<body class="text-center bg-dark">
     <div class="form-signin">
-<!--        <img class="mb-4" src="/docs/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">-->
         <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+
         <label for="inputUsername" class="sr-only">用户名</label>
-        <input type="text" id="inputUsername" class="form-control" placeholder="Username" required autofocus>
+        <input type="text" id="inputUsername" class="form-control" placeholder="Username" required="required" autofocus>
         <label for="inputPassword" class="sr-only">密码</label>
-        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="required">
         <div class="checkbox mb-3">
             <label>
                 <input type="checkbox" id="inputRemember" value="remember-me"> Remember me
             </label>
         </div>
-        <button id="btn-login" class="btn btn-primary btn-block" type="button">Sign in</button>
+        <button id="btn-login" class="btn btn-primary btn-block" type="button">登录</button>
         <p class="mt-5 mb-3 text-muted">&copy; 2017-2020</p>
     </div>
 
-    <!-- jquery core js -->
     <script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
-    <!-- bootstrap core js -->
     <script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
 
     <script>
@@ -75,7 +73,7 @@
             }).catch(error => {
                 console.error('Error:', error)
             }).then(response => {
-                let redirectParams = window.location.search;
+                console.log('response:' + JSON.stringify(response));
             });
         });
     </script>

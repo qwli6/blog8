@@ -94,4 +94,10 @@ public interface MomentMapper {
      * @param comments comments
      */
     void updateCommentCount(@Param("id") Integer id, @Param("comments") Integer comments);
+
+    /**
+     * 更新评论数量
+     * @param id id
+     */
+    void increaseComments(@Param("id") Integer id);
 }

@@ -2,21 +2,30 @@ package me.lqw.blog8.service;
 
 import me.lqw.blog8.constants.BlogConstants;
 import me.lqw.blog8.constants.BlogContext;
+import me.lqw.blog8.event.comments.CreateCommentEvent;
+import me.lqw.blog8.exception.AbstractBlogException;
 import me.lqw.blog8.exception.LogicException;
+import me.lqw.blog8.mapper.ArticleMapper;
 import me.lqw.blog8.mapper.CommentMapper;
+import me.lqw.blog8.model.Article;
 import me.lqw.blog8.model.Comment;
 import me.lqw.blog8.model.CommentModule;
 import me.lqw.blog8.model.dto.CommentDTO;
 import me.lqw.blog8.model.dto.CommentSaved;
 import me.lqw.blog8.model.dto.page.PageResult;
+import me.lqw.blog8.model.enums.ArticleStatusEnum;
 import me.lqw.blog8.model.enums.CommentCheckStrategy;
 import me.lqw.blog8.model.enums.CommentStatus;
+import me.lqw.blog8.model.vo.CheckConversationParams;
 import me.lqw.blog8.model.vo.HandledCommentPageQueryParam;
 import me.lqw.blog8.plugins.md.MarkdownParser;
 import me.lqw.blog8.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +34,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 
+import javax.mail.MessagingException;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -40,12 +50,14 @@ import java.util.stream.Collectors;
  * @since 1.2
  */
 @Service
-public class CommentService {
+public class CommentService implements ApplicationEventPublisherAware {
+
+    private ApplicationEventPublisher applicationEventPublisher;
 
     /**
      * 日志处理
      */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+    private final Logger logger = LoggerFactory.getLogger(getClass().getSimpleName());
 
     /**
      * 评论模块处理器
@@ -57,6 +69,8 @@ public class CommentService {
      */
     private final CommentMapper commentMapper;
 
+    private final ArticleMapper articleMapper;
+
     /**
      * 博客配置
      */
@@ -66,6 +80,9 @@ public class CommentService {
      * MarkdownParser 解析
      */
     private final MarkdownParser markdownParser;
+
+
+    private final SimpleMailHandler mailHandler;
 
     /**
      * 单线程池
@@ -80,11 +97,14 @@ public class CommentService {
      * @param configService  configService
      */
     public CommentService(ObjectProvider<CommentModuleHandler<?>> objectProvider, CommentMapper commentMapper,
+                          ArticleMapper articleMapper, SimpleMailHandler mailHandler,
                           BlogConfigService configService, ObjectProvider<MarkdownParser> markdownParserObjectProvider) {
         this.handlers = objectProvider.orderedStream().collect(Collectors.toList());
+        this.articleMapper = articleMapper;
         this.commentMapper = commentMapper;
         this.configService = configService;
         this.markdownParser = markdownParserObjectProvider.stream().min(Comparator.comparingInt(MarkdownParser::getOrder)).get();
+        this.mailHandler = mailHandler;
     }
 
     /**
@@ -93,22 +113,22 @@ public class CommentService {
      * @param comment comment
      * @return CommentSaved
      * @throws LogicException 逻辑异常
-     *                        1. 评论模块不存在异常
-     *                        2. 父评论不存在异常
-     *                        3. 评论模块不匹配异常
-     *                        4. 父评论待审核异常
-     *                        5. 两次评论内容相同异常
-     *                        6. 操作太频繁异常
-     *                        7. 审核策略无效异常
+     *        1. 评论模块不存在异常
+     *        2. 父评论不存在异常
+     *        3. 评论模块不匹配异常
+     *        4. 父评论待审核异常
+     *        5. 两次评论内容相同异常
+     *        6. 操作太频繁异常
+     *        7. 审核策略无效异常
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public CommentSaved save(Comment comment) throws LogicException {
         CommentModule module = comment.getModule();
-        CommentModuleHandler<?> moduleHandler = handlers.stream().filter(h -> h.getModuleName().equals(module.getName()))
-                .findAny().orElseThrow(() -> new LogicException("comment.module.notExists", "评论模块不存在"));
-
-        //插入之前检查模块
-        moduleHandler.checkBeforeSaved(comment, module);
+//        CommentModuleHandler<?> moduleHandler = handlers.stream().filter(h -> h.getModuleName().equals(module.getName()))
+//                .findAny().orElseThrow(() -> new LogicException("comment.module.notExists", "评论模块不存在"));
+//
+//        //插入之前检查模块
+//        moduleHandler.checkBeforeSaved(comment, module);
 
         //获取到评论内容
         String content = comment.getContent();
@@ -129,7 +149,7 @@ public class CommentService {
             CommentModule parentModule = parent.getModule();
 
             //判断父评论和子评论模块是否匹配
-            if (!parentModule.equals(module)) {
+            if (parentModule == null || !parentModule.getId().equals(module.getId()) || !parentModule.getName().equals(module.getName())) {
                 throw new LogicException("comment.module.mismatch", "评论模块不匹配");
             }
 
@@ -140,7 +160,7 @@ public class CommentService {
             }
 
             //重新赋值评论深度
-            path = path + parent.getId() + "/";
+            path = parent.getPath() + parent.getId() + "/";
 
             //重新设置父评论
             comment.setParent(parent);
@@ -170,7 +190,6 @@ public class CommentService {
 
         //审核策略
         boolean checking;
-
 
         if (BlogContext.isAuthorized()) {
             checking = false; //管理员是不需要审核的
@@ -222,8 +241,10 @@ public class CommentService {
                 comment.setParent(_parent);
                 //执行通知
                 sendMail(comment);
-                //同步增加内容|动态点击量
-                moduleHandler.increaseComments(comment.getModule());
+                //正常状态内容 + 评论量
+                if(comment.getStatus().equals(CommentStatus.NORMAL)){
+                    applicationEventPublisher.publishEvent(new CreateCommentEvent(this, module));
+                }
             }
         });
         return new CommentSaved(comment.getId(), checking);
@@ -234,7 +255,7 @@ public class CommentService {
      *
      * @param id id
      * @throws LogicException 逻辑异常
-     *                        1. 评论不存在异常
+     *         1. 评论不存在异常
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public void delete(Integer id) throws LogicException {
@@ -294,13 +315,16 @@ public class CommentService {
 
     /**
      * 审核评论
-     *
      * @throws LogicException 逻辑异常
-     *                        1. 评论不存在异常
-     *                        2. 状态无法审核异常
+     *         1. 评论不存在异常
+     *         2. 状态无法审核异常
+     *         3. 文章不存在异常
+     *         4. 未发布状态无法审核异常
+     *
+     *         使用同步关键字, 效率低，但是审核次数不多，不存在并发的情况
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public CommentSaved checkComment(Integer id) throws LogicException {
+    public synchronized CommentSaved checkComment(Integer id) throws LogicException {
         Comment comment = commentMapper.selectById(id).orElseThrow(()
                 -> new LogicException("comment.notExits", "评论不存在"));
 
@@ -310,6 +334,18 @@ public class CommentService {
         }
         comment.setStatus(CommentStatus.NORMAL);
         commentMapper.update(comment);
+
+        CommentModule module = comment.getModule();
+
+        Article article = articleMapper.selectById(module.getId()).orElseThrow(()
+                -> new LogicException("article.notExits", "文章不存在"));
+        ArticleStatusEnum articleStatus = article.getStatus();
+
+        if(!articleStatus.equals(ArticleStatusEnum.POSTED)){
+            throw new LogicException("article.status.notAllow", "文章状态不允许");
+        }
+
+        articleMapper.increaseComments(article.getId());
 
         return new CommentSaved(id, false);
     }
@@ -323,6 +359,15 @@ public class CommentService {
         logger.info("执行邮件通知...");
 
         service.submit(() -> {
+
+            try {
+                mailHandler.sendEmail();
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            } finally {
+                service.shutdown();
+            }
+
 
             System.out.println("执行邮件发送通知");
 //            SpringTemplateEngine templateEngine = new SpringTemplateEngine();
@@ -376,7 +421,7 @@ public class CommentService {
         List<CommentDTO> commentDTOS = processComments(comments);
 
 
-        return new PageResult<>(queryParam, commentDTOS.size(), commentDTOS);
+        return new PageResult<>(queryParam, count, commentDTOS);
     }
 
     /**
@@ -393,15 +438,20 @@ public class CommentService {
             commentDtos = comments.stream().map(CommentDTO::new).collect(Collectors.toList());
 
             for (CommentDTO commentDto : commentDtos) {
-                commentMapper.selectParentById(commentDto.getId()).ifPresent(e -> {
-                    CommentDTO parentDto = new CommentDTO();
-                    parentDto.setNickname(e.getUsername());
-                    parentDto.setAdmin(e.getAdmin());
-                    parentDto.setAvatar(e.getAvatar());
-                    parentDto.setId(e.getId());
 
-                    commentDto.setParent(parentDto);
-                });
+                CommentDTO _parent = commentDto.getParent();
+                if(_parent != null){
+                    commentMapper.selectById(_parent.getId()).ifPresent(e -> {
+                        _parent.setNickname(e.getUsername());
+                        _parent.setAdmin(e.getAdmin());
+                        _parent.setAvatar(e.getAvatar());
+                        _parent.setId(e.getId());
+
+                        commentDto.setParent(_parent);
+                    });
+                }
+
+
                 //非管理员评论, 隐藏邮箱
                 if (!commentDto.getAdmin()) {
                     commentDto.setEmail("********");
@@ -410,5 +460,63 @@ public class CommentService {
             }
         }
         return commentDtos;
+    }
+
+    /**
+     * 查看会话
+     * @param checkConversationParams 查看会话参数
+     * @return list
+     * @throws AbstractBlogException AbstractBlogException
+     * <p>
+     *    评论不存在异常
+     *    评论待审核，无法查看评论会话
+     * </p>
+     */
+    @Transactional(readOnly = true)
+    public List<CommentDTO> checkConversation(CheckConversationParams checkConversationParams) throws AbstractBlogException {
+        Comment old = commentMapper.selectById(checkConversationParams.getId()).orElseThrow(()
+                -> new LogicException("comment.notExists", "评论不存在"));
+
+        if(old.getStatus().equals(CommentStatus.WAIT_CHECK)){
+            throw new LogicException("currentComment.waitCheck", "评论待审核, 无法查看评论会话");
+        }
+
+        String path = old.getPath();
+        if(StringUtil.isBlank(path) || "/".equals(path)){
+            CommentDTO commentDto = new CommentDTO(old);
+            if(!commentDto.getAdmin()){
+                commentDto.setEmail("********");
+            }
+            if(StringUtil.isNotBlank(commentDto.getContent())){
+                commentDto.setContent(markdownParser.parse(commentDto.getContent()));
+            }
+            return Collections.singletonList(commentDto);
+        }
+
+        List<Integer> ids = Arrays.stream(path.split("/")).filter(StringUtil::isNotBlank).map(Integer::new).collect(Collectors.toList());
+        if(!CollectionUtils.isEmpty(ids)){
+            ids.add(old.getId());
+        }
+
+        List<Comment> comments = commentMapper.selectByIds(ids);
+
+        //未审核评论需要直接过滤出来
+        List<CommentDTO> commentDtos = comments.stream().filter(e -> e.getStatus().equals(CommentStatus.NORMAL)).map(CommentDTO::new).sorted(Comparator.comparing(CommentDTO::getId)).collect(Collectors.toList());
+
+        commentDtos.forEach(e -> {
+            if(e.getAdmin()){ //非管理员邮箱不暴露邮箱账号
+                e.setEmail("********");
+            }
+            if(StringUtil.isNotBlank(e.getContent())) {
+                e.setContent(markdownParser.parse(e.getContent()));
+            }
+        });
+
+        return commentDtos;
+    }
+
+    @Override
+    public void setApplicationEventPublisher(@NonNull ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 }

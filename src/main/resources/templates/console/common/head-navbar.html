@@ -7,9 +7,6 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" th:href="@{/console/home}">控制面板<span class="sr-only">(current)</span></a>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/console/articles}">文章</a>
                 </li>
@@ -39,22 +36,7 @@
             </ul>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link btn btn-danger dropdown-toggle" id="createCenterDropdown" role="button" data-toggle="dropdown">创作中心</a>
-                    <div class="dropdown-menu" aria-labelledby="createCenterDropdown">
-                        <a class="dropdown-item" th:href="@{/console/article/create}">写博客</a>
-                        <a class="dropdown-item" th:href="@{/console/moment/create}">发动态</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        ⏰
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#">
-                        <img class="rounded-circle align-self-center"
-                             src="/static/blog/images/logoH.png" style="height: 40px; width: 40px">
-                    </a>
+                   <a class="nav-link" href="#">退出</a>
                 </li>
             </ul>
         </div>

@@ -109,5 +109,9 @@
         update blog_moment set comments = #{comments,jdbcType=INTEGER} where id = #{id,jdbcType=INTEGER}
     </update>
 
+    <update id="increaseComments" parameterType="integer">
+        update blog_moment set comments = comments + 1 where id = #{id,jdbcType=INTEGER}
+    </update>
+
 
 </mapper>

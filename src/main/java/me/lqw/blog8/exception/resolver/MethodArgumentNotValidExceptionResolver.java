@@ -1,5 +1,6 @@
 package me.lqw.blog8.exception.resolver;
 
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -41,8 +42,12 @@ public class MethodArgumentNotValidExceptionResolver implements ExceptionResolve
     public Map<String, Object> readErrors(HttpServletRequest request, Exception ex) {
         MethodArgumentNotValidException methodArgumentNotValidException = (MethodArgumentNotValidException) ex;
         BindingResult bindingResult = methodArgumentNotValidException.getBindingResult();
-//        bindingResult.
         List<ObjectError> allErrors = bindingResult.getAllErrors();
+
+        if(!CollectionUtils.isEmpty(allErrors)){
+
+        }
+
         for (ObjectError objectError : allErrors) {
 //            objectError.get
 

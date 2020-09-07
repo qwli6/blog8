@@ -22,9 +22,12 @@
             <result property="id" column="module_id" />
             <result property="name" column="module_name" />
         </association>
+        <association property="parent" javaType="me.lqw.blog8.model.Comment">
+            <id property="id" column="fk_parent_id" />
+        </association>
     </resultMap>
 
-    <insert id="insert" parameterType="Comment">
+    <insert id="insert" parameterType="Comment" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into blog_comment (content, email, username, module_name, module_id,
                                   status, path, fk_parent_id, admin, ip, address,
                                   from_client, avatar) values
@@ -45,6 +48,17 @@
                fk_parent_id, admin, ip, address, from_client, create_at,
                modify_at from blog_comment
         where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="selectByIds" parameterType="list" resultMap="CommentMap">
+        select id, content, email, username, module_name, module_id, status, path,
+               fk_parent_id, admin, ip, address, from_client, create_at,
+               modify_at from blog_comment
+        where id in
+            <foreach collection="ids" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
     </select>
 
     <select id="findLastCommentByIp" parameterType="string" resultMap="CommentMap">
@@ -74,8 +88,12 @@
         select count(id) from blog_comment
         <where>
             <if test="commentModule != null">
-                and module_id = #{commentModule.id,jdbcType=INTEGER}
-                and module_name = #{commentModule.name,jdbcType=VARCHAR}
+                <if test="commentModule.id != null">
+                    and module_id = #{commentModule.id,jdbcType=INTEGER}
+                </if>
+                <if test="commentModule.name != null and commentModule.name != ''">
+                    and module_name = #{commentModule.name,jdbcType=VARCHAR}
+                </if>
             </if>
             <if test="commentStatus != null">
                 and status = #{commentStatus, typeHandler=EnumOrdinalTypeHandler}
@@ -86,12 +104,16 @@
     <select id="selectPage" parameterType="HandledCommentPageQueryParam" resultMap="CommentMap">
         select id, content, email, username, module_name,
             module_id, status, path, fk_parent_id, admin, ip,
-            address, from_client, create_at, modify_at, avatar
+            address, from_client, create_at, modify_at, avatar, fk_parent_id
         from blog_comment
         <where>
             <if test="commentModule != null">
-                and module_id = #{commentModule.id,jdbcType=INTEGER}
-                and module_name = #{commentModule.name,jdbcType=VARCHAR}
+                <if test="commentModule.id != null">
+                    and module_id = #{commentModule.id,jdbcType=INTEGER}
+                </if>
+                <if test="commentModule.name != null">
+                    and module_name = #{commentModule.name,jdbcType=VARCHAR}
+                </if>
             </if>
             <if test="commentStatus != null">
                 and status = #{commentStatus, typeHandler=EnumOrdinalTypeHandler}

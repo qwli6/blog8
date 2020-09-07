@@ -9,10 +9,8 @@ import me.lqw.blog8.model.dto.common.CR;
 import me.lqw.blog8.model.dto.common.ResultDTO;
 import me.lqw.blog8.model.dto.page.PageResult;
 import me.lqw.blog8.model.enums.ArticleStatusEnum;
-import me.lqw.blog8.model.vo.ArticleArchivePageQueryParam;
-import me.lqw.blog8.model.vo.ArticlePageQueryParam;
-import me.lqw.blog8.model.vo.HandledCommentPageQueryParam;
-import me.lqw.blog8.model.vo.MomentPageQueryParam;
+import me.lqw.blog8.model.enums.CommentStatus;
+import me.lqw.blog8.model.vo.*;
 import me.lqw.blog8.service.ArticleService;
 import me.lqw.blog8.service.CommentService;
 import me.lqw.blog8.service.MomentService;
@@ -22,8 +20,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 
 /**
  * 首页主控制器
@@ -49,6 +49,10 @@ public class MainController extends AbstractBaseController {
      * 评论服务
      */
     private final CommentService commentService;
+
+
+    @Resource
+    private SimpleMailHandler simpleMailHandler;
 
     /**
      * 构造方法
@@ -128,6 +132,14 @@ public class MainController extends AbstractBaseController {
     }
 
 
+    @GetMapping("guestbook")
+    public String guestbook(){
+
+        return "guestbook";
+
+    }
+
+
     /**
      * 点击动态
      * @param id id
@@ -183,9 +195,60 @@ public class MainController extends AbstractBaseController {
     public CR<?> selectPage(@PathVariable("name") String name,
                             @PathVariable("id") Integer id,
                             HandledCommentPageQueryParam queryParam) {
+        if(!queryParam.hasPageSize()){
+            queryParam.setPageSize(1);
+        }
+
         queryParam.setCommentModule(new CommentModule(id, name));
+        queryParam.setIgnorePaging(false);
         PageResult<CommentDTO> commentPageResult = commentService.selectPage(queryParam);
         commentPageResult.setQueryParam(queryParam);
         return ResultDTO.create(commentPageResult);
+    }
+
+
+    /**
+     * 获取评论会话
+     * @param name name
+     * @param id id
+     * @param commentId 评论 id
+     * @return CR<?>
+     */
+    @GetMapping("api/module/{name}/{id}/comment/{commentId}/conversation")
+    @ResponseBody
+    public CR<?> checkConversation(@PathVariable("name") String name,
+                                   @PathVariable("id") Integer id,
+                                   @PathVariable("commentId") Integer commentId){
+
+        CommentModule commentModule = new CommentModule(id, name);
+
+        return ResultDTO.create(commentService.checkConversation(new CheckConversationParams(commentModule, commentId)));
+    }
+
+
+    @GetMapping("test")
+    @ResponseBody
+    public String sendMail(){
+
+        try {
+//            simpleMailHandler.sendEmail();
+            Comment comment = new Comment();
+            Comment _parent = new Comment();
+            _parent.setUsername("selfassu");
+            _parent.setContent("评论写的太重了，感觉还是要封装一下，将评论做成插件。这样灵活度也高一点。");
+            comment.setParent(_parent);
+
+            comment.setUsername("张三");
+            comment.setContent("我也感觉是这样的, 博主封装好了可以通知可以公布出来，学习一下");
+            comment.setCreateAt(LocalDateTime.now());
+            comment.setStatus(CommentStatus.WAIT_CHECK);
+            simpleMailHandler.sendTemplateMail("commentMailTemplate.html", comment);
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+
+        }
+
+        return "success";
     }
 }

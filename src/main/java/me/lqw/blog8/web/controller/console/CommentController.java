@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Controller
 @RequestMapping("console")
-public class CommentController {
+public class CommentController extends AbstractBaseController {
 
     /**
      * 评论 service
@@ -45,6 +45,10 @@ public class CommentController {
      */
     @GetMapping("comments")
     public String index(CommentPageQueryParam queryParam, Model model) {
+
+        if(!queryParam.hasPageSize()){
+            queryParam.setPageSize(10);
+        }
 
         queryParam.setModuleName("article");
         HandledCommentPageQueryParam handledCommentPageQueryParam = new HandledCommentPageQueryParam(queryParam);

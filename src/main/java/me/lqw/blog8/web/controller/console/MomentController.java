@@ -4,6 +4,7 @@ import me.lqw.blog8.exception.ResourceNotFoundException;
 import me.lqw.blog8.model.Moment;
 import me.lqw.blog8.model.dto.common.CR;
 import me.lqw.blog8.model.dto.common.ResultDTO;
+import me.lqw.blog8.model.dto.page.PageResult;
 import me.lqw.blog8.model.vo.MomentPageQueryParam;
 import me.lqw.blog8.service.MomentService;
 import org.springframework.stereotype.Controller;
@@ -47,7 +48,8 @@ public class MomentController extends AbstractBaseController {
     @GetMapping("moments")
     public String index(Model model, MomentPageQueryParam queryParam) {
         queryParam.setPageSize(20);
-        model.addAttribute("momentPage", momentService.selectPage(queryParam));
+        PageResult<Moment> momentPageData = momentService.selectPage(queryParam);
+        model.addAttribute("momentPage", momentPageData);
         return "console/moment/index";
     }
 

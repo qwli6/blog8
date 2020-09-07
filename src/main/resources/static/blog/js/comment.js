@@ -5,7 +5,14 @@
  * @description 评论插件
  **/
 
-const Comment = {
+let Comment = function(){
+
+
+    function Comment(name, id, config){
+
+        alert(name);
+
+    }
 
 
 }();

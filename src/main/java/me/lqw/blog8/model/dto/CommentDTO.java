@@ -1,5 +1,7 @@
 package me.lqw.blog8.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import me.lqw.blog8.model.Comment;
 import me.lqw.blog8.model.CommentModule;
@@ -31,6 +33,7 @@ public class CommentDTO implements Serializable {
     /**
      * 创建时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", shape = JsonFormat.Shape.STRING)
     private LocalDateTime createTime;
 
     /**
@@ -95,6 +98,14 @@ public class CommentDTO implements Serializable {
         this.avatar = comment.getAvatar();
         this.admin = comment.getAdmin();
         this.parentPath = comment.getPath();
+
+        Comment parent = comment.getParent();
+        if(parent != null){
+            CommentDTO _parent = new CommentDTO();
+            _parent.setId(parent.getId());
+
+            this.parent = _parent;
+        }
         this.checking = comment.getStatus() == CommentStatus.WAIT_CHECK;
     }
 

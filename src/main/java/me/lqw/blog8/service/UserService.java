@@ -41,35 +41,34 @@ public class UserService extends AbstractBaseService<User> {
 
     /**
      * 用户认证
-     *
      * @param username username
      * @param password password
      * @return User
-     * @throws LogicException 逻辑异常
+     * @throws AbstractBlogException 逻辑异常
      */
     @Transactional(readOnly = true)
-    public User userLogin(String username, String password) throws AbstractBlogException {
+    public User userAuth(String username, String password) throws AbstractBlogException {
 
-        User queryUser = new User(username);
+        User user = new User(username);
 
         //user not found
-        queryUser = userMapper.selectByUser(queryUser).orElseThrow(()
+        user = userMapper.selectByUser(user).orElseThrow(()
                 -> new UnauthorizedException(BlogConstants.AUTH_FAILED));
 
         //encode password
 //        String encodePassword = SecurityUtil.encodePasswordUseMd5(password);
 
         //password mismatch
-        if(StringUtil.isBlank(queryUser.getPassword()) || !queryUser.getPassword().equals(password)){
+        if(StringUtil.isBlank(user.getPassword()) || !user.getPassword().equals(password)){
             throw new UnauthorizedException(BlogConstants.AUTH_FAILED);
         }
 
         //set password is null
-        queryUser.setPassword(null);
+        user.setPassword(null);
         //set ThreadLocal
         BlogContext.AUTH_THREAD_LOCAL.set(true);
 
-        return queryUser;
+        return user;
     }
 
 
