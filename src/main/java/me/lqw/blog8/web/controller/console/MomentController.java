@@ -47,7 +47,9 @@ public class MomentController extends AbstractBaseController {
      */
     @GetMapping("moments")
     public String index(Model model, MomentPageQueryParam queryParam) {
-        queryParam.setPageSize(20);
+        if(!queryParam.hasPageSize()) {
+            queryParam.setPageSize(20);
+        }
         PageResult<Moment> momentPageData = momentService.selectPage(queryParam);
         model.addAttribute("momentPage", momentPageData);
         return "console/moment/index";

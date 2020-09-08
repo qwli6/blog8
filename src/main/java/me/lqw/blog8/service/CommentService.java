@@ -393,17 +393,17 @@ public class CommentService implements ApplicationEventPublisherAware {
         }
 
 
-        if(commentModule != null) {
-            if(StringUtil.isNotBlank(commentModule.getName())) {
-                CommentModuleHandler<?> commentModuleHandler = handlers.stream().filter(h -> h.getModuleName().equals(commentModule.getName()))
-                        .findAny().orElseThrow(() -> new LogicException("comment.module.notExists", "评论模块不存在"));
-
-                if (commentModule.getId() != null) {
-
-                    commentModuleHandler.checkBeforeQuery(commentModule);
-                }
-            }
-        }
+//        if(commentModule != null) {
+//            if(StringUtil.isNotBlank(commentModule.getName())) {
+//                CommentModuleHandler<?> commentModuleHandler = handlers.stream().filter(h -> h.getModuleName().equals(commentModule.getName()))
+//                        .findAny().orElseThrow(() -> new LogicException("comment.module.notExists", "评论模块不存在"));
+//
+//                if (commentModule.getId() != null) {
+//
+//                    commentModuleHandler.checkBeforeQuery(commentModule);
+//                }
+//            }
+//        }
 
         //查询评论数量
         int count = commentMapper.selectCount(queryParam);

@@ -139,6 +139,12 @@ public class MainController extends AbstractBaseController {
 
     }
 
+    @GetMapping("about")
+    public String about(){
+
+        return "about";
+    }
+
 
     /**
      * 点击动态

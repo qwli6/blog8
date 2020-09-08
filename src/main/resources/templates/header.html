@@ -19,6 +19,9 @@
                 <li class="nav-item" th:classappend="${type} == 'guestbook' ? 'active' : ''">
                     <a class="nav-link" th:href="@{/guestbook}">留言板</a>
                 </li>
+                <li class="nav-item" th:classappend="${type} == 'about' ? 'active' : ''">
+                    <a class="nav-link" th:href="@{/about}">关于</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/console/articles}">控制台</a>
                 </li>

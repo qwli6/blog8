@@ -9,66 +9,54 @@
 <body>
 <div th:replace="/console/common/head-navbar::headnav('config')"></div>
 <div class="container">
-    <div class="row mt-3">
-        <div class="col-12">
-            <button type="button" class="btn btn-primary" id="btn-create">新标签</button>
-        </div>
-    </div>
     <form th:action="@{/console/tags}" id="queryForm" method="get">
-        <div class="row mt-3">
-            <div class="col-9 table-responsive">
-                <div class="table-responsive">
-                    <table class="table table-bordered rounded">
-                    <thead>
-                        <tr><th>标签名称</th><th>创建时间</th><th>操作</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="tag: ${tagPage.data}">
-                            <td>
-                                <a href="javascript:void(0);" class="badge badge-warning" th:text="${tag.tagName}"></a>
-                            </td>
-                            <td th:text="${#temporals.format(tag.getCreateAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
-                            <td>
+        <div class="row my-4">
+            <div class="col-9">
+                <div class="media bg-white p-4 rounded shadow-sm">
+                    <img src="/static/blog/images/logoH.png" class="mr-3 rounded align-self-center" alt="...">
+                    <div class="media-body">
+                        <h3 class="mt-0" style="font-weight: 600; color: #222222;">石杉的架构笔记</h3>
+                        <div>Java 开发工程师 @湖北良品铺子食品有限公司</div>
+                        <div>Java、Android、Web</div>
+                    </div>
+                </div>
+
+                <ul class="list-unstyled bg-white shadow-sm mt-4">
+                    <li class="media" th:each="tag : ${tagPage.data}" style="border-radius: 4px; padding: 15px; border-bottom: 1px solid #eeeeee;">
+                        <div class="media-body">
+                            <div class="mt-0">
+                                <span th:text="${tag.tagName}" class="badge badge-success"></span>
+                            </div>
+                            <div><small class="text-muted" th:text="${#temporals.format(tag.createAt, 'yyyy-MM-dd HH:mm:ss')}">2020-09-02 15:24:12</small></div>
+                            <div>
                                 <a href="javascript:void(0);" th:data-edit="${tag.id}" th:data-name="${tag.tagName}">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="text-primary" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><path d="M9 7 h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3"></path><path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3"></path><line x1="16" y1="5" x2="19" y2="8"></line></svg>
                                 </a>
                                 <a href="javascript:void(0);" th:data-trash="${tag.id}">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="text-danger" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="4" y1="7" x2="20" y2="7"></line><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>
                                 </a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                </div>
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-center" th:if="${tagPage.totalPage > 0}">
-                        <li class="page-item" th:classappend="${tagPage.currentPage == 1 ? 'disabled' : ''}">
-                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(1);'" tabindex="-1">
-                                <<
-                            </a>
-                        </li>
-                        <li class="page-item" th:classappend="${tagPage.currentPage == 1 ? 'disabled' : ''}">
-                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${tagPage.currentPage - 1} + ');'" tabindex="-1">
-                                <
-                            </a>
-                        </li>
-                        <li class="page-item" th:classappend="${tagPage.currentPage == item ? 'active' : ''}" th:each="item: ${#numbers.sequence(1, tagPage.totalPage)}">
-                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${item} + ');'" th:text="${item}">1</a>
-                        </li>
-                        <li class="page-item" th:classappend="${tagPage.currentPage == tagPage.totalPage ? 'disabled' : ''}">
-                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${tagPage.currentPage + 1} + ');'">
-                                >
-                            </a>
-                        </li>
-                        <li class="page-item" th:classappend="${tagPage.currentPage == tagPage.totalPage ? 'disabled' : ''}">
-                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${tagPage.totalPage} + ');'">
-                                >>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="pagination justify-content-center m-0 ml-auto" th:if="${tagPage.totalPage > 0}">
+                    <li class="page-item" th:classappend="${tagPage.currentPage == item ? 'active' : ''}" th:each="item: ${#numbers.sequence(1, tagPage.totalPage)}">
+                        <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${item} + ');'" th:text="${item}">1</a>
+                    </li>
+                </ul>
             </div>
+            <div class="col-3">
+                <a href="javascript:void(0);" id="btn-create" type="button" class="btn btn-danger btn-block">新标签</a>
 
+                <div class="card border-0 bg-white mt-4 shadow-sm">
+                    <div class="card-header bg-white" style="font-weight: 600; color: #222222;">
+                        数据汇总
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item border-0">标签总数<strong class="ml-2" th:text="${tagPage.totalRow}">723</strong></li>
+                    </ul>
+                </div>
+            </div>
         </div>
         <input type="hidden" id="currentPage" name="currentPage" th:value="${tagPage.currentPage}">
     </form>

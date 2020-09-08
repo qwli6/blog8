@@ -27,7 +27,7 @@
                         <form method="get" th:action="@{/console/articles}">
                             <div class="form-row">
                                 <div class="col-7">
-                                    <input type="text" class="form-control" placeholder="内容">
+                                    <input type="text" id="query" th:value="${momentPage.queryParam.query}" name="query" class="form-control" placeholder="内容">
                                 </div>
                                 <div class="col">
 <!--                                    <input type="text" class="form-control" placeholder="State">-->
@@ -60,13 +60,8 @@
 
                 <ul class="pagination justify-content-center m-0 ml-auto" th:if="${momentPage.totalPage > 0}">
                     <li class="page-item" th:classappend="${momentPage.currentPage == 1 ? 'disabled' : ''}">
-                        <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(1);'" tabindex="-1">
-                            <<
-                        </a>
-                    </li>
-                    <li class="page-item" th:classappend="${momentPage.currentPage == 1 ? 'disabled' : ''}">
                         <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${momentPage.currentPage - 1} + ');'" tabindex="-1">
-                            <
+                            上一页
                         </a>
                     </li>
                     <li class="page-item" th:classappend="${momentPage.currentPage == item ? 'active' : ''}" th:each="item: ${#numbers.sequence(1, momentPage.totalPage)}">
@@ -74,12 +69,7 @@
                     </li>
                     <li class="page-item" th:classappend="${momentPage.currentPage == momentPage.totalPage ? 'disabled' : ''}">
                         <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${momentPage.currentPage + 1} + ');'">
-                            >
-                        </a>
-                    </li>
-                    <li class="page-item" th:classappend="${momentPage.currentPage == momentPage.totalPage ? 'disabled' : ''}">
-                        <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${momentPage.totalPage} + ');'">
-                            >>
+                            下一页
                         </a>
                     </li>
                 </ul>
@@ -87,12 +77,11 @@
             <div class="col-3">
                 <a th:href="@{/console/moment/create}" type="button" class="btn btn-danger btn-block">新动态</a>
 
-                <div class="card border-0 bg-white mt-3 shadow-sm">
+                <div class="card border-0 bg-white mt-4 shadow-sm">
                     <div class="card-header bg-white" style="font-weight: 600; color: #222222;">
                         个人成就
                     </div>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item border-0">掘金共建者</li>
                         <li class="list-group-item border-0">发布动态数<strong class="ml-2">723</strong></li>
                         <li class="list-group-item border-0">动态被阅读<strong class="ml-2">182,723</strong></li>
                         <li class="list-group-item border-0">动态被评论<strong class="ml-2">12,999</strong></li>
@@ -112,6 +101,14 @@
     function toPage(i){
         document.getElementById('currentPage').value = i;
         document.getElementById('queryForm').submit();
+    }
+
+    document.onkeydown = function(e){
+        let theEvent = window.event || e;
+        let code = theEvent.keyCode || theEvent.which || theEvent.charCode;
+        if (code === 13) {
+           document.getElementById('queryForm').submit();
+        }
     }
 </script>
 </body>
