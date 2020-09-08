@@ -114,7 +114,7 @@
                 let commentsPageData = response.data;
                 let commentData = commentsPageData.data;
                 for(let i = 0; i < commentData.length; i++){
-                    html += "<li class='media py-2 border-bottom'>";
+                    html += "<li id='comment"+commentData[i].id+"' class='media py-2 border-bottom'>";
                     html +=     "<img src='/static/blog/images/default-user.png' style='height: 38px; width: 38px;' class='mr-3 rounded' alt='...'>";
                     html +=     "<div class='media-body'>";
                     html +=         "<div class='mt-0 mb-1'>";

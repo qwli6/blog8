@@ -1,5 +1,7 @@
 package me.lqw.blog8.web.controller;
 
+import me.lqw.blog8.constants.BlogConstants;
+import me.lqw.blog8.constants.Message;
 import me.lqw.blog8.util.JsonUtil;
 import me.lqw.blog8.web.controller.console.AbstractBaseController;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -9,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,6 +22,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -84,6 +88,23 @@ public class BlogErrorController extends AbstractBaseController implements Error
         //可访问的页面就是 404 405 401 5xx，用一个页面来代替就好了
         response.setStatus(status.value());
         mav.setViewName("error");
+
+        //401 可能没有 error, 这里判断了手动填充
+        if(status.value() == 401 && CollectionUtils.isEmpty(errors)){
+            errors = new HashMap<>(2);
+            Message error = new Message();
+            error.setMsg("您无权限访问此资源");
+            error.setCode("authorization.required");
+            errors.put("errors", error);
+        }
+
+        // 500，直接返回系统错误
+        if(status.is5xxServerError()){
+            errors = new HashMap<>(2);
+            errors.put("errors", BlogConstants.SYSTEM_ERROR);
+        }
+
+
         logger.error("errors:[{}]", JsonUtil.toJsonString(errors));
         mav.addObject("errors", errors);
         return mav;

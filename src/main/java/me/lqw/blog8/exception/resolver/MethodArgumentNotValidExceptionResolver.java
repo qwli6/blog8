@@ -1,5 +1,6 @@
 package me.lqw.blog8.exception.resolver;
 
+import me.lqw.blog8.util.StringUtil;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,16 +46,26 @@ public class MethodArgumentNotValidExceptionResolver implements ExceptionResolve
         BindingResult bindingResult = methodArgumentNotValidException.getBindingResult();
         List<ObjectError> allErrors = bindingResult.getAllErrors();
 
-        if(!CollectionUtils.isEmpty(allErrors)){
+        Map<String, Object> errors = new HashMap<>();
 
+        if(CollectionUtils.isEmpty(allErrors)){
+           errors.put("msg", "参数校验错误");
+           errors.put("code", "inputParams.invalid");
+
+           return Collections.singletonMap("errors", errors);
         }
 
-        for (ObjectError objectError : allErrors) {
-//            objectError.get
-
+        ObjectError objectError = allErrors.get(0);
+        String[] codes = objectError.getCodes();
+        if(codes == null || codes.length == 0){
+            errors.put("code", "inputParams.invalid");
+        } else {
+            errors.put("code", codes[0]);
         }
+        errors.put("msg", StringUtil.isNotBlank(objectError.getDefaultMessage()) ? objectError.getDefaultMessage() : "参数校验错误");
 
-        return Collections.singletonMap("errors", "ip 错误");
+
+        return Collections.singletonMap("errors", errors);
     }
 
     /**

@@ -6,19 +6,90 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
     <title>404</title>
 
-    <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #2c3e50;
+            font-family: Helvetica Neue,Luxi Sans,DejaVu Sans,Hiragino Sans GB,Microsoft Yahei,sans-serif,Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,Segoe UI Symbol,Android Emoji,EmojiSymbols !important;
+        }
+
+        .errorPanel {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 480px;
+            height: 200px;
+            position: relative;
+        }
+
+        .errorPanel h1 {
+            z-index: 1;
+            letter-spacing: 5px;
+            color: #ecf0f1;
+            font-size: 50px;
+            font-weight: 500;
+            text-shadow: 5px 5px 5px rgba(33, 45, 58, 0.3);
+        }
+
+        .errorPanel .description {
+            height: 36px;
+            line-height: 36px;
+            margin: 0 16px;
+            color: #ecf0f1;
+            letter-spacing: 5px;
+            font-weight: 200;
+            text-shadow: 5px 5px 5px rgba(33, 45, 58, 0.3);
+        }
+
+        .errorPanel .sub {
+            margin: 16px;
+            outline: none;
+            border: 1px solid #ffffff;
+            border-radius: 4px;
+            color: #fff;
+            background: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            box-shadow: #0a0e14;
+        }
+
+    </style>
+
 </head>
 <body>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <h1>错误页面</h1>
-        </div>
-    </div>
-</div>
 
+    <div class="errorPanel">
+        <h1 th:text="${#response.status}">404</h1>
+        <div class="description" th:text="${!#maps.isEmpty(errors) ? errors[errors].msg : ''}">您似乎来到了没有知识存在的荒原</div>
+        <button class="sub" th:if="${#response.status == 401}" id="toLogin">去认证</button>
+        <button class="sub" th:if="${#response.status == 404}" id="toPrePage" onclick="{window.location.go(-1);}">返回上一页</button>
+        <button class="sub" th:if="${#response.status != 404 && #response.status != 401}" onclick="{window.location.href = '/';}">去往首页</button>
+    </div>
 
 <script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
-<script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script>
+    const rootPath = '[[@{/}]]';
+    let toLogin = document.getElementById('toLogin');
+    if(toLogin !== undefined && toLogin !== null) {
+        toLogin.addEventListener("click", function () {
+            window.location.href = rootPath + 'login?redirectUrl=' + window.location.href;
+        });
+    }
+
+    let toPrePage = document.getElementById('toPrePage');
+    if(toPrePage !== undefined && toPrePage !== null) {
+        toPrePage.addEventListener('click', function () {
+            window.history.go(-1);
+        });
+    }
+</script>
 </body>
 </html>

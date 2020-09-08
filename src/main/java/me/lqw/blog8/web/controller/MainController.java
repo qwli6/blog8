@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 
 /**
@@ -113,7 +114,7 @@ public class MainController extends AbstractBaseController {
      * @return string
      */
     @GetMapping("moment/{id}")
-    public String moment(@PathVariable("id") int id, Model model) {
+    public String moment(@Min(value = 0, message = "动态 id 不能为负数") @PathVariable("id") int id, Model model) {
         model.addAttribute("moment", momentService.getMomentForView(id).orElseThrow(() ->
                 new ResourceNotFoundException("momentService.get.notExists", "动态不存在")));
         return "moment";

@@ -4,6 +4,7 @@ import me.lqw.blog8.constants.BlogContext;
 import me.lqw.blog8.exception.AbstractBlogException;
 import me.lqw.blog8.exception.LogicException;
 import me.lqw.blog8.exception.ResourceNotFoundException;
+import me.lqw.blog8.exception.UnauthorizedException;
 import me.lqw.blog8.mapper.*;
 import me.lqw.blog8.model.*;
 import me.lqw.blog8.model.dto.page.PageResult;
@@ -507,11 +508,11 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
         }
 
         Article article = articleOp.orElseThrow(()
-                -> new ResourceNotFoundException("article.notExists", "资源未找到"));
+                -> new ResourceNotFoundException("article.notExists", "未找到文章"));
 
         ArticleStatusEnum articleStatus = article.getStatus();
         if (!ArticleStatusEnum.POSTED.equals(articleStatus) && !BlogContext.isAuthorized()) {
-            throw new ResourceNotFoundException("", "");
+            throw new UnauthorizedException("authorization.required", "您无权限访问此资源");
         }
         handleArticles(Collections.singletonList(article), BlogContext.isAuthorized());
 

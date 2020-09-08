@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
@@ -59,8 +60,8 @@ public class BlogHandlerExceptionResolver extends ResponseEntityExceptionHandler
     }
 
     @Override
-    public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
-                                         Object handler, Exception ex) {
+    public ModelAndView resolveException(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+                                         Object handler, @NonNull Exception ex) {
 
 //        logger.info("解析系统异常:[{}]", ex.getMessage(), ex);
         if (resolve(request, response, ex)) {
@@ -116,8 +117,6 @@ public class BlogHandlerExceptionResolver extends ResponseEntityExceptionHandler
      * @return boolean
      */
     public boolean resolve(HttpServletRequest request, HttpServletResponse response, Exception ex) {
-
-        logger.info("BlogHandlerExceptionResolver#resolve()", ex);
 
         //先移除上一次填充的错误信息
         request.removeAttribute(ERROR_ATTRIBUTES);

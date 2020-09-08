@@ -29,7 +29,7 @@ public class BlogConstants implements Serializable {
     /**
      * 系统错误
      */
-    public static final Message SYSTEM_ERROR = new Message("system.internal.error", "系统内部异常");
+    public static final Message SYSTEM_ERROR = new Message("system.internal.error", "服务器可能无法理解您的请求");
 
     /**
      * 授权失败

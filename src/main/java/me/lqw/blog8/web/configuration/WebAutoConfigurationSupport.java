@@ -105,18 +105,17 @@ public class WebAutoConfigurationSupport extends WebMvcConfigurationSupport {
 //
 
 
-//    /**
-//     * 添加拦截器
-//     *
-//     * @param registry registry
-//     */
-//    @Override
-//    public void addInterceptors(@NonNull InterceptorRegistry registry) {
-//        //授权拦截请求
-//        AuthenticationHandlerInterceptor interceptor = new AuthenticationHandlerInterceptor(rememberMeService);
-//        registry.addInterceptor(interceptor).addPathPatterns(interceptor.matchPatterns());
-//
-//    }
+    /**
+     * 添加拦截器
+     *
+     * @param registry registry
+     */
+    @Override
+    public void addInterceptors(@NonNull InterceptorRegistry registry) {
+        //授权拦截请求
+        AuthenticationHandlerInterceptor interceptor = new AuthenticationHandlerInterceptor(rememberMeService);
+        registry.addInterceptor(interceptor).addPathPatterns(interceptor.matchPatterns());
+    }
 
     @Override
     protected void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
