@@ -1,5 +1,6 @@
 package me.lqw.blog8.util;
 
+import me.lqw.blog8.constants.BlogConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,11 +25,6 @@ public class WebUtil {
     private static final Logger logger = LoggerFactory.getLogger(WebUtil.class);
 
     /**
-     * 后台路径
-     */
-    private static final String CONSOLE_REQUEST_PREFIX = "console";
-
-    /**
      * 本地 ip
      */
     private static final List<String> LOCAL_IP = Arrays.asList("0:0:0:0:0:0:0:1", "127.0.0.1");
@@ -48,7 +44,7 @@ public class WebUtil {
      * @return false | true
      */
     public static boolean isAuthRequest(HttpServletRequest request) {
-        return request.getRequestURI().contains(CONSOLE_REQUEST_PREFIX);
+        return request.getRequestURI().startsWith(BlogConstants.CONSOLE_URI);
     }
 
     /**
@@ -98,8 +94,12 @@ public class WebUtil {
                 }
             }
         }
-        logger.info("WebUtils#getIp() ip:[{}]", ip);
         return ip;
     }
 
+
+    public static String getDomain(HttpServletRequest request){
+        String path = request.getContextPath();
+        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();// + path;
+    }
 }

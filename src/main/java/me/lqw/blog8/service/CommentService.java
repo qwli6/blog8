@@ -196,6 +196,7 @@ public class CommentService implements ApplicationEventPublisherAware {
             comment.setAdmin(true);
             comment.setUsername("");
             comment.setWebsite("");
+            comment.setAvatar("");
         } else {
             String email = comment.getEmail();
             if (StringUtil.isBlank(email)) {

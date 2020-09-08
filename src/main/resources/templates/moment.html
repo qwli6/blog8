@@ -7,9 +7,28 @@
     <link rel="shortcut icon" th:href="@{/static/blog/images/logoH.png}" >
     <link rel="stylesheet" th:href="@{/static/blog/css/front.css}">
     <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
+    <style>
+        @media (max-width: 767px) {
+            .markdown-body {
+                padding: 15px;
+            }
+        }
+
+        .blog-footer {
+            padding: 2.5rem 0;
+            margin-top: 32px;
+            color: #999999;
+            text-align: center;
+            background-color: #f9f9f9;
+            border-top: .05rem solid #e5e5e5;
+        }
+        .blog-footer p:last-child {
+            margin-bottom: 0;
+        }
+    </style>
 </head>
 <body>
-    <div th:replace="header::head('index')"></div>
+    <div th:replace="header::head('moment')"></div>
     <!-- 主体部分 -->
     <div class="container my-4">
         <div class="row">
@@ -18,6 +37,13 @@
             </div>
         </div>
     </div>
+
+    <!-- 底部标注 -->
+    <footer class="blog-footer">
+        <div class="container">
+            <p>京ICP备15031610号-30</p>
+        </div>
+    </footer>
 
     <script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
     <script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
@@ -28,19 +54,18 @@
         const rootPath = '[[@{/}]]';
         const momentId = '[[${moment.id}]]'
         window.onload = function(){
-            const url = rootPath + 'moment/' + momentId + '/hits';
-            fetch(url, {
-                method: 'PUT',
-                headers: new Headers({
-                    'Content-Type': 'application/json;charset=UTF-8'
-                })
-            }).then(res => res.json())
-            .catch(error => {
-                console.error('Error:', error);
-            })
-            .then(response => {
-                console.log('Success:', response);
-            });
+            if(sessionStorage.getItem("moment." + momentId) == null) {
+                setTimeout(function(){
+                    const url = rootPath + 'moment/' + momentId + '/hits';
+                    fetch(url, {
+                        method: 'PUT',
+                        headers: new Headers({
+                            'Content-Type': 'application/json;charset=UTF-8'
+                        })
+                    });
+                }, 2000);
+                sessionStorage.setItem("moment." + momentId, momentId);
+            }
         }
     </script>
 </body>

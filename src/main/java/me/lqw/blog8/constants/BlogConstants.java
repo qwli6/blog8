@@ -29,6 +29,7 @@ public class BlogConstants implements Serializable {
 
 
     public static final String LOGIN_URI = "/login";
+    public static final String CONSOLE_URI = "/console";
     public static final String INDEX_URI = "/";
 
     /**

@@ -15,6 +15,18 @@
                 padding: 15px;
             }
         }
+
+        .blog-footer {
+            padding: 2.5rem 0;
+            margin-top: 32px;
+            color: #999999;
+            text-align: center;
+            background-color: #f9f9f9;
+            border-top: .05rem solid #e5e5e5;
+        }
+        .blog-footer p:last-child {
+            margin-bottom: 0;
+        }
     </style>
 </head>
 <body>
@@ -32,13 +44,12 @@
                         文章内容
                     </div>
                 </div>
-
             </div>
         </div>
     </main>
 
     <!-- 底部标注 -->
-    <footer class="site-footer">
+    <footer class="blog-footer">
         <div class="container">
             <p>京ICP备15031610号-30</p>
         </div>
@@ -51,81 +62,21 @@
     <script type="text/javascript" th:src="@{/static/blog/libs/prism/prism.js}"></script>
 
     <script>
-
         const rootPath = '[[@{/}]]';
+        const articleId = '[[${article.id}]]'
         window.onload = function(){
-
-            fetch(rootPath + 'article/[[${article.id}]]/hits', {
-                method: 'PUT',
-                headers: new Headers({
-                    'Content-Type': 'application/json;charset=UTF-8'
-                }),
-            }).then(res => res.json())
-            .catch(error => {
-                console.error('Error:', error);
-            })
-            .then(response => {
-                console.log('Success:', response);
-            })
-
+            if(sessionStorage.getItem("article." + articleId) == null) {
+                setTimeout(function(){
+                    fetch(rootPath + 'article/'+articleId+'/hits', {
+                        method: 'PUT',
+                        headers: new Headers({
+                            'Content-Type': 'application/json;charset=UTF-8'
+                        }),
+                    });
+                }, 2000);
+                sessionStorage.setItem("article." + articleId, articleId);
+            }
         }
-
-        document.getElementById('btn-submit').addEventListener('click', function(){
-            let comment = {};
-            comment.username = document.getElementById('username').value;
-            comment.content = document.getElementById('content').value;
-            comment.email = document.getElementById('email').value;
-            comment.website = document.getElementById('website').value;
-
-            // $.ajax({
-            //     url: rootPath + 'module/article/' + '[[${article.id}]]' + '/comment/save',
-            //     data: JSON.stringify(comment),
-            //     dataType: 'json',
-            //     contentType: 'application/json;charset=utf8',
-            //     type: 'post',
-            //     success: function(res){
-            //         console.log(res);
-            //     }
-            // });
-        })
-
-        $(document).ready(function(){
-
-            // $.ajax({
-            //     url: rootPath + 'api/module/article/'+ '[[${article.id}]]' + '/comments',
-            //     type: 'get',
-            //     dataType: 'json',
-            //     success: function(res){
-            //         let data = res.data;
-            //         let html = '';
-            //         for(let i = 0; i <data.length; i++){
-            //             if(i === 0){
-            //                 html += '<div class="list list-row list-hoverable">';
-            //             }
-            //             html += '<div class="list-item">';
-            //             html += '<a href="#">';
-            //             html += '<span class="avatar" style="background-image: url(/static/tabler/avatars/000m.jpg)"></span> ';
-            //             html += '</a> ';
-            //             html += '<div class="text-truncate"> ';
-            //             html += '<a href="#" class="text-body d-block">' + data[i].username+'</a> ';
-            //             html += '<div class="d-block text-muted text-truncate mt-n1">';
-            //             html += data[i].content ;
-            //             html += '</div> ';
-            //             html += '</div> ';
-            //             html += '<a href="#" class="list-item-actions show"> ';
-            //             html += '<svg xmlns="http://www.w3.org/2000/svg" class="icon text-muted" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M12 17.75l-6.172 3.245 1.179-6.873-4.993-4.867 6.9-1.002L12 2l3.086 6.253 6.9 1.002-4.993 4.867 1.179 6.873z" /></svg> ';
-            //             html += '</a> ' ;
-            //             html += '</div>';
-            //
-            //             if(i === data.length-1){
-            //                 html += '</div>';
-            //             }
-            //             document.getElementById('commentContainer').innerHTML = html;
-            //         }
-            //     }
-            // })
-
-        })
     </script>
 </body>
 </html>
