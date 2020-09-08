@@ -26,6 +26,13 @@ body {
     position: relative;
 }
 
+.container .msg {
+    color: red;
+    letter-spacing: 4px;
+    font-weight: 500;
+    box-shadow: 15px 15px 15px rgba(33, 45, 58, 0.3);
+}
+
 .container form {
     width: 300px;
     height: 300px;

@@ -25,6 +25,11 @@ public class BlogConstants implements Serializable {
      * user session key
      */
     public static final String AUTH_USER = "auth_user";
+    public static final String AUTH_TOP_USER = "auth_top_user";
+
+
+    public static final String LOGIN_URI = "/login";
+    public static final String INDEX_URI = "/";
 
     /**
      * 系统错误
@@ -35,6 +40,12 @@ public class BlogConstants implements Serializable {
      * 授权失败
      */
     public static final Message AUTH_FAILED = new Message("auth.failed", "用户认证失败");
+
+    public static final Message AUTH_USER_FIRST = new Message("user.authRequired", "请先认证用户名和密码");
+
+    public static final Message NO_HANDLER_FOUND = new Message("handler.notFound", "您好像来到了没有知识的荒原");
+
+
 
     /**
      * 最大分页大小

@@ -26,6 +26,12 @@ public class BlogProperties {
      */
     private boolean rebuildIndexWhenStartup;
 
+
+    /**
+     * 二次认证加密
+     */
+    private String topSecret;
+
     public boolean isFileEnable() {
         return fileEnable;
     }
@@ -40,5 +46,13 @@ public class BlogProperties {
 
     public void setRebuildIndexWhenStartup(boolean rebuildIndexWhenStartup) {
         this.rebuildIndexWhenStartup = rebuildIndexWhenStartup;
+    }
+
+    public String getTopSecret() {
+        return topSecret;
+    }
+
+    public void setTopSecret(String topSecret) {
+        this.topSecret = topSecret;
     }
 }

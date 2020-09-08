@@ -7,6 +7,7 @@ import me.lqw.blog8.service.RememberMeService;
 import me.lqw.blog8.web.filter.BlackIpFilter;
 import me.lqw.blog8.web.filter.ContextFilter;
 import me.lqw.blog8.web.interceptor.AuthenticationHandlerInterceptor;
+import me.lqw.blog8.web.interceptor.CheckAccessLoginPageInterceptor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -113,8 +114,10 @@ public class WebAutoConfigurationSupport extends WebMvcConfigurationSupport {
     @Override
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
         //授权拦截请求
-        AuthenticationHandlerInterceptor interceptor = new AuthenticationHandlerInterceptor(rememberMeService);
-        registry.addInterceptor(interceptor).addPathPatterns(interceptor.matchPatterns());
+        AuthenticationHandlerInterceptor authenticationHandlerInterceptor = new AuthenticationHandlerInterceptor(rememberMeService);
+        CheckAccessLoginPageInterceptor checkAccessLoginPageInterceptor = new CheckAccessLoginPageInterceptor();
+        registry.addInterceptor(checkAccessLoginPageInterceptor).addPathPatterns(checkAccessLoginPageInterceptor.matchPatterns());
+        registry.addInterceptor(authenticationHandlerInterceptor).addPathPatterns(authenticationHandlerInterceptor.matchPatterns());
     }
 
     @Override

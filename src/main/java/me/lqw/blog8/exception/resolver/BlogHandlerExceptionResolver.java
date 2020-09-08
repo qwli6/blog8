@@ -49,6 +49,7 @@ public class BlogHandlerExceptionResolver extends ResponseEntityExceptionHandler
      */
     public BlogHandlerExceptionResolver() {
         //初始化全部的 ExceptionResolver
+        resolvers.add(new NoHandlerFoundExceptionResolver());
         resolvers.add(new ResourceNotFoundExceptionResolver());
         resolvers.add(new UnauthorizedExceptionResolver());
         resolvers.add(new LogicExceptionResolver());

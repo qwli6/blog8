@@ -72,7 +72,6 @@ public class BlogErrorController extends AbstractBaseController implements Error
 
     /**
      * 给前端返回 html 格式的错误
-     *
      * @param request  request
      * @param response response
      * @return ModelAndView
@@ -81,7 +80,6 @@ public class BlogErrorController extends AbstractBaseController implements Error
     public ModelAndView errorWithHtml(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mav = getModelAndView();
         HttpStatus status = getStatus(request);
-
         Map<String, Object> errors = errorAttributes.getErrorAttributes(new ServletWebRequest(request),
                 ErrorAttributeOptions.of(Collections.emptyList()));
 

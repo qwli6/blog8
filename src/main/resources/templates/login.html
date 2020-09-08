@@ -3,99 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="用户登录">用户登录</title>
-    <meta name="description" content="">
+    <meta name="description" content="blog login">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" th:href="@{/static/blog/css/login.css}">
 </head>
-
 <body>
 <div class="container">
     <h1>LOGIN</h1>
+    <div class="msg" id="errorMsg" style="display: none;" th:text="登录失败"></div>
     <form action="#">
-        <input class="tbx" type="text" autofocus id="inputUsername" required placeholder="用户名">
-        <input class="tbx" type="password" id="inputPassword" required placeholder="密码">
-<!--        <input class="cbx" type="checkbox" id="inputRemember"> 记住我-->
+        <input autocomplete="off" class="tbx" type="text" autofocus id="inputUsername" required placeholder="用户名">
+        <input autocomplete="off" class="tbx" type="password" id="inputPassword" required placeholder="密码">
+        <input autocomplete="off" class="tbx" style="display: none;" type="text" maxlength="6" id="inputTopCode" placeholder="二次认证码">
         <input type="button" id="btn-login" class="sub" value="登录" >
+        <input type="button" id="btn-top-auth" style="display: none;" class="sub" value="二次认证">
         <a class="back" th:href="@{/}">回首页</a>
     </form>
 </div>
-
-<script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
-
-<script>
-
-    const rootPath = '[[@{/}]]';
-
-    document.getElementById('btn-login').addEventListener('click', function(){
-        submitLogin();
-    });
-
-    document.onkeydown = function(e){
-        let theEvent = window.event || e;
-        let keyCode = theEvent.keyCode || theEvent.which || theEvent.charCode;
-        if (keyCode === 13) {
-            submitLogin();
-        }
-    }
-
-    function getRedirectUrlParams(key, url){
-        let str = url;
-        str = str.substring(1, str.length); // 获取URL中?之后的字符（去掉第一位的问号）
-        // 以&分隔字符串，获得类似name=xiaoli这样的元素数组
-        let arr = str.split("&");
-        let obj = new Object();
-
-        // 将每一个数组元素以=分隔并赋给obj对象
-        for (let i = 0; i < arr.length; i++) {
-            let tmp_arr = arr[i].split("=");
-            obj[decodeURIComponent(tmp_arr[0])] = decodeURIComponent(tmp_arr[1]);
-        }
-        return obj[key];
-    }
-
-    function submitLogin(){
-        const username = document.getElementById('inputUsername').value;
-        const password = document.getElementById('inputPassword').value;
-        // const rememberMe = document.getElementById('inputRemember').checked;
-
-        const data = {
-            'username': username,
-            'password': password,
-            'rememberMe': false
-        }
-
-        fetch(rootPath + 'api/token', {
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: new Headers({
-                'Content-Type':'application/json;charset=UTF-8'
-            })
-        }).then(res => {
-            return res.json();
-        }).catch(error => {
-            console.error('Error:', error)
-        }).then(response => {
-            if(response.code === 200){
-                let redirectUrl = "";
-                let searchParams = window.location.search;
-                if(searchParams !== null && searchParams !== ''){
-                    redirectUrl = getRedirectUrlParams("redirectUrl");
-                    if(redirectUrl !== null && redirectUrl !== 'undefined'){
-                        window.location.href = redirectUrl;
-                    } else {
-                        window.location.href = rootPath + 'console/articles';
-                    }
-                } else {
-                    window.location.href = rootPath + 'console/articles';
-                }
-            } else {
-                alert(response.errors.msg);
-            }
-            console.log('response:' + JSON.stringify(response));
-        });
-    }
-</script>
-
-
+<script type="text/javascript" src="/static/blog/js/login.js"></script>
 </body>
 </html>

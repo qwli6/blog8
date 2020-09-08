@@ -43,10 +43,24 @@ public class AuthenticationHandlerInterceptor extends AbstractBlogInterceptor {
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
 
-        logger.info("AuthenticationHandlerInterceptor request coming");
+        logger.info("认证授权请求拦截器执行");
+
+        if(!(handler instanceof HandlerMethod)){
+            return  true;
+        }
+
+
+        if(BlogContext.isAuthorized()){
+            String requestURI = request.getRequestURI();
+            //登录的情况下还在访问登录页，直接重定向到首页
+            if(BlogConstants.LOGIN_URI.equals(requestURI)){
+                response.sendRedirect("/");
+            }
+            return true;
+        }
 
         //是否是授权请求 & 用户是否登录
-        if (WebUtil.isAuthRequest(request) && !BlogContext.isAuthorized() && handler instanceof HandlerMethod) {
+        if (WebUtil.isAuthRequest(request) && !BlogContext.isAuthorized()) {
 
             //自动登录是否成功
             boolean flag = rememberMeService.autoLogin(request, response);
@@ -77,6 +91,7 @@ public class AuthenticationHandlerInterceptor extends AbstractBlogInterceptor {
      * 匹配拦截路径
      * @return List
      */
+    @Override
     public List<String> matchPatterns(){
         return Collections.singletonList("/console/**");
     }

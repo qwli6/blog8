@@ -93,9 +93,8 @@ public class LoginController extends AbstractBaseController {
     public CR<?> logout(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         session.removeAttribute(BlogConstants.AUTH_USER);
-
+        session.removeAttribute(BlogConstants.AUTH_TOP_USER);
         rememberMeService.clearRemember(request, response);
-
         return ResultDTO.create();
     }
 

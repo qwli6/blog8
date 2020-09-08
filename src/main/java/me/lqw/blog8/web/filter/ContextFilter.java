@@ -67,7 +67,8 @@ public class ContextFilter implements Filter, Ordered {
             session = httpServletRequest.getSession(true);
         }
         User user = (User) session.getAttribute(BlogConstants.AUTH_USER);
-        BlogContext.AUTH_THREAD_LOCAL.set(user != null);
+        Boolean authTopUser = (Boolean) session.getAttribute(BlogConstants.AUTH_TOP_USER);
+        BlogContext.AUTH_THREAD_LOCAL.set(user != null && authTopUser != null && authTopUser);
 
         BlogConfigModel blogConfigModel = blogConfigService.selectBlogConfig(BlogConstants.BLOG_CONFIG);
         request.setAttribute("blogConfigModel", blogConfigModel);

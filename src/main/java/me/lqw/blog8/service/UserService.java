@@ -66,7 +66,8 @@ public class UserService extends AbstractBaseService<User> {
         //set password is null
         user.setPassword(null);
         //set ThreadLocal
-        BlogContext.AUTH_THREAD_LOCAL.set(true);
+        // 二次验证成功才算登录
+//        BlogContext.AUTH_THREAD_LOCAL.set(true);
 
         return user;
     }
