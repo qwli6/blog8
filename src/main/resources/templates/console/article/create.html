@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <title th:text="新文章">新文章</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" th:href="@{/static/blog/libs/editor/editor.css}">
-    <link rel="stylesheet" href="/static/blog/libs/codemirror-5.52.0/lib/codemirror.css">
-    <link rel="stylesheet" href="/static/blog/libs/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/blog/css/base.css" th:href="@{/static/blog/css/base.css}">
+    <link rel="stylesheet" href="/static/blog/libs/editor/editor.css" th:href="@{/static/blog/libs/editor/editor.css}">
+    <link rel="stylesheet" href="/static/blog/libs/codemirror-5.52.0/lib/codemirror.css" th:href="@{/static/blog/libs/codemirror-5.52.0/lib/codemirror.css}">
+    <link rel="stylesheet" href="/static/blog/libs/bootstrap/css/bootstrap.min.css" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
 </head>
-
 <body id="toplevel">
     <div id="in">
         <form>
-            <textarea id="code"># New Document</textarea>
+            <textarea id="code" placeholder="正文"></textarea>
         </form>
     </div>
     <div id="out" class="markdown-body"></div>
@@ -42,12 +42,13 @@
             <p id="savebutton" title="Download" class="navbutton left" onclick="showMenu()">2</p>
             <p id="browsersavebutton" title="Browser Save (Experimental)" class="navbutton left" onclick="saveInBrowser()">3</p>
             <p id="newbutton" class="navbutton left hidden" onclick="clearEditor()">4</p>
-            <p id="postButton" class="navbutton right" data-toggle="modal" data-target="#staticBackdrop">发布</p>
+            <p id="uploadImage" class="navbutton left" onclick="uploadModal();">上传图片</p>
+            <p id="prePostButton" class="navbutton right">发布</p>
         </div>
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal fade" id="postArticleModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
@@ -59,84 +60,76 @@
                 <div class="modal-body">
                     <div class="container-fluid">
                         <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-2 col-form-label">
+                            <label for="title" class="col-md-2 col-form-label">文章标题</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="title" value="">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="tagStr" class="col-sm-2 col-form-label">
                                 文章标签
                             </label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control"
-                                       id="staticEmail" value="">
+                                <input type="text" class="form-control" id="tagStr" value="">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="staticEmail1" class="col-sm-2 col-form-label">
+                            <label for="category" class="col-sm-2 col-form-label">
                                 文章分类
                             </label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control"
-                                       id="staticEmail1" value="">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="staticEmail1" class="col-sm-2 col-form-label">
-                                文章类型
-                            </label>
                             <div class="col-sm-4">
-                                <select class="form-control">
-                                    <option value="0">原创</option>
-                                    <option value="0">转载</option>
-                                </select>
+                               <select id="category" class="form-control"></select>
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="staticEmail1" class="col-sm-2 col-form-label">
-                                发布方式
-                            </label>
+                            <label for="urlName" class="col-sm-2 col-form-label">文章别名</label>
                             <div class="col-sm-4">
-                                <select class="form-control">
-                                    <option value="0">实时</option>
-                                    <option value="0">定时</option>
-                                </select>
-                            </div>
-                            <div class="col-sm-6">
-                                <input type="datetime-local" class="form-control"
-                                       id="staticEmail2" value="">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="staticEmail1" class="col-sm-2 col-form-label">
-                                文章状态
-                            </label>
-                            <div class="col-sm-4">
-                                <select class="form-control">
-                                    <option value="0">原创</option>
-                                    <option value="0">转载</option>
-                                </select>
+                                <input type="text" class="form-control" id="urlName">
                             </div>
                         </div>
 
                         <div class="form-group row">
-                            <label for="staticEmail1" class="col-sm-2 col-form-label">
+                            <label for="status" class="col-sm-2 col-form-label">
+                                文章状态
+                            </label>
+                            <div class="col-sm-4">
+                                <select id="status" class="form-control">
+                                    <option value="POSTED">立即发布</option>
+                                    <option value="DRAFT">存为草稿</option>
+                                    <option value="SCHEDULED">定时发布</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="text" style="display: none;" class="form-control" id="scheduleInput" value="">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="allowComment" class="col-sm-2 col-form-label">允许评论</label>
+                            <div class="col-sm-10">
+                                <input type="checkbox" value="" checked id="allowComment"> 开启
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="protectPassword" class="col-sm-2 col-form-label">
                                 私密权限
                             </label>
                             <div class="col-sm-4">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                                    <label class="form-check-label" for="defaultCheck1">
+                                    <input class="form-check-input" type="checkbox" value="" id="protectPassword">
+                                    <label class="form-check-label" for="protectPassword">
                                         加锁
                                     </label>
                                 </div>
                             </div>
                             <div class="col-sm-6">
-                                <input type="datetime-local" class="form-control"
-                                       id="staticEmail3" value="">
+                                <input type="datetime-local" class="form-control" id="staticEmail3" value="">
                             </div>
                         </div>
 
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary float-left" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Understood</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="button" id="postButton" class="btn btn-primary">发布</button>
                 </div>
             </div>
         </div>
@@ -146,19 +139,21 @@
 <!--    <script src="lib/markdown-it-footnote.js"></script>-->
 <!--    <script src="lib/highlight.pack.js"></script>-->
 <!--    <script src="lib/emojify.js"></script>-->
-    <script src="/static/blog/libs/jquery/jquery-3.5.1.js"></script>
-    <script src="/static/blog/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/static/blog/libs/codemirror-5.52.0/lib/codemirror.js"></script>
-    <script src="/static/blog/libs/codemirror-5.52.0/mode/overlay.js"></script>
-    <script src="/static/blog/libs/codemirror-5.52.0/mode/xml/xml.js"></script>
-    <script src="/static/blog/libs/codemirror-5.52.0/mode/markdown/markdown.js"></script>
-    <script src="/static/blog/libs/codemirror-5.52.0/mode/gfm/gfm.js"></script>
-    <script src="/static/blog/libs/codemirror-5.52.0/mode/javascript/javascript.js"></script>
-    <script src="/static/blog/libs/codemirror-5.52.0/mode/css/css.js"></script>
-    <script src="/static/blog/libs/codemirror-5.52.0/mode/htmlmixed/htmlmixed.js"></script>
-    <script src="/static/blog/libs/codemirror-5.52.0/mode/util/continuelist.js"></script>
+    <script src="/static/blog/libs/jquery/jquery-3.5.1.js" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
+    <script src="/static/blog/libs/bootstrap/js/bootstrap.bundle.min.js" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script src="/static/blog/libs/codemirror-5.52.0/lib/codemirror.js" th:src="@{/static/blog/libs/codemirror-5.52.0/lib/codemirror.js}"></script>
+    <script src="/static/blog/libs/codemirror-5.52.0/mode/overlay.js" th:src="@{/static/blog/libs/codemirror-5.52.0/mode/overlay.js}"></script>
+    <script src="/static/blog/libs/codemirror-5.52.0/mode/xml/xml.js" th:src="@{/static/blog/libs/codemirror-5.52.0/mode/xml/xml.js}"></script>
+    <script src="/static/blog/libs/codemirror-5.52.0/mode/markdown/markdown.js" th:src="@{/static/blog/libs/codemirror-5.52.0/mode/markdown/markdown.js}"></script>
+    <script src="/static/blog/libs/codemirror-5.52.0/mode/gfm/gfm.js" th:src="@{/static/blog/libs/codemirror-5.52.0/mode/gfm/gfm.js}"></script>
+    <script src="/static/blog/libs/codemirror-5.52.0/mode/javascript/javascript.js" th:src="@{/static/blog/libs/codemirror-5.52.0/mode/javascript/javascript.js}"></script>
+    <script src="/static/blog/libs/codemirror-5.52.0/mode/css/css.js" th:src="@{/static/blog/libs/codemirror-5.52.0/mode/css/css.js}"></script>
+    <script src="/static/blog/libs/codemirror-5.52.0/mode/htmlmixed/htmlmixed.js" th:src="@{/static/blog/libs/codemirror-5.52.0/mode/htmlmixed/htmlmixed.js}"></script>
+    <script src="/static/blog/libs/codemirror-5.52.0/mode/util/continuelist.js" th:src="@{/static/blog/libs/codemirror-5.52.0/mode/util/continuelist.js}"></script>
     <script src="index.js"></script>
     <script>
+
+        const rootPath = '[[@{/}]]';
         let editor = CodeMirror.fromTextArea(document.getElementById('code'), {
             mode: "markdown",
             lineNumbers: false,
@@ -168,6 +163,137 @@
                 "Enter": "newlineAndIndentContinueMarkdownList"
             }
         });
+
+        window.onload = function(){
+            fetch(rootPath + 'api/v1/categories', {
+                method: 'GET',
+                headers: new Headers({
+                    'Content-Type': 'application/json;charset=UTF-8'
+                })
+            }).then(res => res.json())
+            .catch(error => console.log(error))
+            .then(response => {
+                if(response.code === 200){
+                    let categoriesData = response.data;
+                    let html = '';
+                    for(let i = 0; i < categoriesData.length; i++){
+                        html += '<option value="'+categoriesData[i].id+'">'+categoriesData[i].name+'</option>';
+                    }
+                    document.getElementById('category').innerHTML = html;
+                }
+            });
+        }
+
+
+        document.getElementById('status').addEventListener('change', function(e){
+            if(this.value === 'SCHEDULED'){
+                let time = new Date();
+                let timeStr = time.getFullYear()
+                + '-'+((time.getMonth()+1)+"").padStart(2,'0')
+                    +'-'
+                    +(time.getDate()+"").padStart(2,'0')
+                    +' '
+                    +(time.getHours()+"").padStart(2,'0')
+                    +':'
+                    +(time.getMinutes()+"").padStart(2,'0')
+                    +':'
+                    +(time.getSeconds()+"").padStart(2,'0');
+                document.getElementById('scheduleInput').value = timeStr;
+                document.getElementById('scheduleInput').style.display = '';
+            } else {
+                document.getElementById('scheduleInput').value = '';
+                document.getElementById('scheduleInput').style.display = 'none';
+            }
+        })
+
+        document.getElementById('prePostButton').addEventListener('click', function(){
+            if(editor.getValue() === null || editor.getValue() === '' || editor.getValue().trim().length === 0){
+                alert("请先输入内容");
+                return;
+            }
+            $("#postArticleModal").modal('show');
+        });
+
+
+        document.getElementById('postButton').addEventListener('click', function(){
+            let article = getArticle();
+            if(article.title === null || article.title === ''){
+                alert('请先输入标题');
+                return;
+            }
+            console.log(JSON.stringify(article));
+            fetch(rootPath + 'console/article/save', {
+                method: 'POST',
+                body: JSON.stringify(article),
+                headers: new Headers({
+                    'Content-Type': 'application/json;charset=utf8'
+                })
+            }).then(res => res.json())
+            .catch(error => {
+                console.log("保存文章错误");
+                alert('保存文章错误');
+                return;
+            }).then(res => {
+                alert('文章发布成功');
+                // setTimeout(function(){
+                //     window.location.href = rootPath + 'console/articles';
+                // }, 800);
+            })
+        });
+
+
+
+        function getArticle(){
+
+            let Article = {};
+
+            Article.title = document.getElementById('title').value;
+            Article.content = editor.getValue();
+            Article.summary = '';
+
+            let Category = {};
+
+            Category.id = document.getElementById('category').value;
+
+            Article.category = Category;
+
+            Article.status = document.getElementById('status').value;
+
+            let scheduleInput = document.getElementById('scheduleInput').value;
+            if(scheduleInput !== null && scheduleInput !== ''){
+                Article.postAt = scheduleInput;
+            }
+
+            Article.urlName = document.getElementById('urlName').value;
+            Article.allowComment = document.getElementById('allowComment').checked;
+
+
+            return Article;
+
+        }
+
+
+        document.getElementById('uploadModal').addEventListener('click', function(){
+            let html = "";
+                html += "<div class='modal fade' id='chooseImageModal' data-backdrop='static' data-keyboard='false' tabindex='-1' role='dialog' aria-labelledby='staticBackdropLabel' aria-hidden='true'>";
+            html += "<div class='modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable'>";
+            html += "<div class='modal-content'>";
+            html += "<div class='modal-header'>";
+            html += "<h5 class='modal-title' id='staticBackdropLabel'>选择图片</h5>";
+            html += "<button type='button' class='close' data-dismiss='modal' aria-label='Close'>";
+            html += "<span aria-hidden='true'>&times;</span>";
+            html += "</button>";
+            html += "</div>";
+            html += "<div class='modal-body'>";
+            html += "<div class='form-group'>" +
+                "<input type='file' name='file' id='file' multiple><button class='btn btn-danger'>上传</button>" +
+                "</div>"
+            html += "</div>";
+            html += "</div>";
+            html += "</div>";
+            html += "</div>";
+
+        })
     </script>
 </body>
 </html>

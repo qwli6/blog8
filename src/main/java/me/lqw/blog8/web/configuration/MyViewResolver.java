@@ -5,6 +5,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+import org.thymeleaf.spring5.view.ThymeleafView;
+import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
 import java.util.Locale;
 import java.util.Map;
@@ -15,7 +17,7 @@ import java.util.Map;
  * @since 2.0
  * @version 2.0
  */
-public class MyViewResolver implements ViewResolver, Ordered {
+public class MyViewResolver extends ThymeleafViewResolver implements Ordered {
 
     private Map<String, String> viewMap;
 

@@ -15,6 +15,17 @@ import java.util.List;
  */
 public class FilePageResult extends PageResult<FileInfo> implements Serializable {
 
+
+    private List<String> path;
+
+    public List<String> getPath() {
+        return path;
+    }
+
+    public void setPath(List<String> path) {
+        this.path = path;
+    }
+
     /**
      * 文件分页对象构造方法
      *

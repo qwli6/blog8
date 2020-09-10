@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @version 1.2
  * @since 1.2
  */
-public class UploadModel implements Serializable {
+public class FileUpload implements Serializable {
 
     /**
      * 上传额外属性

@@ -3,6 +3,9 @@ package me.lqw.blog8.file;
 import me.lqw.blog8.exception.AbstractBlogException;
 import me.lqw.blog8.exception.LogicException;
 import me.lqw.blog8.exception.ResourceNotFoundException;
+import me.lqw.blog8.file.exception.FileAlreadyExistsException;
+import me.lqw.blog8.file.exception.FileException;
+import me.lqw.blog8.file.exception.FileNotExistsException;
 import me.lqw.blog8.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,14 +17,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileAttributeView;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -103,23 +104,27 @@ public class FileService {
 
     /**
      * 保存文件到本地
-     * @param uploadModel uploadModel
+     * @param fileUpload uploadModel
      * @return FileInfo
      * @throws AbstractBlogException 系统异常
      */
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    public List<FileInfo> uploadedFiles(UploadModel uploadModel) throws AbstractBlogException {
+    public List<FileInfo> uploadedFiles(FileUpload fileUpload) throws FileException {
 
-        MultipartFile[] files = uploadModel.getFiles();
+        MultipartFile[] files = fileUpload.getFiles();
+
+        if(files == null || files.length == 0){
+            throw new FileException("files.notExists", "请选择上传文件");
+        }
 
         List<FileInfo> fileInfos = new ArrayList<>(files.length);
 
         try {
             for (MultipartFile multipartFile : files) {
-                Path file = Paths.get(fileProperties.getUploadPath(), multipartFile.getOriginalFilename());
+                Path file = Paths.get(getFullPath(fileUpload.getTargetPath()).toString(), multipartFile.getOriginalFilename());
 
                 if(Files.exists(file)){
-                    throw new FileAlreadyException("file.alreadyExists", "文件已经存在");
+                    throw new FileAlreadyExistsException("file.already.exists", "文件已经存在");
                 }
                 fileInfos.add(getFileInfo(file));
                 Files.copy(multipartFile.getInputStream(), file);
@@ -127,7 +132,7 @@ public class FileService {
         } catch (IOException ex){
             ex.printStackTrace();
             logger.error("上传文件异常,[{}]", ex.getMessage(), ex);
-            throw new FileException("file.uploadFailed", "文件上传失败");
+            throw new FileException("file.uploaded.failed", "文件上传失败");
         }
         return fileInfos;
     }
@@ -138,7 +143,7 @@ public class FileService {
      * @param queryParam queryParam
      * @return FilePageResult
      */
-    public FilePageResult selectPage(FilePageQueryParam queryParam) {
+    public FilePageResult selectPage(FilePageQueryParam queryParam) throws AbstractBlogException {
 
         return doSearchWithParams2(Paths.get(fileProperties.getUploadPath()), queryParam);
     }
@@ -153,25 +158,61 @@ public class FileService {
     private FilePageResult doSearchWithParams2(Path path, FilePageQueryParam queryParam) throws AbstractBlogException {
         FilePageResult filePageResult;
 
+        if(path == null || !path.toFile().isDirectory()){
+            throw new FileException("query.filePath.illegal", "查询文件路径非法");
+        }
+
+
+        boolean needQuery = !CollectionUtils.isEmpty(queryParam.getExtensions()) || StringUtil.isNotBlank(queryParam.getFileName());
+
+
+        //递归查询深度
+        int maxDepth = queryParam.getContainChildDir() != null && queryParam.getContainChildDir() ? Integer.MAX_VALUE : 1;
+
+        //要执行分页
+        //计算要跳过的页码
+        int skip = queryParam.getOffset();
+        //需要查询的数量
+        int limit = queryParam.getPageSize();
+
+        String fileName = queryParam.getFileName();
+
+        Predicate<Path> predicate = p -> {
+            if(!p.equals(rootPath)){
+
+                return true;
+
+            }
+
+            return false;
+        };
+
+        if(needQuery){
+            predicate = predicate.and(p -> matchParam(queryParam, p.getFileName().toString()));
+        }
 
 
         try {
-            List<FileInfo> fileInfos = Files.walk(path, 1).skip(queryParam.getOffset())
-                    .limit(queryParam.getPageSize()).map(this::getFileInfo).collect(Collectors.toList());
+            List<FileInfo> fileInfos = Files.walk(path, maxDepth).skip(skip)
+                    .limit(limit).map(this::getFileInfo).collect(Collectors.toList());
             Boolean sortBySize = queryParam.isSortBySize();
             if(sortBySize != null && sortBySize){
                 //默认是从小到大, 改变一下，从大到小
                 fileInfos = fileInfos.stream().sorted(Comparator.comparingLong(FileInfo::getSize).reversed()).collect(Collectors.toList());
             }
 
-            int count = (int) Files.walk(path, 1).count();
+            int count = (int) Files.walk(path, maxDepth).count();
             filePageResult = new FilePageResult(queryParam, count, fileInfos);
+
+
+            List<String> paths = getPathsBetweenPath(rootPath, getFullPath(queryParam.getTargetPath()));
+
+            filePageResult.setPath(paths);
 
             return filePageResult;
         } catch (IOException ex){
-            logger.error("查询文件列表异常:[{}]", ex.getMessage(), ex);
-            ex.printStackTrace();
-            throw new LogicException("", "");
+            logger.error("查询文件列表异常: [{}]", ex.getMessage(), ex);
+            throw new FileException("query.files.failed", "查询文件列表异常");
         }
     }
 
@@ -227,12 +268,16 @@ public class FileService {
 
     /**
      * 是否匹配参数
-     * @param queryParam queryParam
-     * @param queryFileName queryFileName
+     * @param queryParam queryParam 查询参数
+     * @param queryFileName queryFileName 传入的文件名称
      * @return true | false
      */
     private boolean matchParam(FilePageQueryParam queryParam, String queryFileName) {
+
+        //获取传入名称的扩展名
         Optional<String> extOp = FileUtil.getExtension(queryFileName);
+
+        //扩展名存在
         if (extOp.isPresent() && !CollectionUtils.isEmpty(queryParam.getExtensions()) &&
                 queryParam.getExtensions().stream().noneMatch(ex -> ex.equalsIgnoreCase(extOp.get()))) {
             return false;
@@ -263,9 +308,7 @@ public class FileService {
      * @param path path
      * @return FileInfoDetail
      */
-    public FileInfoDetail getFileInfoDetail(Path path) {
-
-        logger.info("filePath:[{}]", path.toString());
+    public FileInfoDetail getFileInfoDetail(Path path) throws FileException {
 
         FileInfoDetail fid = new FileInfoDetail(getFileInfo(path));
 
@@ -287,7 +330,11 @@ public class FileService {
      * @param path path
      * @return FileInfo
      */
-    public FileInfo getFileInfo(Path path) {
+    public FileInfo getFileInfo(Path path) throws FileException {
+
+        if(path == null){
+            throw new FileNotExistsException("file.notExists", "文件不存在");
+        }
 
         FileInfo fileInfo = new FileInfo();
         FileUtil.getExtension(path).ifPresent(e -> fileInfo.setExt(FileTypeEnum.getType(e)));
@@ -350,35 +397,39 @@ public class FileService {
      * @param content content
      * @throws AbstractBlogException 逻辑异常
      */
-    public void writeFile(Path file, String content) throws AbstractBlogException {
+    private void writeFile(Path file, String content) throws FileException {
 
         if (!FileTypeEnum.canEdit(file)) {
-            throw new LogicException("file.non.editing", "文件不能被编辑");
+            throw new FileException("file.canNot.editing", "文件不能被编辑");
         }
 
         if(!Files.exists(file)){
-
             try {
                 Files.createFile(file);
             } catch (IOException e) {
                 e.printStackTrace();
-                throw new LogicException("file.write.failed", "无法创建文件写入");
+                throw new FileException("file.write.failed", "无法创建文件写入");
             }
         }
 
         if (!Files.isWritable(file)) {
-            throw new LogicException("file.not.writeable", "文件无写权限");
+            throw new FileException("file.not.writeable", "文件无写权限");
         }
 
         try {
             Files.write(file, content.getBytes(Charset.defaultCharset()));
         } catch (IOException e) {
             e.printStackTrace();
-            throw new LogicException("file.write.failed", "文件写入失败");
+            throw new FileException("file.write.failed", "文件写入失败");
         }
     }
 
-    public void writeFile(FileUpdated fileUpdated) throws AbstractBlogException {
+    /**
+     * 写文件
+     * @param fileUpdated 待更新的文件
+     * @throws FileException 文件异常
+     */
+    public void writeFile(FileUpdated fileUpdated) throws FileException {
 
         String filePath = fileUpdated.getPath();
 
@@ -397,7 +448,7 @@ public class FileService {
      * @throws AbstractBlogException 逻辑异常
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public List<FileInfo> saveUploadedFiles(List<MultipartFile> files) throws AbstractBlogException {
+    public List<FileInfo> saveUploadedFiles(List<MultipartFile> files) throws FileException {
         List<FileInfo> fileInfos = new ArrayList<>();
 
         for (MultipartFile file : files) {
@@ -599,26 +650,42 @@ public class FileService {
         return fid;
     }
 
-    public FileInfoDetail fileCreate(FileCreate fileCreate) throws AbstractBlogException {
-        String targetPath = fileCreate.getTargetPath();
-        if(StringUtil.isBlank(targetPath)){
-            targetPath = fileProperties.getFileRootPath();
+    /**
+     * 创建文件
+     * @param fileCreated fileCreated
+     * @return FileInfoDetail
+     * @throws FileException FileException
+     */
+    public FileInfoDetail fileCreate(FileCreated fileCreated) throws FileException {
+
+        //创建文件还是文件夹
+        boolean directory = fileCreated.getFileType() == null || fileCreated.getFileType() == 0;
+
+        String fileName = fileCreated.getFileName();
+        if(!directory){
+            //文件, 检查后缀是否支持
+            FileUtil.getExtension(fileName).orElseThrow(()
+                    -> new FileException("file.extension.illegal", "请输入合法的文件后缀名称"));
+
         }
 
-        Integer fileType = fileCreate.getFileType();
 
-        Path filePath = getFilePath(fileCreate.getFileName());
-        boolean exists = filePath.toFile().exists();
 
-        if(exists){
-            throw new FileAlreadyException("directory.alreadyExists", "目录已经存在");
+        Path fullPath = getFullPath(fileCreated.getTargetPath());
+
+        Integer fileType = fileCreated.getFileType();
+
+        Path filePath = getFilePath(fileName);
+
+        if(filePath.toFile().exists()){
+            throw new FileAlreadyExistsException("file.alreadyExists", "目录|文件已经存在");
         }
         if(fileType == null || fileType == 0){
             try {
                 Files.createDirectories(filePath);
             } catch (IOException e) {
                 e.printStackTrace();
-                throw new LogicException("directory.create.failed", "目录创建失败");
+                throw new FileException("directory.create.failed", "目录创建失败");
             }
         } else {
 
@@ -626,10 +693,9 @@ public class FileService {
                 Files.createFile(filePath);
             } catch (IOException e) {
                 e.printStackTrace();
-                throw new LogicException("file.create.failed", "文件创建失败");
+                throw new FileException("file.create.failed", "文件创建失败");
             }
         }
-
 
         return getFileInfoDetail(filePath);
 
@@ -672,8 +738,76 @@ public class FileService {
     }
 
 
+    /**
+     * 获取两个 Path 之间的路径，target 必须要是 root 子目录
+     * 如果不是子目录，则无法获取两个路径之间的距离
+     *
+     * root   /usr/local/tomcat
+     * target /usr/local/tomcat/pos-web.lp.com/logs
+     *
+     * 将返回 [logs, pos-web.lp.com]
+     *
+     * @param root root
+     * @param target target
+     * @return List
+     */
+    public static List<String> getPathsBetweenPath(Path root, Path target) {
+        if(root.equals(target) || target.getNameCount() < root.getNameCount()){
+            return new ArrayList<>();
+        }
+
+        LinkedList<String> paths = new LinkedList<>();
+        while (!target.getParent().equals(root)){
+            paths.addFirst(target.getFileName().toString());
+            target = target.getParent();
+        }
+        return paths;
+    }
+
+
     private Path getFilePath(String path){
         return Paths.get(fileProperties.getUploadPath(), path);
     }
 
+
+    /**
+     * 获取完整的路径，转换成 path
+     * root: /usr/local
+     * path: upload
+     *
+     * fullPath: /usr/local/upload
+     *
+     * root: /usr/local/
+     * path: /upload
+     *
+     * fullPath: /usr/local/upload
+     *
+     * @param path path
+     * @return Path
+     */
+    private Path getFullPath(String path) {
+        if(StringUtil.isBlank(path)){
+            return rootPath;
+        }
+
+        if(path.startsWith("/")){
+            path = path.substring(1);
+        }
+        String uploadPath = fileProperties.getUploadPath();
+
+        if(!uploadPath.endsWith("/")){
+            uploadPath = uploadPath + "/";
+        }
+        return Paths.get(uploadPath, path);
+    }
+
+
+    public static void main(String[] args){
+        Path root = Paths.get("/1/2");
+        Path target = Paths.get("/1/");
+
+        List<String> pathsBetweenPath = getPathsBetweenPath(root, target);
+        System.out.println(pathsBetweenPath);
+
+    }
 }

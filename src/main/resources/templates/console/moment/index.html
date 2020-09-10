@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" th:href="@{/static/css/base.css}">
     <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/static/blog/libs/prism/prism.css}" href="/static/blog/libs/prism/prism.css">
     <link rel="stylesheet" th:href="@{/static/blog/libs/markdown/github-markdown.css}">
 </head>
 <body>
@@ -47,7 +48,7 @@
                             <div class="text-muted" style="font-size: 12px;">
                                 <span><a href="">selfassu</a></span>
                                 <span style="padding-left: 4px; padding-right: 4px;">•</span>
-                                <span>2020-09-02 15:24:12</span>
+                                <span th:text="${#temporals.format(moment.createAt, 'yyyy-MM-dd HH:mm:ss')}">2020-09-02 15:24:12</span>
                             </div>
                             <div class="markdown-body mt-1" th:utext="${moment.content}"></div>
                             <div class="float-right">
@@ -97,6 +98,7 @@
 
 <script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
 <script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
+<script type="text/javascript" src="/static/blog/libs/prism/prism.js" th:src="@{/static/blog/libs/prism/prism.js}"></script>
 <script>
     function toPage(i){
         document.getElementById('currentPage').value = i;
@@ -107,6 +109,10 @@
         let theEvent = window.event || e;
         let code = theEvent.keyCode || theEvent.which || theEvent.charCode;
         if (code === 13) {
+            let query = document.getElementById('query').value;
+            if(query == null || query.trim().length === 0 || query === ''){
+                return;
+            }
            document.getElementById('queryForm').submit();
         }
     }

@@ -5,18 +5,43 @@
     <title th:text="文章列表">文章列表</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="shortcut icon" th:href="@{/static/blog/images/logoH.png}" >
-    <link rel="stylesheet" th:href="@{/static/css/base.css}">
-    <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/static/blog/css/base.css" th:href="@{/static/blog/css/base.css}">
+    <link rel="stylesheet" href="/static/blog/css/console.css" th:href="@{/static/blog/css/console.css}">
+    <link rel="stylesheet" href="/static/blog/libs/bootstrap/css/bootstrap.min.css" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
     <style>
         .list-group-item {
             border: none !important;
             border-top: 1px solid #eeeeee !important;
         }
-        .backend-article-title {
-            color: #222222;
-            font-weight: 600;
-            font-size: 18px;
+
+
+        .el-pagination .el-pager li.active {
+            /*color: #fff !important;*/
+            background-color: #e33e33 !important;
         }
+
+        .el-pagination {
+            text-align: center;
+            margin-top: 20px;
+            white-space: nowrap;
+            padding: 2px 5px;
+            color: #303133;
+            font-weight: 700;
+        }
+        .el-pager {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            list-style: none;
+            display: inline-block;
+            vertical-align: top;
+            font-size: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+
     </style>
 </head>
 <body>
@@ -35,15 +60,16 @@
             </div>
 
             <ul class="list-group list-group-flush bg-white shadow-sm mt-4">
-
                 <li class="list-group-item">
                     <form method="get" th:action="@{/console/moment}">
                         <div class="form-row">
                             <div class="col-7">
-                                <input type="text" class="form-control" placeholder="City">
+                                <input type="text" class="form-control" placeholder="内容">
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="State">
+                                <select id="category" class="form-control">
+                                    <option value="">全部分类</option>
+                                </select>
                             </div>
                             <div class="col">
                                 <input type="text" class="form-control" placeholder="Zip">
@@ -70,23 +96,30 @@
                     </div>
                     <div class="float-right" style="font-size: 14px;">
                         <a class="text-decoration-none" href="javascript:void(0);" id="btn-set-top">置顶</a>
-                        <a class="text-decoration-none" th:href="@{/article/} + ${article.id}">查看</a>
+                        <a class="text-decoration-none" th:data-previewid="${article.id}"  href="javascript:void(0);">预览</a>
                         <a class="text-decoration-none" th:href="@{/console/article/} + ${article.id} + '/edit'">编辑</a>
                         <a class="text-decoration-none text-danger" href="javascript:void(0);" th:data-trash="${article.id}" id="btn-delete">删除</a>
                     </div>
                 </li>
             </ul>
+
+            <div class="el-pagination">
+                <ul class="el-pager">
+                    <li class="number active">1</li>
+                    <li class="number">2</li>
+                    <li class="number">3</li>
+                </ul>
+            </div>
         </div>
         <div class="col-3">
 
-            <a th:href="@{/console/article/create}" type="button" class="btn btn-danger btn-block">写文章</a>
+            <a th:href="@{/console/article/create}" type="button" class="btn btn-danger btn-block">新文章</a>
 
             <div class="card border-0 bg-white shadow-sm mt-3">
                 <div class="card-header bg-white" style="font-weight: 600; color: #222222;">
                     个人成就
                 </div>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item border-0">掘金共建者</li>
                     <li class="list-group-item border-0">文章被阅读<strong class="ml-2">182,723</strong></li>
                     <li class="list-group-item border-0">文章被评论<strong class="ml-2">12,999</strong></li>
                     <li class="list-group-item border-0">动态被阅读<strong class="ml-2">323</strong></li>
@@ -105,29 +138,16 @@
 
 
 
-<script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
-<script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
-<script type="text/javascript" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>
-<script type="text/javascript" th:src="@{/static/blog/js/Toast.js}"></script>
-<script type="text/javascript" th:src="@{/static/blog/libs/prism/prism.js}"></script>
+<script type="text/javascript" src="/static/blog/libs/jquery/jquery-3.5.1.js" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
+<script type="text/javascript" src="/static/blog/libs/bootstrap/js/bootstrap.bundle.js" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
+<script type="text/javascript" src="/static/blog/libs/sweetalert/sweetalert2-2.9.js" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>
+<script type="text/javascript" src="/static/blog/js/Toast.js" th:src="@{/static/blog/js/Toast.js}"></script>
+<script type="text/javascript" src="/static/blog/libs/prism/prism.js" th:src="@{/static/blog/libs/prism/prism.js}"></script>
 <script type="text/javascript" src="/static/blog/js/console.js" th:src="@{/static/blog/js/console.js}"></script>
 
 <script>
 
-    const rootPath = '[[@{/}]]';
-
-    $(document).ready(function(){
-        $("#btnSubmit").click(function (event) {
-
-            //stop submit the form, we will post it manually.
-            event.preventDefault();
-
-            fire_ajax_submit();
-        });
-    });
-
-
-    for(elem of document.querySelectorAll('a[data-trash]')){
+    for(elem of document.querySelectorAll('[data-trash]')){
         elem.addEventListener('click', function(){
             let id = this.dataset.trash;
             alert(id);
@@ -135,15 +155,13 @@
     }
 
 
-    function fire_ajax_submit() {
-        // Get form
-        $("#btnSubmit").prop("disabled", true);
 
-        let data = {
-            name: document.getElementById('name').value,
-            sort: document.getElementById('sort').value,
-            show: document.getElementById('show').checked
-        }
+    for(elem of document.querySelectorAll('[data-previewid]')) {
+        elem.addEventListener('click', function(){
+            let id = this.dataset.previewid;
+
+        });
+
     }
 
 </script>

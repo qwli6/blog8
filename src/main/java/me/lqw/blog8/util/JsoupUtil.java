@@ -53,7 +53,7 @@ public class JsoupUtil {
      */
     public static Optional<String> cleanAllHtml(String content){
 
-        return Optional.ofNullable(Jsoup.clean(content, Whitelist.simpleText()));
+        return Optional.ofNullable(Jsoup.clean(content, Whitelist.none()));
 
     }
 }

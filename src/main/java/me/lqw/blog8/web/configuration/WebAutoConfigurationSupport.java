@@ -1,6 +1,9 @@
 package me.lqw.blog8.web.configuration;
 
+import me.lqw.blog8.exception.BlogMessageCodeResolver;
 import me.lqw.blog8.exception.resolver.BlogHandlerExceptionResolver;
+import me.lqw.blog8.plugins.template.TemplateService;
+import me.lqw.blog8.plugins.thymeleaf.ExtendSpringResourceTemplateResolver;
 import me.lqw.blog8.service.BlackIpService;
 import me.lqw.blog8.service.BlogConfigService;
 import me.lqw.blog8.service.RememberMeService;
@@ -14,15 +17,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.lang.NonNull;
 import org.springframework.util.PathMatcher;
+import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.resource.ResourceUrlProvider;
 import org.springframework.web.util.UrlPathHelper;
+import org.thymeleaf.templatemode.TemplateMode;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,6 +45,9 @@ import java.util.Map;
  */
 @Configuration
 public class WebAutoConfigurationSupport extends WebMvcConfigurationSupport {
+
+
+    private final TemplateService templateService;
 
 
     /**
@@ -57,13 +67,19 @@ public class WebAutoConfigurationSupport extends WebMvcConfigurationSupport {
      * @param exceptionResolver 异常解析器
      */
     public WebAutoConfigurationSupport(RememberMeService rememberMeService,
+                                       TemplateService templateService,
                                        BlogHandlerExceptionResolver exceptionResolver) {
         this.handlerExceptionResolver = exceptionResolver;
         this.rememberMeService = rememberMeService;
+        this.templateService = templateService;
     }
 
+    @Override
+    protected MessageCodesResolver getMessageCodesResolver() {
+        return new BlogMessageCodeResolver();
+    }
 
-//    @Bean
+    //    @Bean
 //    public TemplateEngine templateEngine(){
 //        SpringResourceTemplateResolver springResourceTemplateResolver = new SpringResourceTemplateResolver();
 //        springResourceTemplateResolver.set
@@ -96,14 +112,22 @@ public class WebAutoConfigurationSupport extends WebMvcConfigurationSupport {
 
 //
 //    @Bean
-//    public ExtendThymeleafViewResolver viewResolver(){
-//        ExtendThymeleafViewResolver viewResolver = new ExtendThymeleafViewResolver();
+//    public ExtendSpringResourceTemplateResolver viewResolver(TemplateService templateService){
+//        ExtendSpringResourceTemplateResolver viewResolver = new ExtendSpringResourceTemplateResolver(templateService);
 ////        viewResolver
-//        viewResolver.setTemplateEngine(templateEngine());
+////        viewResolver.setTemplateEngine(templateEngine());
 //        viewResolver.setOrder(0);
+//        viewResolver.setTemplateMode(TemplateMode.HTML);
+//        viewResolver.setSuffix(".html");
+//        viewResolver.setPrefix("");
+//        viewResolver.setCacheable(false);
+//
+//
+//        templateService.registerAllTemplate();
 //        return viewResolver;
 //    }
-//
+
+
 
 
     /**
@@ -124,6 +148,8 @@ public class WebAutoConfigurationSupport extends WebMvcConfigurationSupport {
     protected void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
         super.addResourceHandlers(registry);
         registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+
+//        registry.
     }
 
 

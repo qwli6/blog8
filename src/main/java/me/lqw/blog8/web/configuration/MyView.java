@@ -3,6 +3,7 @@ package me.lqw.blog8.web.configuration;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.View;
+import org.thymeleaf.spring5.view.ThymeleafView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,7 +14,7 @@ import java.util.Map;
  * @since 2.2
  * @version 2.2
  */
-public class MyView implements View {
+public class MyView extends ThymeleafView {
 
     private String content;
 

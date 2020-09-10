@@ -13,6 +13,11 @@ a:focus, button:focus{
     outline: none !important;
 }
 
+
+.card {
+    border-radius: 2px !important;
+}
+
 .title-article {
     color: #222226;
     font-weight: 600;
@@ -63,6 +68,7 @@ a {
     cursor: pointer !important;
     text-decoration: none !important;
     outline: none !important;
+    color: #222226 !important;
 }
 
 a:hover{

@@ -1,7 +1,5 @@
-package me.lqw.blog8.file;
+package me.lqw.blog8.file.exception;
 
-import me.lqw.blog8.constants.Message;
-import me.lqw.blog8.exception.AbstractBlogException;
 import me.lqw.blog8.exception.LogicException;
 
 /**

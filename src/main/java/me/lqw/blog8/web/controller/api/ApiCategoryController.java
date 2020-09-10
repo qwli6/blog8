@@ -38,7 +38,7 @@ public class ApiCategoryController extends AbstractBaseController {
      *
      * @return CR<?>
      */
-    @GetMapping("categores")
+    @GetMapping("categories")
     public CR<?> selectAll() {
         return ResultDTO.create(categoryService.selectAll());
     }

@@ -1,15 +1,15 @@
-package me.lqw.blog8.file;
+package me.lqw.blog8.file.meta;
 
 import java.io.Serializable;
 
 /**
- * 图片信息
+ * 图片元信息
  *
  * @author liqiwen
  * @version 1.4
  * @since 1.4
  */
-public class ImageInfo implements Serializable {
+public class ImageMetaInfo implements Serializable {
 
     /**
      * 图片宽度
@@ -26,6 +26,25 @@ public class ImageInfo implements Serializable {
      */
     private long size;
 
+    /**
+     * 构造方法
+     */
+    public ImageMetaInfo() {
+        super();
+    }
+
+    /**
+     * 构造方法
+     * @param width width
+     * @param height height
+     * @param size size
+     */
+    public ImageMetaInfo(int width, int height, long size) {
+        super();
+        this.width = width;
+        this.height = height;
+        this.size = size;
+    }
 
     public int getWidth() {
         return width;

@@ -1,6 +1,5 @@
 package me.lqw.blog8.file;
 
-import me.lqw.blog8.exception.ResourceNotFoundException;
 import me.lqw.blog8.model.dto.common.CR;
 import me.lqw.blog8.model.dto.common.QR;
 import me.lqw.blog8.model.dto.common.ResultDTO;
@@ -9,23 +8,12 @@ import me.lqw.blog8.web.controller.console.AbstractBaseController;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 文件系统 controller
@@ -67,28 +55,39 @@ public class FileController extends AbstractBaseController {
 
 
     /**
-     * 查询文件
-     *
+     * 多条件查询文件
      * @param queryParam queryParam
      * @return FilePageResult
      */
-    @GetMapping("file/query")
+    @GetMapping("files/search")
     @ResponseBody
     public QR selectPage(FilePageQueryParam queryParam) {
+
+        logger.info("查询目标路径:" + queryParam.getTargetPath());
+
+        if(!queryParam.hasPageSize()){
+            queryParam.setPageSize(10);
+        }
+
+        Boolean containChildDir = queryParam.getContainChildDir();
+        if(containChildDir == null){
+            queryParam.setContainChildDir(true);
+        }
+
         return ResultDTO.createQR(fileService.selectPage(queryParam));
     }
 
 
     /**
      * 上传文件
-     * @param uploadModel uploadModel
+     * @param fileUpload fileUpload
      * @return CR<?>
      */
     @PostMapping("file/upload")
     @ResponseBody
-    public CR<?> fileUpload(@ModelAttribute UploadModel uploadModel) {
+    public CR<?> fileUpload(@ModelAttribute FileUpload fileUpload) {
 
-        List<FileInfo> fileInfos = fileService.uploadedFiles(uploadModel);
+        List<FileInfo> fileInfos = fileService.uploadedFiles(fileUpload);
 
         logger.info("upload success! [{}]", JsonUtil.toJsonString(fileInfos));
         return ResultDTO.create(fileInfos);
@@ -109,10 +108,15 @@ public class FileController extends AbstractBaseController {
     }
 
 
+    /**
+     * 创建文件
+     * @param fileCreated fileCreated
+     * @return CR
+     */
     @PostMapping("file/create")
     @ResponseBody
-    public CR<?> fileCreate(@RequestBody FileCreate fileCreate) {
-        return ResultDTO.create(fileService.fileCreate(fileCreate));
+    public CR<?> fileCreate(@RequestBody FileCreated fileCreated) {
+        return ResultDTO.create(fileService.fileCreate(fileCreated));
     }
 
 

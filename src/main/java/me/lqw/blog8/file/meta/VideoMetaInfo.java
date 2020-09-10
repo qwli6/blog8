@@ -1,4 +1,4 @@
-package me.lqw.blog8.file;
+package me.lqw.blog8.file.meta;
 
 import java.io.Serializable;
 
@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @author liqiwen
  * @version 1.0
  */
-public class VideoInfo implements Serializable {
+public class VideoMetaInfo implements Serializable {
 
     /**
      * 视频高度
@@ -25,7 +25,7 @@ public class VideoInfo implements Serializable {
      */
     private long duration;
 
-    public VideoInfo() {
+    public VideoMetaInfo() {
         super();
     }
 
@@ -36,7 +36,7 @@ public class VideoInfo implements Serializable {
      * @param height   height 高度
      * @param duration duration 时长
      */
-    public VideoInfo(int width, int height, long duration) {
+    public VideoMetaInfo(int width, int height, long duration) {
         super();
         this.width = width;
         this.height = height;

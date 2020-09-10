@@ -7,6 +7,8 @@
     <link rel="shortcut icon" th:href="@{/static/blog/images/logoH.png}" >
     <link rel="stylesheet" th:href="@{/static/blog/css/front.css}">
     <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/static/blog/libs/prism/prism.css}" href="/static/blog/libs/prism/prism.css">
+    <link rel="stylesheet" th:href="@{/static/blog/libs/markdown/github-markdown.css}" href="/static/blog/libs/markdown/github-markdown.css">
     <style>
         @media (max-width: 767px) {
             .markdown-body {
@@ -45,11 +47,11 @@
         </div>
     </footer>
 
-    <script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
-    <script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
-    <script type="text/javascript" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>
-    <script type="text/javascript" th:src="@{/static/blog/js/Toast.js}"></script>
-    <script type="text/javascript" th:src="@{/static/blog/libs/prism/prism.js}"></script>
+    <script type="text/javascript" src="/static/blog/libs/jquery/jquery-3.5.1.js" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
+    <script type="text/javascript" src="/static/blog/libs/bootstrap/js/bootstrap.bundle.js" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
+    <script type="text/javascript" src="/static/blog/libs/sweetalert/sweetalert2-2.9.js" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>
+    <script type="text/javascript" src="/static/blog/js/Toast.js" th:src="@{/static/blog/js/Toast.js}"></script>
+    <script type="text/javascript" src="/static/blog/libs/prism/prism.js" th:src="@{/static/blog/libs/prism/prism.js}"></script>
     <script>
         const rootPath = '[[@{/}]]';
         const momentId = '[[${moment.id}]]'

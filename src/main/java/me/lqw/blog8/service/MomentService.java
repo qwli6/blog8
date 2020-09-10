@@ -9,10 +9,13 @@ import me.lqw.blog8.model.Comment;
 import me.lqw.blog8.model.CommentModule;
 import me.lqw.blog8.model.Moment;
 import me.lqw.blog8.model.MomentArchive;
+import me.lqw.blog8.model.dto.CommentDTO;
+import me.lqw.blog8.model.dto.MomentDTO;
 import me.lqw.blog8.model.dto.page.PageResult;
 import me.lqw.blog8.model.vo.MomentPageQueryParam;
 import me.lqw.blog8.plugins.md.MarkdownParser;
 import me.lqw.blog8.util.JsonUtil;
+import me.lqw.blog8.util.JsoupUtil;
 import me.lqw.blog8.util.StringUtil;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.Ordered;
@@ -22,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 动态业务处理类
@@ -172,9 +176,25 @@ public class MomentService extends AbstractBaseService<Moment> implements Commen
 
     @Transactional(readOnly = true)
     public MomentArchive selectLatestMoments() {
-        MomentArchive momentArchive = momentMapper.selectLatestMoments();
-        momentArchive.getMoments().forEach(e -> e.setContent(markdownParser.parse(e.getContent())));
 
+        MomentArchive momentArchive = momentMapper.selectLatestMoments();
+
+        List<Moment> moments = momentArchive.getMoments();
+
+        for(Moment moment: moments) {
+            String content = moment.getContent();
+            String htmlContent = markdownParser.parse(content);
+            JsoupUtil.getFirstImage(htmlContent).ifPresent(moment::setFeatureImage);
+
+            if(StringUtil.isNotBlank(htmlContent)){
+                JsoupUtil.cleanAllHtml(htmlContent).ifPresent(e -> {
+                    if(e.length() > 20){
+                        e = e.substring(0, 20) + "....";
+                    }
+                    moment.setContent(e);
+                });
+            }
+        }
         return momentArchive;
     }
 
