@@ -5,96 +5,113 @@
     <title th:text="创建动态">新动态</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
-    <link rel="stylesheet" href="/static/blog/libs/codemirror-5.52.0/lib/codemirror.css">
     <style>
-        .CodeMirror {
-            border: 1px solid #eeeeee;
-            height: 500px;
-            padding: 0;
-            font: 15px / normal 'Monaco','Menlo','Ubuntu Mono','Consolas','source-code-pro',monospace;
+        body {
+            font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace!important;
+        }
+        textarea {
+            font-size: 14px !important;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 <div th:replace="/console/common/head-navbar::headnav('moment')"></div>
 <div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="btn-toolbar float-right" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="btn-group mr-2" role="group" aria-label="First group">
-                    <button type="button" class="btn btn-light">1</button>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <nav style="background-color: #f6f8fa; border-top-left-radius: 4px; border-top-right-radius: 4px; padding-top: 8px; padding-left: 8px; border: 1px solid #dfe2e5;">
+                <div class="nav small nav-tabs" id="nav-tab" role="tablist" style="border-bottom: none !important;">
+                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="javascript:void(0);" role="tab"
+                       aria-controls="nav-home" aria-selected="true">书写</a>
+                    <a class="nav-item nav-link preview" id="nav-profile-tab" data-toggle="tab" href="javascript:void(0);" role="tab"
+                       aria-controls="nav-profile" aria-selected="false">预览</a>
                 </div>
-                <div class="btn-group mr-2" role="group" aria-label="Second group">
-                    <button type="button" class="btn btn-light">
-                        <i data-feather="circle"></i>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group-sm btn-group" style="margin-right: 10px;" role="group" aria-label="First group">
+                    <button type="button" class="btn btn-sm btn-light" >
+                        <b>h1</b>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light">
+                        <b>h2</b>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light">
+                        <b>h3</b>
                     </button>
                 </div>
-                <div class="btn-group" role="group" aria-label="Third group">
-                    <button type="button" data-toggle="modal" data-target="#staticBackdrop" class="btn btn-light">8</button>
+                <div class="btn-group btn-group-sm" style="margin-right: 10px;" role="group" aria-label="Second group">
+                    <button type="button" class="btn btn-sm btn-light">
+                        <svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light">
+                        <svg class="octicon octicon-image" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M1.75 2.5a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h.94a.76.76 0 01.03-.03l6.077-6.078a1.75 1.75 0 012.412-.06L14.5 10.31V2.75a.25.25 0 00-.25-.25H1.75zm12.5 11H4.81l5.048-5.047a.25.25 0 01.344-.009l4.298 3.889v.917a.25.25 0 01-.25.25zm1.75-.25V2.75A1.75 1.75 0 0014.25 1H1.75A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25zM5.5 6a.5.5 0 11-1 0 .5.5 0 011 0zM7 6a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </button>
+                </div>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Third group">
+                    <button type="button" class="btn btn-sm btn-light">
+                        <b>B</b>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light">
+                        <em>i</em>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light">
+                        <svg class="octicon octicon-code" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4.72 3.22a.75.75 0 011.06 1.06L2.06 8l3.72 3.72a.75.75 0 11-1.06 1.06L.47 8.53a.75.75 0 010-1.06l4.25-4.25zm6.56 0a.75.75 0 10-1.06 1.06L13.94 8l-3.72 3.72a.75.75 0 101.06 1.06l4.25-4.25a.75.75 0 000-1.06l-4.25-4.25z"></path></svg>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
     <div class="row mt-3">
         <div class="col-12">
-            <div class="mb-3">
-                <textarea name="content" id="content" cols="30" rows="20" class="form-control"></textarea>
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                    <textarea name="content"  id="content" style="min-height: 390px;" class="form-control"></textarea>
+                </div>
+                <div class="tab-pane fade" style="min-height: 390px;" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+                </div>
             </div>
         </div>
     </div>
 
     <div class="row mt-3">
-        <div class="col-5">
-            <div class="form-group form-check">
-                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                <label class="form-check-label" for="exampleCheck1">开启密码保护</label>
-            </div>
-        </div>
-        <div class="col-7">
-            <div class="btn-toolbar float-right" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="btn-group mr-2" role="group" aria-label="First group">
-                    <button type="button" class="btn btn-light">?</button>
+        <div class="col-12">
+            <div class="form-inline">
+                <div class="form-check mb-2 mr-2 small">
+                    <input class="form-check-input check-box" checked type="checkbox" id="allowComment">
+                    <label class="form-check-label" for="allowComment">
+                        开启评论
+                    </label>
                 </div>
-                <div class="btn-group mr-2" role="group" aria-label="Second group">
-                    <button type="button" class="btn btn-warning">草稿
-                    </button>
+                <div class="form-check mb-2 mr-2 small">
+                    <input class="form-check-input check-box" type="checkbox" id="isPrivate">
+                    <label class="form-check-label" for="isPrivate">
+                        私人动态
+                    </label>
                 </div>
-                <div class="btn-group" role="group" aria-label="Third group">
-                    <button type="button" class="btn btn-outline-dark">发布</button>
+
+                <div class="form-check mb-2 mr-2 small" style="cursor: pointer;">
+                    <input type="checkbox" class="form-check-input check-box" id="passwordProtectEnable">
+                    <label class="form-check-label" for="passwordProtectEnable">启用密码保护</label>
                 </div>
+                <input type="text" placeholder="勾选后输入密码" class="form-control form-control-sm mb-2 mr-2" id="passwordProtect" disabled>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="mb-3">
-            <div class="row row-sm">
-                <div class="col-5">
-                    <label class="form-label" for="passwordProtect">
-                        密码保护
-                        <span class="form-label-description">
-                                <label class="form-check form-check-inline cursor-pointer">
-                                      <input class="form-check-input" id="passwordProtectEnable" type="checkbox">
-                                      <span class="form-check-label">启用</span>
-                                </label>
-                            </span>
-                    </label>
-                    <input type="text" class="form-control" disabled id="passwordProtect">
-                </div>
-            </div>
+    <div class="btn-toolbar justify-content-end" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-group btn-group-sm" style="margin-right: 10px;" role="group" aria-label="Third group">
+            <button type="button" id="btn-cancel" class="btn btn-danger">取消</button>
         </div>
-        <div class="btn-list mb-3 justify-content-end">
-            <a href="javascript:void(0);" id="btn-cancel" class="btn btn-outline-danger">取消发布</a>
-            <a href="javascript:void(0);" id="btn-create" class="btn btn-primary">立即发布</a>
-        </div>
-        <div class="mb-3">
-            <div class="form-label">评论设置</div>
-            <div>
-                <label class="form-check form-check-inline">
-                    <input id="allowComment" class="form-check-input" type="checkbox" checked>
-                    <span class="form-check-label form-label">开启</span>
-                </label>
-            </div>
+        <div class="btn-group btn-group-sm" role="group" aria-label="Third group">
+            <button type="button" id="btn-create" class="btn btn-success">保存动态</button>
         </div>
     </div>
 </div>
@@ -124,15 +141,7 @@
 <script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
 <script type="text/javascript" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>
 <script type="text/javascript" th:src="@{/static/blog/js/Toast.js}"></script>
-<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/lib/codemirror.js"></script>
-<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/addon/edit/continuelist.js"></script>
-<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/addon/display/fullscreen.js"></script>
-<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/mode/markdown/markdown.js"></script>
-<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/addon/mode/overlay.js"></script>
-<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/addon/display/placeholder.js"> </script>
-<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/addon/selection/mark-selection.js"> </script>
-<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/mode/gfm/gfm.js"></script>
-<script type="text/javascript" src="/static/blog/libs/codemirror-5.52.0/mode/xml/xml.js"></script>
+<script type="text/javascript" th:src="@{/static/blog/libs/markedjs/marked.min.js}" src="/static/blog/libs/markedjs/marked.min.js"></script>
 
 <script>
 
@@ -146,15 +155,23 @@
         }
     });
 
-    let editor = CodeMirror.fromTextArea(document.getElementById('content'), {
-        mode: 'markdown',
-        lineNumbers: true,
-        tabSize: 2,
-    });
+    $("#nav-tab a").on('click', function(e) {
+        e.preventDefault();
+        $(this).show();
+        if($(this).hasClass('preview')){
+            $("#nav-profile").addClass('show active');
+            $('#nav-home').removeClass('show active');
+            let markdownContent = document.getElementById('content').value;
+            document.getElementById('nav-profile').innerHTML = marked(markdownContent);
+        } else {
+            $("#nav-profile").removeClass('show active');
+            $('#nav-home').addClass('show active');
+        }
+    })
+
 
     document.getElementById('btn-create').addEventListener('click',function(){
-        // let content = document.getElementById('content').value;
-        let content = editor.getValue();
+        let content = document.getElementById('content').value;
         console.log("content", content);
         if(content == null || content === '' || content.trim().length === 0){
             Swal.fire({
@@ -171,7 +188,8 @@
         fetch(rootPath + 'console/moment/save', {
             body: JSON.stringify({
                 'content': content,
-                'allowComment': document.getElementById('allowComment').checked
+                'allowComment': document.getElementById('allowComment').checked,
+                'privateMoment': document.getElementById('isPrivate').checked
             }),
             headers: new Headers({
                 'Content-Type': 'application/json;charset=UTF-8',

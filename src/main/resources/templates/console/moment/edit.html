@@ -4,102 +4,128 @@
     <meta charset="UTF-8">
     <title th:text="修改动态">修改动态</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="/static/images/favicon.ico" rel="shortcut icon">
-    <link rel="stylesheet" href="/static/css/base.css">
-    <link rel="stylesheet" href="/static/tabler/dist/css/tabler.min.css">
-    <link rel="stylesheet" href="/static/tabler/dist/css/tabler-buttons.min.css"/>
-    <link rel="stylesheet" href="/static/tabler/dist/css/demo.min.css">
+    <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
     <style>
         body {
-            display: none;
+            font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace!important;
         }
-
-        .form-check-inline{
-            margin-right: 0 !important;
+        textarea {
+            font-size: 14px !important;
+            font-weight: 600;
         }
     </style>
 </head>
-<body class="antialiased">
-<div class="page">
-    <div th:replace="/console/common/head-navbar::headnav('moment')"></div>
-    <div class="content">
-        <div class="container-xl">
-           <div class="row">
-               <div class="col-12">
-                   <div class="mb-3">
-                       <label for="content" class="form-label">正文
-                           <span class="form-label-description">
-                                    <label class="form-check form-check-inline cursor-pointer">
-                                      <input class="form-check-input" type="checkbox">
-                                      <span class="form-check-label">启用配图</span>
-                                    </label>
-                                </span>
-                       </label>
-                       <textarea name="content" id="content" cols="30" rows="20" class="form-control" th:text="${moment.content}" style="resize: none;"></textarea>
-                   </div>
-                   <div class="mb-3">
-                       <div class="row row-sm">
-                           <div class="col-5">
-                               <label class="form-label" for="passwordProtect">
-                                   密码保护
-                                   <span class="form-label-description">
-                                            <label class="form-check form-check-inline cursor-pointer">
-                                                  <input class="form-check-input" id="passwordProtectEnable" type="checkbox">
-                                                  <span class="form-check-label">启用</span>
-                                            </label>
-                                        </span>
-                               </label>
-                               <input type="text" class="form-control" disabled id="passwordProtect">
-                           </div>
-                       </div>
-                   </div>
-                   <div class="mb-3">
-                       <div class="form-label">评论设置</div>
-                       <label class="form-check form-check-inline cursor-pointer">
-                           <input class="form-check-input" id="allowComment" th:checked="${moment.allowComment}" type="checkbox">
-                           <span class="form-check-label form-label">开启</span>
-                       </label>
-                   </div>
-                   <div class="btn-list mb-3 justify-content-end">
-                       <a href="javascript:void(0);" id="btn-cancel" class="btn btn-outline-danger">取消修改</a>
-                       <a href="javascript:void(0);" id="btn-moment-update" th:data-momentid="${moment.id}" class="btn btn-success">保存修改</a>
-                    </div>
-               </div>
-           </div>
+<body>
+<div th:replace="/console/common/head-navbar::headnav('moment')"></div>
+<div class="container">
+    <div class="row mt-3">
+        <div class="col-12">
+            <nav style="background-color: #f6f8fa; border-top-left-radius: 4px; border-top-right-radius: 4px; padding-top: 8px; padding-left: 8px; border: 1px solid #dfe2e5;">
+                <div class="nav small nav-tabs" id="nav-tab" role="tablist" style="border-bottom: none !important;">
+                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="javascript:void(0);" role="tab"
+                       aria-controls="nav-home" aria-selected="true">书写</a>
+                    <a class="nav-item nav-link preview" id="nav-profile-tab" data-toggle="tab" href="javascript:void(0);" role="tab"
+                       aria-controls="nav-profile" aria-selected="false">预览</a>
+                </div>
+            </nav>
         </div>
-        <footer class="footer footer-transparent">
-            <div class="container">
-                <div class="row text-center align-items-center flex-row-reverse">
-                    <div class="col-lg-auto ml-lg-auto">
-                        <ul class="list-inline list-inline-dots mb-0">
-                            <li class="list-inline-item"><a href="./docs/index.html" class="link-secondary">Documentation</a></li>
-                            <li class="list-inline-item"><a href="./faq.html" class="link-secondary">FAQ</a></li>
-                            <li class="list-inline-item"><a href="https://github.com/tabler/tabler" target="_blank" class="link-secondary">Source code</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-12 col-lg-auto mt-3 mt-lg-0">
-                        Copyright © 2020
-                        <a href="." class="link-secondary">Tabler</a>.
-                        All rights reserved.
-                    </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group-sm btn-group" style="margin-right: 10px;" role="group" aria-label="First group">
+                    <button type="button" class="btn btn-sm btn-light" >
+                        <b>h1</b>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light">
+                        <b>h2</b>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light">
+                        <b>h3</b>
+                    </button>
+                </div>
+                <div class="btn-group btn-group-sm" style="margin-right: 10px;" role="group" aria-label="Second group">
+                    <button type="button" class="btn btn-sm btn-light">
+                        <svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light">
+                        <svg class="octicon octicon-image" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M1.75 2.5a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h.94a.76.76 0 01.03-.03l6.077-6.078a1.75 1.75 0 012.412-.06L14.5 10.31V2.75a.25.25 0 00-.25-.25H1.75zm12.5 11H4.81l5.048-5.047a.25.25 0 01.344-.009l4.298 3.889v.917a.25.25 0 01-.25.25zm1.75-.25V2.75A1.75 1.75 0 0014.25 1H1.75A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25zM5.5 6a.5.5 0 11-1 0 .5.5 0 011 0zM7 6a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </button>
+                </div>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Third group">
+                    <button type="button" class="btn btn-sm btn-light">
+                        <b>B</b>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light">
+                        <em>i</em>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light">
+                        <svg class="octicon octicon-code" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4.72 3.22a.75.75 0 011.06 1.06L2.06 8l3.72 3.72a.75.75 0 11-1.06 1.06L.47 8.53a.75.75 0 010-1.06l4.25-4.25zm6.56 0a.75.75 0 10-1.06 1.06L13.94 8l-3.72 3.72a.75.75 0 101.06 1.06l4.25-4.25a.75.75 0 000-1.06l-4.25-4.25z"></path></svg>
+                    </button>
                 </div>
             </div>
-        </footer>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                    <textarea name="content" th:text="${moment.content}"  id="content" style="min-height: 390px;" class="form-control"></textarea>
+                </div>
+                <div class="tab-pane fade" style="min-height: 390px;" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="form-inline">
+                <div class="form-check mb-2 mr-2 small">
+                    <input class="form-check-input check-box" th:checked="${moment.allowComment}" type="checkbox" id="allowComment">
+                    <label class="form-check-label" for="allowComment">
+                        开启评论
+                    </label>
+                </div>
+                <div class="form-check mb-2 mr-2 small">
+                    <input class="form-check-input check-box" th:checked="${moment.privateMoment}" type="checkbox" id="isPrivate">
+                    <label class="form-check-label" for="isPrivate">
+                        私人动态
+                    </label>
+                </div>
+
+                <div class="form-check mb-2 mr-2 small" style="cursor: pointer;">
+                    <input type="checkbox" class="form-check-input check-box" id="passwordProtectEnable">
+                    <label class="form-check-label" for="passwordProtectEnable">启用密码保护</label>
+                </div>
+                <input type="text" placeholder="勾选后输入密码" class="form-control form-control-sm mb-2 mr-2" id="passwordProtect" disabled>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-toolbar justify-content-end" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-group btn-group-sm" style="margin-right: 10px;" role="group" aria-label="Third group">
+            <button type="button" id="btn-cancel" class="btn btn-danger">取消</button>
+        </div>
+        <div class="btn-group btn-group-sm" role="group" aria-label="Third group">
+            <button type="button" id="btn-update" class="btn btn-success" th:data-momentid="${moment.id}">保存修改</button>
+        </div>
     </div>
 </div>
 
+<script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
+<script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
+<script type="text/javascript" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>
+<script type="text/javascript" th:src="@{/static/blog/js/Toast.js}"></script>
+<script type="text/javascript" th:src="@{/static/blog/libs/markedjs/marked.min.js}" src="/static/blog/libs/markedjs/marked.min.js"></script>
 
-<!-- Libs JS -->
-<script type="text/javascript" src="/static/tabler/dist/libs/jquery/dist/jquery-3.3.1.js"></script>
-<script type="text/javascript" src="/static/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Tabler Core -->
-<script type="text/javascript" src="/static/tabler/dist/js/tabler.min.js"></script>
-<script type="text/javascript" src="/static/blog/libs/sweetalert/sweetalert2-2.9.js"></script>
-<script type="text/javascript" src="/static/blog/js/Toast.js"></script>
 <script>
-    document.body.style.display = "block";
-</script>
-<script>
+
+    const rootPath = '[[@{/}]]';
+    const momentid = '[[${moment.id}]]';
+
     document.getElementById('passwordProtectEnable').addEventListener('click', function(){
         if(this.checked){
             document.getElementById('passwordProtect').disabled='';
@@ -109,7 +135,23 @@
         }
     });
 
-    document.getElementById('btn-moment-update').addEventListener('click',function(){
+
+    $("#nav-tab a").on('click', function(e) {
+        e.preventDefault();
+        $(this).show();
+        if($(this).hasClass('preview')){
+            $("#nav-profile").addClass('show active');
+            $('#nav-home').removeClass('show active');
+            let markdownContent = document.getElementById('content').value;
+            document.getElementById('nav-profile').innerHTML = marked(markdownContent);
+        } else {
+            $("#nav-profile").removeClass('show active');
+            $('#nav-home').addClass('show active');
+        }
+    });
+
+
+    document.getElementById('btn-update').addEventListener('click',function(){
         let content = document.getElementById('content').value;
         if(content == null || content === '' || content.trim().length === 0){
             Swal.fire({
@@ -123,10 +165,12 @@
             return ;
         }
 
-        fetch('/console/moment' +$(this).data('momentid')+ '/update', {
+
+        fetch(rootPath + 'console/moment/' + momentid + '/update', {
             body: JSON.stringify({
                 'content': content,
-                'allowComment': document.getElementById('passwordProtect').checked
+                'allowComment': document.getElementById('allowComment').checked,
+                'privateMoment': document.getElementById('isPrivate').checked
             }),
             headers: new Headers({
                 'Content-Type': 'application/json;charset=UTF-8',
@@ -134,9 +178,9 @@
             method: 'POST'
         }).then(res => res.json()).catch(error => console.error('Error:',error)).then(response => {
             console.log(JSON.stringify(response));
-            toast("发布成功");
+            toast("修改成功");
             setTimeout(function(){
-                window.location.href='/console/moments';
+                window.location.href= rootPath + 'console/moments';
             }, 800);
         });
     });
@@ -153,7 +197,7 @@
             cancelButtonText: '取消'
         }).then(function(result){
             if(result){
-                window.location.href = '/console/moments';
+                window.location.href = rootPath + 'console/moments';
             }
         });
     });
