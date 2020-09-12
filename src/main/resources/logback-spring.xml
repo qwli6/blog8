@@ -2,8 +2,24 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml" />
 
-    <springProfile name="default">
+    <springProfile name="dev">
         <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <!-- 日志输出编码 -->
+            <encoder>
+                <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+                <pattern>%d %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
+                <charset>UTF-8</charset>
+            </encoder>
+        </appender>
+
+        <logger name="org.apache.ibatis.logging.stdout.StdOutImpl" />
+        <!--打印SQL-->
+        <logger name="java.sql.Connection" level="DEBUG" />
+        <logger name="java.sql.Statement" level="DEBUG" />
+        <logger name="java.sql.PreparedStatement" level="DEBUG" />
+        <logger name="me.lqw.blog8.mapper" level="DEBUG" />
 
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
@@ -13,26 +29,27 @@
     <springProfile name="prod">
 
         <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>app.log</file>
+            <file>blog.log</file>
 
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-                <fileNamePattern>logs/archived/app.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <fileNamePattern>/data/site/blog8/logs/blog.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
                 <!-- each archived file, size max 10MB -->
-                <maxFileSize>10MB</maxFileSize>
+                <maxFileSize>200MB</maxFileSize>
                 <!-- total size of all archive files, if total size > 20GB, it will delete old archived file -->
-                <totalSizeCap>20GB</totalSizeCap>
+                <totalSizeCap>1GB</totalSizeCap>
                 <!-- 60 days to keep -->
-                <maxHistory>60</maxHistory>
+                <maxHistory>7</maxHistory>
             </rollingPolicy>
 
             <encoder>
                 <pattern>%d %p %c{1.} [%t] %m%n</pattern>
+                <charset>UTF-8</charset>
             </encoder>
         </appender>
 
         <logger name="org.springframework" level="INFO"/>
-        <logger name="me.lqw.blog8" level="DEBUG"/>
-        <root level="ERROR">
+        <logger name="me.lqw.blog8" level="INFO"/>
+        <root level="INFO">
             <appender-ref ref="FILE-ROLLING"/>
         </root>
     </springProfile>
