@@ -1,6 +1,7 @@
 package me.lqw.blog8.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import me.lqw.blog8.model.enums.ArticleStatusEnum;
 import me.lqw.blog8.validator.ArticleStatus;
 import me.lqw.blog8.validator.UrlName;
@@ -31,20 +32,20 @@ public class Article implements Serializable {
      * 文章标题
      */
     @NotBlank(message = "请提供文章标题")
-    @Length(max = 128, min = 0, message = "文章标题的最大长度必须在 {min}~{max} 之间")
+    @Length(max = 128, message = "文章标题的最大长度必须在 {min}~{max} 之间")
     private String title;
 
     /**
      * 文章内容
      */
     @NotEmpty(message = "请提供文章内容")
-    @Length(max = 10240, min = 0, message = "文章内容的最大长度必须在 {min}~{max} 之间")
+    @Length(max = 10240, message = "文章内容的最大长度必须在 {min}~{max} 之间")
     private String content;
 
     /**
      * 文章别名
      */
-    @Length(max = 16, min = 0, message = "文章别名长度不能必须在 {min}~{max} 之间")
+    @Length(max = 16, message = "文章别名长度不能必须在 {min}~{max} 之间")
     @UrlName(message = "别名格式错误, 不能包含空格, 斜杠等字符")
     private String urlName;
 
@@ -74,9 +75,10 @@ public class Article implements Serializable {
 
     /**
      * 是否允许评论
+     * 默认是可以评论, true
      */
     @NotNull(message = "是否允许评论不允许为空")
-    private Boolean allowComment;
+    private Boolean allowComment = true;
 
     /**
      * 文章绑定分类
@@ -92,7 +94,7 @@ public class Article implements Serializable {
     /**
      * 文章摘要长度
      */
-    @Length(max = 1024, min = 0, message = "文章摘要内容长度不能超过 {min}~{max} 个字符")
+    @Length(max = 1024, message = "文章摘要内容长度不能超过 {min}~{max} 个字符")
     private String digest;
 
     /**
@@ -116,8 +118,42 @@ public class Article implements Serializable {
 
     /**
      * 文章关联标签
+     * 这个标签的数量不建议超过 5 个，超过 5 个依然可以存
      */
     private Set<Tag> tags = new LinkedHashSet<>();
+
+    /**
+     * 是否私人文章
+     * @since 2.2 这个概念和加锁不一样，
+     * <ul>
+     *     加锁，只是加了密码，但是还是可以访问，密码告诉别人后，还是可以访问的
+     *     私人，是只有自己能访问，在登录的情况下，其他人都无法访问
+     * </ul>
+     */
+    private Boolean privateArticle = false;
+
+    public Boolean getPrivateArticle() {
+        return privateArticle;
+    }
+
+    public void setPrivateArticle(Boolean privateArticle) {
+        this.privateArticle = privateArticle;
+    }
+
+    /**
+     * 访问 api，在代码里面拼接, 尽量不在页面上渲染
+     * @since 2.2
+     */
+    @JsonIgnore
+    private String accessApi;
+
+    public String getAccessApi() {
+        return accessApi;
+    }
+
+    public void setAccessApi(String accessApi) {
+        this.accessApi = accessApi;
+    }
 
     /**
      * 文章构造方法

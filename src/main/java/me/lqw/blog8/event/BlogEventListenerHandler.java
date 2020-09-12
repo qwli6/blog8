@@ -87,7 +87,7 @@ public class BlogEventListenerHandler {
         CommentModule commentModule = createCommentEvent.getCommentModule();
         switch (commentModule.getName()){
             case "article":
-                articleMapper.increaseComments(commentModule.getId());
+//                articleMapper.increaseComments(commentModule.getId(), c);
                 break;
             case "moment":
                 momentMapper.increaseComments(commentModule.getId());

@@ -16,6 +16,7 @@ import me.lqw.blog8.service.ArticleService;
 import me.lqw.blog8.service.CommentService;
 import me.lqw.blog8.service.MomentService;
 import me.lqw.blog8.service.SimpleMailHandler;
+import me.lqw.blog8.util.StringUtil;
 import me.lqw.blog8.web.controller.console.AbstractBaseController;
 import me.lqw.blog8.web.security.lock.LockProtect;
 import org.springframework.stereotype.Controller;
@@ -78,6 +79,9 @@ public class MainController extends AbstractBaseController {
     @GetMapping
     public String index(ArticlePageQueryParam queryParam, Model model) {
         queryParam.setStatus(ArticleStatusEnum.POSTED);
+        if(StringUtil.isNotBlank(queryParam.getQuery())){
+            model.addAttribute("keyword", queryParam.getQuery());
+        }
         model.addAttribute("articlePage", articleService.selectPage(queryParam));
         model.addAttribute("latestMomentPage", momentService.selectLatestMoments());
         return "index";

@@ -339,14 +339,16 @@ public class CommentService implements ApplicationEventPublisherAware {
         CommentModule module = comment.getModule();
 
         Article article = articleMapper.selectById(module.getId()).orElseThrow(()
-                -> new LogicException("article.notExits", "文章不存在"));
+                -> new LogicException(BlogConstants.ARTICLE_NOT_EXISTS));
         ArticleStatusEnum articleStatus = article.getStatus();
 
         if(!articleStatus.equals(ArticleStatusEnum.POSTED)){
             throw new LogicException("article.status.notAllow", "文章状态不允许");
         }
 
-        articleMapper.increaseComments(article.getId());
+        Integer commentCount = article.getComments();
+        commentCount += 1;
+        articleMapper.increaseComments(article.getId(), commentCount);
 
         return new CommentSaved(id, false);
     }

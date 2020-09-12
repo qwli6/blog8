@@ -27,7 +27,7 @@
                 </li>
             </ul>
             <form id="queryForm" method="get" th:action="@{/}" class="form-inline my-2 my-lg-0">
-                <input name="query" class="form-control form-control-sm" type="text"
+                <input name="query" th:value="${#strings.isEmpty(keyword) ? '' : keyword}" class="form-control form-control-sm" type="text"
                        placeholder="关键字" aria-label="搜索">
                 <input type="hidden" name="currentPage" id="currentPage" value="1">
             </form>

@@ -13,6 +13,7 @@
         <result property="comments" column="comments"/>
         <result property="status" column="status" typeHandler="EnumOrdinalTypeHandler" />
         <result property="allowComment" column="allow_comment"/>
+        <result property="privateArticle" column="is_private" />
     </resultMap>
     <resultMap id="ArticlePageMap" type="Article">
         <id property="id" column="id"/>
@@ -27,12 +28,34 @@
         <result property="hits" column="hits"/>
         <result property="comments" column="comments"/>
         <result property="allowComment" column="allow_comment"/>
+        <result property="privateArticle" column="is_private" />
         <result property="tags" column="tag_ids" typeHandler="TagIdsTypeHandler" />
         <association property="category" javaType="me.lqw.blog8.model.Category">
             <id property="id" column="category_id"/>
             <result property="name" column="category_name" />
         </association>
     </resultMap>
+
+    <sql id="fullColumn">
+        select
+            ba.id,
+            ba.title,
+            ba.content,
+            ba.create_at,
+            ba.hits,
+            ba.digest,
+            ba.comments,
+            ba.status,
+            ba.post_at,
+            ba.url_name,
+            ba.allow_comment,
+            ba.is_private,
+            bc.id as category_id,
+            bc.name as category_name,
+            (select group_concat(bat.tag_id) from blog_article_tag bat where bat.article_id = ba.id group by bat.article_id) as tag_ids
+        from blog_article ba
+                 left join blog_category bc on ba.fk_category_id = bc.id
+    </sql>
 
     <sql id="full">
         select id, title, url_name, content, digest,
@@ -52,15 +75,20 @@
         <selectKey keyProperty="id" keyColumn="id" resultType="integer">
             select last_insert_id()
         </selectKey>
-        insert into blog_article(title, url_name, content, post_at,
-                                 hits, comments, allow_comment, status, fk_category_id, create_at, modify_at)
+        insert into blog_article(
+                title, url_name, content, post_at,
+                hits, comments, allow_comment, status,
+                fk_category_id, is_private,
+                create_at, modify_at)
         VALUES
             (#{title,jdbcType=VARCHAR}, #{urlName,jdbcType=VARCHAR},
              #{content,jdbcType=VARCHAR}, #{postAt},
              #{hits,jdbcType=INTEGER}, #{comments,jdbcType=INTEGER},
-             #{allowComment,jdbcType=BOOLEAN}, #{status, typeHandler=EnumOrdinalTypeHandler}, #{category.id,jdbcType=INTEGER},
+             #{allowComment,jdbcType=BOOLEAN}, #{status, typeHandler=EnumOrdinalTypeHandler},
+             #{category.id,jdbcType=INTEGER}, #{privateArticle,jdbcType=BOOLEAN},
             now(), now())
     </insert>
+
     <select id="selectCount" parameterType="HandledArticlePageQueryParam" resultType="integer">
         select count(ba.id) from blog_article ba
         <if test="category != null">
@@ -72,6 +100,12 @@
             </if>
             <if test="status != null">
                 and ba.status = #{status,  typeHandler=EnumOrdinalTypeHandler}
+            </if>
+            <if test="ids != null and ids.size > 0">
+                and ba.id in
+                <foreach collection="ids" open="(" close=")" separator="," item="item">
+                    #{item}
+                </foreach>
             </if>
         </where>
     </select>
@@ -89,6 +123,7 @@
             ba.post_at,
             ba.url_name,
             ba.allow_comment,
+            ba.is_private,
             bc.id as category_id,
             bc.name as category_name,
             (select group_concat(bat.tag_id) from blog_article_tag bat where bat.article_id = ba.id group by bat.article_id) as tag_ids
@@ -110,29 +145,31 @@
             <if test="status != null">
                 and ba.status = #{status, typeHandler=EnumOrdinalTypeHandler}
             </if>
+            <if test="ids != null and ids.size > 0">
+                and ba.id in
+                <foreach collection="ids" open="(" close=")" separator="," item="item">
+                    #{item}
+                </foreach>
+            </if>
         </where>
 
         order by create_at desc
 
-        <if test="offset != null">
-            limit #{offset, jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
-        </if>
+        <choose>
+            <when test="!ignorePaging">
+                <if test="offset != null">
+                    limit #{offset, jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+                </if>
+            </when>
+        </choose>
 
     </select>
 
-    <select id="selectById" parameterType="integer" resultMap="ArticleMap">
-        select id, title, url_name, content, digest, create_at, modify_at,
-               post_at, hits, comments, status, allow_comment,
-               fk_category_id
-        from
-            blog_article
+    <select id="selectById" parameterType="integer" resultMap="ArticlePageMap">
+        <include refid="fullColumn" />
         where
-            id = #{id,jdbcType=INTEGER}
+            ba.id = #{id,jdbcType=INTEGER}
     </select>
-
-    <update id="increaseHits">
-        update blog_article set hits = hits + #{hits} where id = #{id}
-    </update>
 
     <delete id="deleteById" parameterType="integer">
         delete from blog_article where id = #{id,jdbcType=INTEGER}
@@ -179,8 +216,12 @@
           left join (select bat.article_id, group_concat(bat.tag_id) as tag_str from blog_article_tag bat group by bat.article_id) bat2 on ba.id = bat2.article_id
     </select>
 
-    <update id="increaseComments" parameterType="integer">
-        update blog_article set comments = comments + 1 where id = #{id,jdbcType=INTEGER}
+    <update id="increaseComments">
+        update blog_article set comments = #{comments} where id = #{id}
+    </update>
+
+    <update id="increaseHits">
+        update blog_article set hits = #{hits} where id = #{id}
     </update>
 
     <update id="update" parameterType="Article">

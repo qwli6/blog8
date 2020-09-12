@@ -28,28 +28,30 @@
         <div class="container my-4">
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-8">
-                    <div class="card mb-4" th:each="article : ${articlePage.data}">
+                    <div class="card mb-4" th:if="${!#lists.isEmpty(articlePage.data)}" th:each="article : ${articlePage.data}">
                         <div class="row">
-                            <div class="col-4" th:if="${!#strings.isEmpty(article.getFeatureImage())}">
+                            <div class="col-4" th:if="${!#strings.isEmpty(article.featureImage)}">
                                 <img th:src="${article.featureImage}" class="w-100 h-100 object-cover" alt="Card side image">
                             </div>
                             <div class="col">
                                 <div class="card-body">
                                     <!-- 标题 -->
                                     <div class="title-article title-article-index text-truncate">
-                                        <a th:href="${#strings.isEmpty(article.urlName) ? '/article/' + article.id : '/article/' + article.urlName}" th:text="${article.title}"></a>
+<!--                                        <a th:if="${!#strings.isEmpty(article.urlName)}" th:href="@{/article/${article.urlName}}" th:text="${article.title}"></a>-->
+<!--                                        <a th:if="${#strings.isEmpty(article.urlName)}" th:href="@{/article/${article.id}}" th:text="${article.title}"></a>-->
+                                        <a th:href="@{'/article/' + ${article.accessApi}}" th:text="${article.title}"></a>
                                     </div>
                                     <!-- 摘要 -->
                                     <div th:if="${!#strings.isEmpty(article.digest)}" th:utext="${article.digest}"></div>
 
                                     <!--分类 -->
                                     <div>
-                                        <a th:href="@{/} + '?category=' + ${article.category.name}" class="badge badge-light"
+                                        <a th:href="@{/(category=${article.category.name})}" class="badge badge-light"
                                            th:text="${article.category.name}"></a>
                                     </div>
                                     <!-- 标签 -->
                                     <div>
-                                        <a th:if="${!#sets.isEmpty(article.tags)}" th:href="@{/} + '?tag=' + ${tag.tagName}" th:each="tag : ${article.tags}">
+                                        <a th:if="${!#sets.isEmpty(article.tags)}" th:href="@{/(tag=${tag.tagName})}" th:each="tag : ${article.tags}">
                                             <span class="badge badge-dark" th:text="${#strings.concat('# ', tag.tagName)}"></span>
                                         </a>
                                     </div>
@@ -67,6 +69,24 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="mb-4" th:if="${#lists.isEmpty(articlePage.data)}">
+                        <div role="alert" class="alert alert-success">
+                            <h4>满江红</h4>
+                            <div class="mb-1">
+                                怒发冲冠，凭栏处、潇潇雨歇。<br/>
+                                抬望眼、仰天长啸，壮怀激烈。<br/>
+                                三十功名尘与土，八千里路云和月。<br/>
+                                莫等闲、白了少年头，空悲切。<br/>
+                                靖康耻，犹未雪。臣子恨，何时灭。<br/>
+                                驾长车，踏破贺兰山缺。<br/>
+                                壮志饥餐胡虏肉，笑谈渴饮匈奴血。<br/>
+                            </div>
+                            <hr>
+                            <p class="mb-0">
+                                搜了个寂寞，<a th:href="@{/}" class="alert-link">点我</a>回首页吧。
+                            </p>
                         </div>
                     </div>
                     <ul class="pagination justify-content-center" th:if="${articlePage.totalPage > 1}">
@@ -95,10 +115,14 @@
                                     [[${moment.comments}]]
                                 </span>
                             </div>
-
                         </div>
                     </div>
+                    <div class="mt-3 text-muted">
+                        <div>京 ICP 备 13052560 号 - 1</div>
+                        <div>京公网安备 11010802010035 号</div>
+                    </div>
                 </div>
+
             </div>
         </div>
     </main>

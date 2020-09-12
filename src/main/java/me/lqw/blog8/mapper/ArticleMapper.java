@@ -58,13 +58,7 @@ public interface ArticleMapper {
      */
     Optional<Article> selectById(@Param("id") Integer id);
 
-    /**
-     * 增加文章的点击量
-     *
-     * @param id   id
-     * @param hits hits
-     */
-    void increaseHits(@Param("id") int id, @Param("hits") int hits);
+
 
     /**
      * 根据 id 删除文章
@@ -91,10 +85,17 @@ public interface ArticleMapper {
 
     /**
      * 根据 id 增加文章的评论数
-     *
      * @param id id
+     * @param comments comments
      */
-    void increaseComments(@Param("id") Integer id);
+    void increaseComments(@Param("id") int id, @Param("comments") int comments);
+
+    /**
+     * 增加文章的点击量
+     * @param id   id
+     * @param hits hits
+     */
+    void increaseHits(@Param("id") int id, @Param("hits") int hits);
 
     /**
      * 更新内容，根据主键更新

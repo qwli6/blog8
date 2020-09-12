@@ -4,53 +4,17 @@
     <meta charset="UTF-8">
     <title th:text="文章列表">文章列表</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="shortcut icon" th:href="@{/static/blog/images/logoH.png}" >
     <link rel="stylesheet" href="/static/blog/css/base.css" th:href="@{/static/blog/css/base.css}">
     <link rel="stylesheet" href="/static/blog/css/console.css" th:href="@{/static/blog/css/console.css}">
     <link rel="stylesheet" href="/static/blog/libs/bootstrap/css/bootstrap.min.css" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
-    <style>
-        .list-group-item {
-            border: none !important;
-            border-top: 1px solid #eeeeee !important;
-        }
-
-
-        .el-pagination .el-pager li.active {
-            /*color: #fff !important;*/
-            background-color: #e33e33 !important;
-        }
-
-        .el-pagination {
-            text-align: center;
-            margin-top: 20px;
-            white-space: nowrap;
-            padding: 2px 5px;
-            color: #303133;
-            font-weight: 700;
-        }
-        .el-pager {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            list-style: none;
-            display: inline-block;
-            vertical-align: top;
-            font-size: 0;
-            padding: 0;
-            margin: 0;
-        }
-
-
-    </style>
 </head>
-<body>
+<body class="bg-light">
 <div th:replace="/console/common/head-navbar::headnav('article')"></div>
 
 <div class="container">
     <div class="row my-4">
         <div class="col-9">
-            <div class="media bg-white p-4 rounded shadow-sm">
+            <div class="media bg-white border p-4" style="border-radius: 2px;">
                 <img src="/static/blog/images/logoH.png" class="mr-3 rounded align-self-center" alt="...">
                 <div class="media-body">
                     <h4 style="font-weight: 600; color: #222222;">石杉的架构笔记</h4>
@@ -59,63 +23,77 @@
                 </div>
             </div>
 
-            <ul class="list-group list-group-flush bg-white shadow-sm mt-4">
+            <ul class="list-group list-group-flush bg-white mt-4" style="border-radius: 2px;">
                 <li class="list-group-item">
-                    <form method="get" th:action="@{/console/moment}">
+                    <form method="get" id="queryForm" th:action="@{/console/articles}">
                         <div class="form-row">
-                            <div class="col-7">
-                                <input type="text" class="form-control" placeholder="内容">
+                            <input type="hidden" name="currentPage" id="currentPage" value="">
+                            <div class="col-6">
+                                <input type="text" id="query" name="query" th:value="${articlePage.queryParam.query}"
+                                       class="form-control form-control-sm" placeholder="内容">
                             </div>
                             <div class="col">
-                                <select id="category" class="form-control">
-                                    <option value="">全部分类</option>
+                                <select id="category" class="form-control form-control-sm">
+                                    <option value="0">全部分类</option>
+                                    <option selected value="1">全部分类2</option>
                                 </select>
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="Zip">
-                            </div>
-                            <div class="col">
-                                <button type="submit" class="btn btn-danger">搜索</button>
+                                <button type="button" id="btn-search-article" class="btn btn-block btn-sm btn-danger">搜索</button>
                             </div>
                         </div>
                     </form>
                 </li>
 
                 <li class="list-group-item" th:each="article : ${articlePage.data}">
-                    <div class="mb-1 text-muted">
-                        <small class="text-muted badge badge-light" th:text="${article.category.name}"></small>
-                        <small class="text-muted mx-2">·</small>
-                        <small class="text-muted" th:text="${#temporals.format(article.postAt, 'yyyy-MM-dd')}"></small>
-                        <small class="text-muted mx-2">·</small>
-                        <small>java/web</small>
-                    </div>
-                    <div class="d-flex w-100 justify-content-between">
-                        <a class="mb-1 backend-article-title" th:text="${article.title}" th:href="@{/article/} + ${article.id}">
-                            5个方案告诉你，高并发下先操作数据库还是先操作缓存?
+                    <div class="d-flex text-truncate">
+                        <a style="font-size: 1.25rem;" class="mb-1 text-dark font-weight-bold text-decoration-none" th:text="${article.title}"
+                           th:href="@{/article/} + ${article.id}">
+                            标题
                         </a>
+                    </div>
+                    <div class="mb-1 text-muted">
+                        <span class="badge badge-dark" style="margin-right: 10px;" th:text="${article.category.name}"></span>
+                        <span th:if="${!#sets.isEmpty(article.tags)}">
+                            <a th:each="tag : ${article.tags}" style="margin-left: 8px;" class="badge badge-pill badge-success" href="javascript:void(0);" th:text="${tag.tagName}"></a>
+                        </span>
+                    </div>
+                    <div class="mb-1">
+                        <small style="margin-right: 10px;">
+                            点击数 [[${article.hits}]]
+                        </small>
+                        <small style="margin-right: 10px;">
+                            回帖数 [[${article.comments}]]
+                        </small>
+                        <small class="text-muted" th:text="${#temporals.format(article.postAt, 'yyyy-MM-dd HH:mm:ss')}"></small>
                     </div>
                     <div class="float-right" style="font-size: 14px;">
                         <a class="text-decoration-none" href="javascript:void(0);" id="btn-set-top">置顶</a>
-                        <a class="text-decoration-none" th:data-previewid="${article.id}"  href="javascript:void(0);">预览</a>
-                        <a class="text-decoration-none" th:href="@{/console/article/} + ${article.id} + '/edit'">编辑</a>
-                        <a class="text-decoration-none text-danger" href="javascript:void(0);" th:data-trash="${article.id}" id="btn-delete">删除</a>
+                        <a class="text-decoration-none" style="margin-left: 4px;"
+                           th:data-previewid="${article.id}"  href="javascript:void(0);">预览</a>
+                        <a class="text-decoration-none" style="margin-left: 4px;"
+                           th:href="@{/console/article/} + ${article.id} + '/edit'">编辑</a>
+                        <a class="text-decoration-none text-danger" style="margin-left: 4px;" href="javascript:void(0);"
+                           th:data-trash="${article.id}" id="btn-delete">删除</a>
                     </div>
                 </li>
             </ul>
 
-            <div class="el-pagination">
-                <ul class="el-pager">
-                    <li class="number active">1</li>
-                    <li class="number">2</li>
-                    <li class="number">3</li>
+            <nav class="mt-3" th:if="${articlePage.totalPage > 1}" aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${articlePage.currentPage == item ? 'disabled' : ''}"
+                        th:each="item: ${#numbers.sequence(1, articlePage.totalPage)}">
+                        <a class="page-link" href="javascript:void(0);"
+                           th:onclick="'toPage(' + ${item} + ');'" th:text="${item}">1</a>
+                    </li>
                 </ul>
-            </div>
+            </nav>
         </div>
         <div class="col-3">
 
-            <a th:href="@{/console/article/create}" type="button" class="btn btn-danger btn-block">新文章</a>
+            <a th:href="@{/console/article/create}" type="button" class="btn btn-danger btn-sm btn-block">新文章</a>
 
-            <div class="card border-0 bg-white shadow-sm mt-3">
+            <div class="card border-0 bg-white mt-3">
                 <div class="card-header bg-white" style="font-weight: 600; color: #222222;">
                     个人成就
                 </div>
@@ -127,7 +105,7 @@
                 </ul>
             </div>
 
-            <ul class="list-group list-group-flush shadow-sm rounded mt-4">
+            <ul class="list-group list-group-flush rounded mt-4">
                 <li class="list-group-item">收藏集 0</li>
                 <li class="list-group-item">关注标签 12</li>
                 <li class="list-group-item">加入于 2020-08-27</li>
@@ -147,6 +125,8 @@
 
 <script>
 
+    const rootPath = '[[@{/}]]';
+
     for(elem of document.querySelectorAll('[data-trash]')){
         elem.addEventListener('click', function(){
             let id = this.dataset.trash;
@@ -154,15 +134,20 @@
         })
     }
 
-
-
     for(elem of document.querySelectorAll('[data-previewid]')) {
         elem.addEventListener('click', function(){
             let id = this.dataset.previewid;
 
         });
-
     }
+    function toPage(i){
+        document.getElementById('currentPage').value = i;
+        document.getElementById('queryForm').submit();
+    }
+
+    document.getElementById('btn-search-article').addEventListener('click', function(){
+        toPage(1);
+    });
 
 </script>
 </body>

@@ -3,6 +3,7 @@ package me.lqw.blog8.web.controller.console;
 import me.lqw.blog8.model.Article;
 import me.lqw.blog8.model.dto.common.CR;
 import me.lqw.blog8.model.dto.common.ResultDTO;
+import me.lqw.blog8.model.dto.page.PageResult;
 import me.lqw.blog8.model.enums.ArticleStatusEnum;
 import me.lqw.blog8.model.vo.ArticlePageQueryParam;
 import me.lqw.blog8.service.ArticleService;
@@ -46,7 +47,11 @@ public class ArticleBackendController extends AbstractBaseController {
      */
     @GetMapping("articles")
     public String index(Model model, ArticlePageQueryParam queryParam) {
-        model.addAttribute("articlePage", articleService.selectPage(queryParam));
+        if(!queryParam.hasPageSize()){
+            queryParam.setPageSize(10);
+        }
+        PageResult<Article> articlePage = articleService.selectPage(queryParam);
+        model.addAttribute("articlePage", articlePage);
         return "console/article/index";
     }
 
@@ -97,7 +102,8 @@ public class ArticleBackendController extends AbstractBaseController {
      */
     @GetMapping("article/{id}/edit")
     public String edit(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("article", articleService.selectArticleForEdit(id));
+        Article article = articleService.selectArticleForEdit(id);
+        model.addAttribute("article", article);
         return "console/article/edit";
     }
 }

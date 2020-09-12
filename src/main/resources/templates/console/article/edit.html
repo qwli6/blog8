@@ -2,10 +2,11 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="新文章">新文章</title>
+    <title th:text="文章编辑">文章编辑</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="/static/blog/libs/bootstrap/css/bootstrap.min.css" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" href="/static/blog/libs/prism/prism.css">
+    <link rel="stylesheet" href="/static/blog/libs/markdown/github-markdown.css">
     <style>
         /*body {*/
         /*    font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace!important;*/
@@ -54,7 +55,7 @@
                     <button type="button" class="btn btn-sm btn-light">
                         <svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg>
                     </button>
-                    <button type="button" class="btn btn-sm btn-light">
+                    <button type="button" id="openImageModal" class="btn btn-sm btn-light">
                         <svg class="octicon octicon-image" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M1.75 2.5a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h.94a.76.76 0 01.03-.03l6.077-6.078a1.75 1.75 0 012.412-.06L14.5 10.31V2.75a.25.25 0 00-.25-.25H1.75zm12.5 11H4.81l5.048-5.047a.25.25 0 01.344-.009l4.298 3.889v.917a.25.25 0 01-.25.25zm1.75-.25V2.75A1.75 1.75 0 0014.25 1H1.75A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25zM5.5 6a.5.5 0 11-1 0 .5.5 0 011 0zM7 6a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     </button>
                 </div>
@@ -162,6 +163,7 @@
 <script>
     const rootPath = '[[@{/}]]';
     const articleId = '[[${article.id}]]';
+    const currentName = '[[${article.category.name}]]';
     document.getElementById('passwordProtectEnable').addEventListener('click', function(){
         if(this.checked){
             document.getElementById('passwordProtect').disabled='';
@@ -210,8 +212,6 @@
             let categories = data.data;
             let html = '';
             for(let i = 0; i < categories.length; i++){
-
-                let currentName = '[[${article.category.name}]]';
 
                 let category = categories[i];
 
@@ -373,6 +373,11 @@
 
         return Article;
     }
+
+    document.getElementById('openImageModal').addEventListener('click', function(){
+        alert('open the image modal');
+
+    });
 
 </script>
 

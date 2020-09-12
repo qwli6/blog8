@@ -1,6 +1,5 @@
-<header class="navbar navbar-expand-lg navbar-light bg-white shadow-sm" th:fragment="headnav(type)" xmlns:th="http://www.thymeleaf.org">
+<header class="navbar navbar-expand-sm navbar-light border-bottom bg-white" th:fragment="headnav(type)" xmlns:th="http://www.thymeleaf.org">
     <div class="container">
-        <a class="navbar-brand" th:href="@{/console/home}">后台管理</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -8,26 +7,28 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/console/articles}">文章</a>
+                    <a class="nav-link" th:href="@{/console/articles}">文章管理</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/console/moments}">动态</a>
+                    <a class="nav-link" th:href="@{/console/moments}">动态管理</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/console/comments}">评论</a>
+                    <a class="nav-link" th:href="@{/console/comments}">评论管理</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/console/files}">文件</a>
+                    <a class="nav-link" th:href="@{/console/files}">文件管理</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false">
                         偏好设定
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" th:href="@{/console/templates}">模板</a>
                         <a class="dropdown-item" th:href="@{/console/tags}">标签</a>
                         <a class="dropdown-item" th:href="@{/console/categories}">分类</a>
-                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" th:href="@{/console/blackips}">黑名单</a>
+                        <a class="dropdown-item" th:href="@{/console/configs}">设置</a>
                     </div>
                 </li>
                 <li class="nav-item">

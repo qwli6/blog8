@@ -4,31 +4,19 @@
     <meta charset="UTF-8">
     <title th:text="动态详情">动态详情</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" th:href="@{/static/blog/css/front.css}">
-    <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
-    <link rel="stylesheet" th:href="@{/static/blog/libs/prism/prism.css}" href="/static/blog/libs/prism/prism.css">
-    <link rel="stylesheet" th:href="@{/static/blog/libs/markdown/github-markdown.css}" href="/static/blog/libs/markdown/github-markdown.css">
+    <link rel="stylesheet" href="/static/blog/css/front.css" th:href="@{/static/blog/css/front.css}">
+    <link rel="stylesheet" href="/static/blog/libs/bootstrap/css/bootstrap.min.css" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/static/blog/libs/prism/prism.css" th:href="@{/static/blog/libs/prism/prism.css}" >
+    <link rel="stylesheet" href="/static/blog/libs/markdown/github-markdown.css" th:href="@{/static/blog/libs/markdown/github-markdown.css}">
     <style>
         @media (max-width: 767px) {
             .markdown-body {
                 padding: 15px;
             }
         }
-
-        .blog-footer {
-            padding: 2.5rem 0;
-            margin-top: 32px;
-            color: #999999;
-            text-align: center;
-            background-color: #f9f9f9;
-            border-top: .05rem solid #e5e5e5;
-        }
-        .blog-footer p:last-child {
-            margin-bottom: 0;
-        }
     </style>
 </head>
-<body>
+<body class="bg-light">
     <div th:replace="header::head('moment')"></div>
     <!-- 主体部分 -->
     <div class="container my-4">

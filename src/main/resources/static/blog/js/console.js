@@ -1,7 +1,6 @@
-const rootPath = '/';
 
 document.getElementById('btn-logout').addEventListener('click', function(){
-    fetch(rootPath + "logout", {
+    fetch("/logout", {
         method: 'POST',
         headers: new Headers({
             'Content-Type':'application/json;charset=UTF-8'

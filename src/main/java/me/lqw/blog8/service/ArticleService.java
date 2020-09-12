@@ -1,5 +1,7 @@
 package me.lqw.blog8.service;
 
+import me.lqw.blog8.BlogProperties;
+import me.lqw.blog8.constants.BlogConstants;
 import me.lqw.blog8.constants.BlogContext;
 import me.lqw.blog8.exception.AbstractBlogException;
 import me.lqw.blog8.exception.LogicException;
@@ -13,8 +15,13 @@ import me.lqw.blog8.model.vo.ArticleArchivePageQueryParam;
 import me.lqw.blog8.model.vo.ArticlePageQueryParam;
 import me.lqw.blog8.model.vo.HandledArticlePageQueryParam;
 import me.lqw.blog8.plugins.md.MarkdownParser;
+import me.lqw.blog8.util.JsonUtil;
 import me.lqw.blog8.util.JsoupUtil;
 import me.lqw.blog8.util.StringUtil;
+import me.lqw.blog8.validator.ArticleStatus;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.checkerframework.checker.units.qual.A;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Service;
@@ -28,6 +35,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -38,12 +46,15 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @since 1.2
  */
 @Service
-public class ArticleService extends AbstractBaseService<Article> implements CommentModuleHandler<Article> {
+public class ArticleService extends AbstractBaseService<Article> implements CommentModuleHandler<Article>, InitializingBean {
 
     /**
      * 可重入读写锁
      */
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+    private final BlogProperties blogProperties;
+
 
     /**
      * 文章操作持久 Mapper
@@ -93,6 +104,7 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
      */
     public ArticleService(ArticleMapper articleMapper, CategoryMapper categoryMapper,
                           ArticleTagMapper articleTagMapper, TagMapper tagMapper,
+                          BlogProperties blogProperties,
                           ObjectProvider<MarkdownParser> objectProvider,
                           CommentMapper commentMapper) throws IOException {
         this.articleMapper = articleMapper;
@@ -101,8 +113,8 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
         this.tagMapper = tagMapper;
         this.markdownParser = objectProvider.stream().min(Comparator.comparingInt(Ordered::getOrder)).get();
         this.commentMapper = commentMapper;
-        articleIndexer = new ArticleIndexer();
-
+        this.articleIndexer = new ArticleIndexer();
+        this.blogProperties = blogProperties;
     }
 
     /**
@@ -117,6 +129,10 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @Override
     public Article save(Article article) throws LogicException {
+        Boolean privateArticle = article.getPrivateArticle();
+        if(privateArticle == null){
+            article.setPrivateArticle(false);
+        }
         article.setHits(0);
         article.setComments(0);
         article.setCreateAt(LocalDateTime.now());
@@ -129,13 +145,13 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
                 urlName = urlName.replace("/", "");
             }
             articleMapper.selectByUrlName(urlName).ifPresent(e -> {
-                throw new LogicException("articleService.save.aliasExists", "别名已经存在");
+                throw new LogicException("article.aliasExists", "别名已经存在");
             });
         }
         //获取内容的分类, 判断分类是否存在
         Category category = article.getCategory();
         categoryMapper.selectById(category.getId()).orElseThrow(() ->
-                new LogicException("articleService.save.categoryNotExists", "分类不存在"));
+                new LogicException("category.notExists", "分类不存在"));
 
         //判断内容的状态
         ArticleStatusEnum status = article.getStatus();
@@ -148,14 +164,16 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
             case POSTED:
                 //如果是已发布状态, 则直接设置成当前时间
                 article.setPostAt(LocalDateTime.now());
+                break;
             case SCHEDULED:
                 //如果是计划中，则必须指明发布时间
                 if (article.getPostAt() == null || article.getPostAt().isBefore(LocalDateTime.now())) {
-                    throw new LogicException("scheduled.invalid", "计划发布的内容发布时间有误");
+                    throw new LogicException("invalid.scheduleTime", "无效的发布时间");
                 }
                 break;
             default:
-                //其他状态直接跳出
+                //其他状态一律设置成草稿
+                article.setStatus(ArticleStatusEnum.DRAFT);
                 break;
 
         }
@@ -181,10 +199,10 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
             public void afterCommit() {
                 lock.writeLock().lock();
                 try {
-                    articleIndexer.addDocument(article);
+                    articleIndexer.addDocument(Collections.singletonList(article));
                 } catch (IOException e) {
                     e.printStackTrace();
-                    logger.error("新增文章后, 重构索引异常:[{}]", e.getMessage(), e);
+                    logger.error("add document failed when saved article!: [{}]", e.getMessage(), e);
                 } finally {
                     lock.writeLock().unlock();
                 }
@@ -204,7 +222,7 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
     @Override
     public void delete(Integer id) throws AbstractBlogException {
         Article article = articleMapper.selectById(id).orElseThrow(()
-                -> new LogicException("article.notExists", "内容不存在"));
+                -> new LogicException(BlogConstants.ARTICLE_NOT_EXISTS));
         //删除内容本身
         articleMapper.deleteById(article.getId());
         //删除与之关联的关联标签
@@ -220,7 +238,7 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
                     articleIndexer.deleteDocument(id);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    logger.error("删除文章后, 删除 id 为 [{}] 的索引异常:[{}]", id, e.getMessage(), e);
+                    logger.error("remove index failed when delete the article [{}], the failed reason: [{}]", id, e.getMessage(), e);
                 } finally {
                     lock.writeLock().unlock();
                 }
@@ -231,24 +249,16 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
     private void processArticleTags(Article article) {
         articleTagMapper.deleteByArticle(article);
         Set<Tag> tags = article.getTags();
-        if (!tags.isEmpty()) {
-            List<ArticleTag> articleTags = new ArrayList<>(tags.size());
+        if (!CollectionUtils.isEmpty(tags)) {
+            List<ArticleTag> articleTags = new ArrayList<>();
             tags.forEach(e -> {
-
                 Optional<Tag> tagOp = tagMapper.selectById(e.getId());
-                tagOp.ifPresent(tag -> articleTags.add(new ArticleTag(article, tag)));
-
-//                Optional<Tag> tagOp = tagMapper.findByName(e.getTagName());
-//                if(tagOp.isPresent()){
-//                    articleTags.add(new ArticleTag(article, tagOp.get()));
-//                } else {
-//                    Tag tag = new Tag();
-//                    tag.setTagName(e.getTagName());
-//                    tagMapper.insert(tag);
-//                    articleTags.add(new ArticleTag(article, tag));
-//                }
+                if(tagOp.isPresent()){
+                     e = tagOp.get();
+                     articleTags.add(new ArticleTag(article, e));
+                }
             });
-            if (!articleTags.isEmpty()) {
+            if (!CollectionUtils.isEmpty(articleTags)) {
                 articleTagMapper.batchInsert(articleTags);
             }
         }
@@ -264,9 +274,7 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
     @Transactional(readOnly = true)
     public PageResult<Article> selectPage(ArticlePageQueryParam queryParam) {
         String category = queryParam.getCategory();
-
         String tag = queryParam.getTag();
-
         Integer categoryId = null;
         Integer tagId = null;
         if (StringUtil.isNotBlank(category)) {
@@ -289,22 +297,29 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
             }
         }
 
-        //利用 lucene 从索引库中查询出内容的 id，根据 id 去关联查询
         List<Integer> ids = new ArrayList<>();
-//        lock.readLock().lock();
-//        try {
-//            ids = articleIndexer.searchArticleIds("");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            logger.error("索引库获取 id 失败![{}]", e.getMessage(), e);
-//        } finally {
-//            lock.readLock().unlock();
-//        }
+        String query = queryParam.getQuery();
+        if(StringUtil.isNotBlank(query)) {
+            //利用 lucene 从索引库中查询出内容的 id，根据 id 去关联查询
+            lock.readLock().lock();
+            try {
+                ids = articleIndexer.doSearchByLucene(query);
+
+                logger.info("search by lucene ids: [{}]", JsonUtil.toJsonString(ids));
+
+                if(CollectionUtils.isEmpty(ids)){
+                    return new PageResult<>(queryParam, 0, Collections.emptyList());
+                }
+            } catch (IOException | ParseException e) {
+                e.printStackTrace();
+                logger.error("search by lucene for get index failed! failed reason: [{}]", e.getMessage(), e);
+            } finally {
+                lock.readLock().unlock();
+            }
+        }
 
         HandledArticlePageQueryParam handledArticleQueryParam = new HandledArticlePageQueryParam(queryParam, categoryId, tagId);
-        if (!ids.isEmpty()) {
-            handledArticleQueryParam.setIds(ids);
-        }
+        handledArticleQueryParam.setIds(ids);
         if (!BlogContext.isAuthorized()) {
             handledArticleQueryParam.setStatus(ArticleStatusEnum.POSTED);
             handledArticleQueryParam.setQueryPasswordProtect(false);
@@ -367,9 +382,9 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
     /**
      * 处理内容
      * <ul>
-     *     <li>1. 处理标签</li>
-     *     <li>2. 内容 markdown 转 html</li>
-     *     <li>3. 生成缩略图</li>
+     *     1. 处理标签
+     *     2. 内容 markdown 转 html
+     *     3. 生成缩略图
      * </ul>
      *
      * @param articles 待处理的内容列表
@@ -377,11 +392,18 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
      */
     private void processArticles(List<Article> articles, boolean auth) {
 
-        if (articles.isEmpty()) {
+        logger.info("this articles will be process. [{}]", JsonUtil.toJsonString(articles));
+
+        if(CollectionUtils.isEmpty(articles)) {
+            logger.error("no articles need to be process, because the list is empty");
             return;
         }
 
         for (Article article : articles) {
+
+            // process access api
+            article.setAccessApi(StringUtil.isNotBlank(article.getUrlName()) ? article.getUrlName() : String.valueOf(article.getId()));
+
             Set<Tag> tags = article.getTags();
             if (!tags.isEmpty()) {
                 Iterator<Tag> iterator = tags.iterator();
@@ -399,27 +421,11 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
 
         processArticleContents(articles);
 
-        for (Article article : articles) {
-            if (StringUtil.isBlank(article.getContent())) {
-                logger.info("文章内容为空, 跳过该内容:[{}]", article.getId());
-                continue;
-            }
-
-            if (StringUtil.isBlank(article.getDigest())) {
-                logger.info("文章摘要为空, 跳过该内容:[{}]", article.getId());
-                continue;
-            }
-
-            //获取文章的第一幅图片，如果存在，则设置为文章的特征图
-            Optional<String> featureImageOp = JsoupUtil.getFirstImage(markdownParser.parse(article.getContent()));
-            featureImageOp.ifPresent(article::setFeatureImage);
-        }
     }
 
 
     /**
      * 处理文章的内容 articles
-     *
      * @param articles articles
      */
     private void processArticleContents(List<Article> articles) {
@@ -434,12 +440,16 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
             }
         }
 
-        if (CollectionUtils.isEmpty(markdownMap)) {
+        if (!CollectionUtils.isEmpty(markdownMap)) {
             Map<Integer, String> htmlMap = markdownParser.parseMap(markdownMap);
             for (Article article : articles) {
                 //展示内容的时候，需要过滤出 xss 字符，避免执行脚本
                 article.setDigest(htmlMap.get(-article.getId()));
                 article.setContent(htmlMap.get(article.getId()));
+
+                //获取文章的第一幅图片，如果存在，则设置为文章的特征图
+                Optional<String> featureImageOp = JsoupUtil.getFirstImage(article.getContent());
+                featureImageOp.ifPresent(article::setFeatureImage);
             }
         }
     }
@@ -450,55 +460,53 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
      *
      * @param id id
      * @throws LogicException LogicException
-     *                        1. 内容不存在异常
-     *                        2. 内容状态不正确异常
+     *    maybe throw exception
+     *    1. the article not exists
+     *    2. illegal access
      */
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    public void hit(int id) throws AbstractBlogException {
+    public void hit(int id) throws LogicException {
         //登录的情况下点击, 不计算点击量
         if (BlogContext.isAuthorized()) {
             return;
         }
 
-        //查询文章内容
         Article article = articleMapper.selectById(id).orElseThrow(()
-                -> new LogicException("article.notExists", "内容不存在"));
+                -> new LogicException(BlogConstants.ARTICLE_NOT_EXISTS));
         ArticleStatusEnum status = article.getStatus();
-        //如果内容为非 POSTED
-        if (!ArticleStatusEnum.POSTED.equals(status)) {
-            throw new LogicException("article.state.notAllowed", "不允许操作");
+        // use not auth
+        // but access resource is !POSTED || privateResource
+        if (!ArticleStatusEnum.POSTED.equals(status) || article.getPrivateArticle()) {
+            throw new LogicException(BlogConstants.AUTHORIZATION_REQUIRED);
         }
-        // 获取一个写锁
+
         lock.writeLock().lock();
         try {
-            //更新内容的点击量
-            articleMapper.increaseHits(id, article.getHits() + 1);
+            AtomicInteger hits = new AtomicInteger(article.getHits());
+            articleMapper.increaseHits(id, hits.incrementAndGet());
         } finally {
-            //释放写锁
             lock.writeLock().unlock();
         }
     }
 
     /**
      * 获取待修改的内容
-     *
      * @param id id
      * @return Article
      */
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-    public Article selectArticleForEdit(int id) throws AbstractBlogException {
+    public Article selectArticleForEdit(int id) throws LogicException {
         return articleMapper.selectById(id).orElseThrow(() ->
-                new ResourceNotFoundException("article.notExists", "内容不存在"));
+                new ResourceNotFoundException(BlogConstants.ARTICLE_NOT_EXISTS));
     }
 
     /**
      * 获取文章, 查看
-     *
      * @param idOrUrlName id Or urlName
      * @return Article
      */
     @Transactional(readOnly = true)
-    public Article selectArticleForView(String idOrUrlName) throws AbstractBlogException {
+    public Article selectArticleForView(String idOrUrlName) throws LogicException {
         Optional<Article> articleOp;
         try {
             Integer id = Integer.parseInt(idOrUrlName);
@@ -508,12 +516,16 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
         }
 
         Article article = articleOp.orElseThrow(()
-                -> new ResourceNotFoundException("article.notExists", "未找到文章"));
+                -> new ResourceNotFoundException(BlogConstants.ARTICLE_NOT_EXISTS));
 
         ArticleStatusEnum articleStatus = article.getStatus();
-        if (!ArticleStatusEnum.POSTED.equals(articleStatus) && !BlogContext.isAuthorized()) {
-            throw new UnauthorizedException("authorization.required", "您无权限访问此资源");
+
+        if(!BlogContext.isAuthorized()) {
+            if (!ArticleStatusEnum.POSTED.equals(articleStatus) || article.getPrivateArticle()) {
+                throw new UnauthorizedException(BlogConstants.AUTHORIZATION_REQUIRED);
+            }
         }
+
         handleArticles(Collections.singletonList(article), BlogContext.isAuthorized());
 
         return article;
@@ -537,18 +549,18 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
      * @param commentModule commentModule
      * @return Article
      * @throws LogicException 逻辑异常
-     *                        1. 内容是否存在
-     *                        2. 未登录的情况下是不允许查询评论的
+     *     1. 内容是否存在
+     *     2. 未登录的情况下是不允许查询评论的
      */
     @Override
     public Article checkBeforeQuery(CommentModule commentModule) throws LogicException {
         Integer id = commentModule.getId();
 
         Article article = articleMapper.selectById(id).orElseThrow(()
-                -> new LogicException("article.notExists", "内容不存在"));
+                -> new LogicException(BlogConstants.ARTICLE_NOT_EXISTS));
 
         //未登录并且文章状态不为发布, 不允许查询
-        if (!BlogContext.isAuthorized() && !article.getStatus().equals(ArticleStatusEnum.POSTED)) {
+        if (!BlogContext.isAuthorized() && (!article.getStatus().equals(ArticleStatusEnum.POSTED) || article.getPrivateArticle())) {
             throw new LogicException("permission.reject", "您无无权访问未发布的资源评论");
         }
 
@@ -596,11 +608,12 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     @Override
     public void increaseComments(CommentModule module) throws LogicException {
-        articleMapper.selectById(module.getId()).orElseThrow(()
-                -> new LogicException("article.notExists", "内容不存在"));
+        Article old = articleMapper.selectById(module.getId()).orElseThrow(()
+                -> new LogicException(BlogConstants.ARTICLE_NOT_EXISTS));
         lock.writeLock().lock();
         try {
-            articleMapper.increaseComments(module.getId());
+            AtomicInteger comments = new AtomicInteger(old.getComments());
+            articleMapper.increaseComments(module.getId(), comments.incrementAndGet());
         } finally {
             lock.writeLock().unlock();
         }
@@ -616,7 +629,7 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
     public void update(Article article) throws AbstractBlogException {
         Article old = articleMapper.selectById(article.getId()).orElseThrow(() ->
-                new LogicException("article.notExists", "内容不存在"));
+                new LogicException(BlogConstants.ARTICLE_NOT_EXISTS));
 
         Category category = article.getCategory();
         if (category == null || category.getId() == null) {
@@ -629,11 +642,11 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
         //针对旧的内容状态来设置发布时间
 
 
+
+
         article.setModifyAt(LocalDateTime.now());
 
-
         articleMapper.update(article);
-
 
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
@@ -643,12 +656,28 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
                     articleIndexer.updateDocument(article);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    logger.error("更新[{}]的内容时更新索引异常:[{}]", article.getId(), e.getMessage(), e);
+                    logger.error("update index failed when use update article [{}], failed reason: [{}]", article.getId(), e.getMessage(), e);
                 } finally {
                     lock.writeLock().unlock();
                 }
             }
         });
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        logger.info("articleService initial finished，starting rebuild index....");
+        if(articleIndexer != null && blogProperties != null && blogProperties.isRebuildIndexWhenStartup()){
+
+            HandledArticlePageQueryParam handledArticlePageQueryParam = new HandledArticlePageQueryParam();
+            handledArticlePageQueryParam.setIgnorePaging(true);
+
+            List<Article> articles = articleMapper.selectPage(handledArticlePageQueryParam);
+
+            if(!articles.isEmpty()){
+                articleIndexer.rebuild(articles);
+            }
+        }
     }
 
     public static class ArticleScheduledCallable implements Callable<String> {
