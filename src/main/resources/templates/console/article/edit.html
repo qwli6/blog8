@@ -4,461 +4,376 @@
     <meta charset="UTF-8">
     <title th:text="新文章">新文章</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" th:href="@{/static/blog/libs/editor/editor.css}">
-    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css}">
-    <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/static/blog/libs/bootstrap/css/bootstrap.min.css" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/static/blog/libs/prism/prism.css">
+    <style>
+        /*body {*/
+        /*    font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace!important;*/
+        /*}*/
+        textarea {
+            font-size: 14px !important;
+            font-weight: 600;
+        }
+    </style>
 </head>
 
+<body class="bg-light">
+<div class="container mb-5">
+    <div class="row mt-3">
+        <div class="col-12">
+            <nav style="background-color: #f6f8fa; border-top-left-radius: 4px; border-top-right-radius: 4px; padding-top: 8px; padding-left: 8px; border: 1px solid #dfe2e5;">
+                <div class="nav small nav-tabs" id="nav-tab" role="tablist" style="border-bottom: none !important;">
+                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="javascript:void(0);" role="tab"
+                       aria-controls="nav-home" aria-selected="true">书写</a>
+                    <a class="nav-item nav-link preview" id="nav-profile-tab" data-toggle="tab" href="javascript:void(0);" role="tab"
+                       aria-controls="nav-profile" aria-selected="false">预览</a>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <input type="text" th:value="${article.title}" id="title" class="form-control form-control-sm" placeholder="请输入标题">
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group-sm btn-group" style="margin-right: 10px;" role="group" aria-label="First group">
+                    <button type="button" class="btn btn-sm btn-light" >
+                        <b>h1</b>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light">
+                        <b>h2</b>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light">
+                        <b>h3</b>
+                    </button>
+                </div>
+                <div class="btn-group btn-group-sm" style="margin-right: 10px;" role="group" aria-label="Second group">
+                    <button type="button" class="btn btn-sm btn-light">
+                        <svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light">
+                        <svg class="octicon octicon-image" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M1.75 2.5a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h.94a.76.76 0 01.03-.03l6.077-6.078a1.75 1.75 0 012.412-.06L14.5 10.31V2.75a.25.25 0 00-.25-.25H1.75zm12.5 11H4.81l5.048-5.047a.25.25 0 01.344-.009l4.298 3.889v.917a.25.25 0 01-.25.25zm1.75-.25V2.75A1.75 1.75 0 0014.25 1H1.75A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25zM5.5 6a.5.5 0 11-1 0 .5.5 0 011 0zM7 6a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </button>
+                </div>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Third group">
+                    <button type="button" class="btn btn-sm btn-light">
+                        <b>B</b>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light">
+                        <em>i</em>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light">
+                        <svg class="octicon octicon-code" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4.72 3.22a.75.75 0 011.06 1.06L2.06 8l3.72 3.72a.75.75 0 11-1.06 1.06L.47 8.53a.75.75 0 010-1.06l4.25-4.25zm6.56 0a.75.75 0 10-1.06 1.06L13.94 8l-3.72 3.72a.75.75 0 101.06 1.06l4.25-4.25a.75.75 0 000-1.06l-4.25-4.25z"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<body>
-<div class="container">
-    <div class="row">
+
+    <div class="row mt-3">
         <div class="col-12">
-            <div class="form-group">
-                <label for="title" id="titleLabel">标题</label>
-                <input type="text" th:value="${article.title}" id="title" class="form-control" placeholder="请输入标题">
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                    <textarea name="content" th:text="${article.content}"  id="content" style="min-height: 390px;" class="form-control"></textarea>
+                </div>
+                <div class="tab-pane fade markdown-body" style="min-height: 390px;" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab"></div>
             </div>
         </div>
     </div>
-    <div class="row">
+
+    <div class="row mt-3">
         <div class="col-12">
-            <div class="form-group">
-                <label for="editor" id="editorLabel">正文</label>
-                <textarea name="editor" th:text="${article.content}" class="form-control" id="editor"></textarea>
+            <textarea name="content" th:text="${article.digest}" placeholder="请输入摘要（1204个字符内）"
+                      id="digest" style="height: 120px; max-height: 120px; min-height: 60px;"
+                      class="form-control"></textarea>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <input type="text" id="tagStr" class="form-control form-control-sm" placeholder="input tags">
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="form-row">
+                <div class="col">
+                    <input type="text" id="urlName" th:value="${article.urlName}" name="urlName" class="form-control form-control-sm" placeholder="url name">
+                </div>
+                <div class="col">
+                    <select name="category" id="category" class="form-control form-control-sm"></select>
+                </div>
             </div>
         </div>
     </div>
-    <div class="row">
+
+    <div class="row mt-3">
         <div class="col-12">
-            <button type="button" class="btn btn-primary">发布</button>
+            <div class="form-inline">
+                <div class="form-check mb-2 mr-2 small">
+                    <input class="form-check-input check-box" th:checked="${article.allowComment}" type="checkbox" id="allowComment">
+                    <label class="form-check-label" for="allowComment">
+                        开启评论
+                    </label>
+                </div>
+                <div class="form-check mb-2 mr-2 small">
+                    <input class="form-check-input check-box" th:checked="${article.privateArticle}" type="checkbox" id="isPrivate">
+                    <label class="form-check-label" for="isPrivate">
+                        私人文章
+                    </label>
+                </div>
+
+                <div class="form-check mb-2 mr-2 small" style="cursor: pointer;">
+                    <input type="checkbox" class="form-check-input check-box" id="passwordProtectEnable">
+                    <label class="form-check-label" for="passwordProtectEnable">启用密码保护</label>
+                </div>
+                <input type="text" placeholder="勾选后输入密码" class="form-control form-control-sm mb-2 mr-2" id="passwordProtect" disabled>
+
+                <div class="form-check mb-2 mr-2 small" style="cursor: pointer;">
+                    <input type="checkbox" th:checked="${article.status.name() == 'SCHEDULED'}" class="form-check-input check-box" id="scheduleInputEnable">
+                    <label class="form-check-label" for="scheduleInputEnable">启用定时发布</label>
+                </div>
+                <input type="text" placeholder="勾选后选择时间" class="form-control form-control-sm mb-2 mr-2" id="scheduleInput" disabled>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-toolbar justify-content-end" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-group btn-group-sm" style="margin-right: 10px;" role="group" aria-label="Third group">
+            <button type="button" id="btn-cancel" class="btn btn-danger">取消</button>
+        </div>
+        <div class="btn-group btn-group-sm" role="group" aria-label="Third group">
+            <button type="button" id="btn-create" class="btn btn-success">保存修改</button>
         </div>
     </div>
 </div>
 
 <script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
 <script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
-<script type="text/javascript" th:src="@{https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js}"></script>
-<!--    <script type="text/javascript" src="/static/blog/libs/editor/editor.js"></script>-->
+<script type="text/javascript" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>
+<script type="text/javascript" th:src="@{/static/blog/js/Toast.js}"></script>
+<script type="text/javascript" src="/static/blog/libs/prism/prism.js"></script>
+<script type="text/javascript" th:src="@{/static/blog/libs/markedjs/marked.min.js}" src="/static/blog/libs/markedjs/marked.min.js"></script>
+
 <script>
-    (function() {
-        $(function() {
-            // marked
-            // let markedRender = new marked.Renderer();
-            // marked.setOptions({
-            //     renderer: markedRender,
-            //     gfm: true,
-            //     tables: true,
-            //     breaks: true,  // '>' 换行，回车换成 <br>
-            //     pedantic: false,
-            //     sanitize: true,
-            //     smartLists: true,
-            //     smartypants: false
-            // });
+    const rootPath = '[[@{/}]]';
+    const articleId = '[[${article.id}]]';
+    document.getElementById('passwordProtectEnable').addEventListener('click', function(){
+        if(this.checked){
+            document.getElementById('passwordProtect').disabled='';
+        } else {
+            document.getElementById('passwordProtect').disabled = 'disabled';
+            document.getElementById('passwordProtect').value = '';
+        }
+    });
+
+    document.getElementById('scheduleInputEnable').addEventListener('click', function(){
+        if(this.checked){
+            document.getElementById('scheduleInput').disabled = '';
+        } else {
+            document.getElementById('scheduleInput').disabled = 'disabled';
+            document.getElementById('scheduleInput').value = '';
+        }
+    });
 
 
-            let editor = new SimpleMDE({ element: document.getElementById("editor") });
+    $("#nav-tab a").on('click', function(e) {
+        e.preventDefault();
+        $(this).show();
+        if($(this).hasClass('preview')){
+            $("#nav-profile").addClass('show active');
+            $('#nav-home').removeClass('show active');
+            let markdownContent = document.getElementById('content').value;
+            document.getElementById('nav-profile').innerHTML = marked(markdownContent);
+        } else {
+            $("#nav-profile").removeClass('show active');
+            $('#nav-home').addClass('show active');
+        }
+    });
 
-            // // codemirror editor
-            // let editor = CodeMirror.fromTextArea($('#editor').get(0), {
-            //     mode: 'markdown',
-            //     lineNumbers: false,
-            //     autoCloseBrackets: true,
-            //     matchBrackets: true,
-            //     showCursorWhenSelecting: true,
-            //     lineWrapping: true,  // 长句子折行
-            //     keyMap: 'sublime',
-            //     extraKeys: {"Enter": "newlineAndIndentContinueMarkdownList"}
-            // });
-            // editor.on('change', editorOnHandler);
+    window.onload = function() {
+        loadCategoryData();
+        loadTagData();
+    }
+
+    function loadCategoryData(){
+        fetch(rootPath + 'console/categories/list')
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log(JSON.stringify(data));
+            let categories = data.data;
+            let html = '';
+            for(let i = 0; i < categories.length; i++){
+
+                let currentName = '[[${article.category.name}]]';
+
+                let category = categories[i];
+
+                if(currentName === category.name) {
+                    html += '<option value="'+ categories[i].id +'" selected>' + categories[i].name + '</option>';
+                } else {
+                    html += '<option value="'+ categories[i].id +'">' + categories[i].name + '</option>';
+                }
+            }
+            document.getElementById("category").innerHTML = html;
         });
+    }
 
-        // function editorOnHandler(cm, co) {
-        //     $('.markdown-body').html(marked(cm.getValue()));
-        //     $('.markdown-body pre code').each(function(i, block) {
-        //         Prism.highlightElement(block);
-        //     });
+
+    function loadTagData() {
+        fetch(rootPath + 'console/tags/list')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                console.log(JSON.stringify(data));
+                let tags = data;
+                let html = '';
+                for (let i = 0; i < tags.length; i++) {
+                    html += '<option value="' + tags[i].id + '">' + tags[i].tagName + '</option>';
+                }
+
+                // document.getElementById('select-tags').innerHTML = html;
+                // $('#select-tags').selectize({
+                //     "maxItems": 5,
+                //     'plugins':['remove_button']
+                // });
+            });
+    }
+
+
+    //返回
+    document.getElementById('btn-cancel').addEventListener('click', function () {
+        Swal.fire({
+            title: '确定要返回吗?',
+            text: '返回将不会保存您的任何数据，您的数据将会被丢失',
+            icon: 'warning',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '确定',
+            showCancelButton: true,
+            cancelButtonText: '取消'
+        }).then(function (result) {
+            if (result) {
+                window.location.href = rootPath + 'console/articles';
+            }
+        });
+    });
+
+    //创建内容
+    document.getElementById('btn-create').addEventListener('click', function () {
+
+        let status = 'POSTED';
+
+        let Article = getArticle(status);
+
+        if (Article.title == null || Article.title === '' || Article.title.trim().length === 0) {
+            Swal.fire({
+                title: '标题不能为空',
+                text: "",
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '确定'
+            });
+            return;
+        }
+        if (Article.content == null || Article.content === '' || Article.content.trim().length === 0) {
+            Swal.fire({
+                title: '内容不能为空',
+                text: "",
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '确定'
+            });
+            return;
+        }
+
+        fetch(rootPath + "console/article/" + articleId + "/update", {
+            body: JSON.stringify(Article),
+            headers: new Headers({
+                'Content-Type': 'application/json;charset=UTF-8',
+            }),
+            method: 'POST',
+            // mode: 'cors', // no-cors, cors, *same-origin
+            // redirect: 'follow', // manual, *follow, error
+            // referrer: 'no-referrer', // *client, no-referrer
+        }).then(res => res.json())
+            .catch(error => {
+                console.error("update article error" + error);
+                alert("修改文章错误");
+            })
+            .then(response => {
+                console.log('Success:', response)
+                alert("文章修改成功");
+                setTimeout(function () {
+                    window.location.href = rootPath + 'console/articles';
+                }, 800);
+            });
+    });
+
+
+    function getArticle(status) {
+
+        let Article = {};
+
+        Article.title = document.getElementById('title').value;
+        Article.content = document.getElementById('content').value;
+        Article.digest = document.getElementById('digest').value;
+        Article.urlName = document.getElementById('urlName').value;
+        Article.privateArticle = document.getElementById('isPrivate').checked;
+
+        if (document.getElementById('scheduledEnable').checked) {
+            Article.state = "SCHEDULED";
+            const scheduledInput = document.getElementById('scheduledInput').value;
+            if (scheduledInput == null || scheduledInput === '' || scheduledInput.trim().length === 0) {
+                Swal.fire({
+                    title: '计划发布时间必填',
+                    text: "",
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: '确定'
+                });
+                return;
+            }
+            Article.postAt = document.getElementById('scheduledInput').value;
+        } else {
+            Article.status = status;
+        }
+
+        Article.allowComment = document.getElementById('allowComment').checked;
+
+        Article.category = {
+            "id": document.getElementById('category').value,
+        }
+
+        // const tagOptions = document.querySelector('#select-tags').options;
+        //
+        // const tags = [];
+        // if(tagOptions != null && tagOptions.length > 0){
+        //     for(let i = 0; i < tagOptions.length; i++){
+        //         if(tagOptions[i].selected){
+        //             const tag = {};
+        //             tag.id = tagOptions[i].value;
+        //             tags[i] = tag;
+        //         }
+        //     }
         // }
-    })();
-</script>
-<!--    <div class="page">-->
-<!--        <div th:replace="/console/common/head-navbar::headnav('article')"></div>-->
-<!--        <div class="content">-->
-<!--            <div class="container-xl">-->
-<!--                <div class="row">-->
-<!--                    <div class="col-12">-->
-<!--                        <div class="mb-3">-->
-<!--                            <label for="title" class="form-label">标题</label>-->
-<!--                            <input type="text" id="title" class="form-control" autocomplete="off" name="title" placeholder="请输入标题">-->
-<!--                        </div>-->
-<!--                        <div class="mb-3">-->
-<!--                            <label for="content" class="form-label">正文-->
-<!--                                <span class="form-label-description">-->
-<!--                                    <label class="form-check form-check-inline cursor-pointer">-->
-<!--                                      <input class="form-check-input" type="checkbox">-->
-<!--                                      <span class="form-check-label">启用配图</span>-->
-<!--                                    </label>-->
-<!--                                </span>-->
-<!--                            </label>-->
-<!--                            <textarea name="content" id="content" cols="30" rows="20" class="form-control" style="resize: none;"></textarea>-->
-<!--                        </div>-->
-<!--                        <div class="mb-3">-->
-<!--                            <label for="select-tags" class="form-label">标签（输入标签，用英文逗号分隔）</label>-->
-<!--                            <select name="select-tags" id="select-tags" class="form-select" multiple></select>-->
-<!--                        </div>-->
-<!--                        <div class="mb-3">-->
-<!--                            <label for="digest" class="form-label">摘要</label>-->
-<!--                            <textarea name="content" id="digest" cols="30" rows="5" style="resize: none;" class="form-control"></textarea>-->
-<!--                        </div>-->
-<!--                        <div class="mb-3">-->
-<!--                            <div class="row row-sm">-->
-<!--                                <div class="col-5">-->
-<!--                                    <label class="form-label" for="urlName">别名（不要包含 / 字符）</label>-->
-<!--                                    <input type="text" autocomplete="off" class="form-control" id="urlName">-->
-<!--                                </div>-->
-<!--                                <div class="col-3">-->
-<!--                                    <label class="form-label" for="select-categories">分类</label>-->
-<!--                                    <select id="select-categories" class="form-select"></select>-->
-<!--                                </div>-->
-<!--                                <div class="col-4">-->
-<!--                                    <label class="form-label" for="scheduledInput">-->
-<!--                                        定时发布-->
-<!--                                        <span class="form-label-description">-->
-<!--                                            <label class="form-check form-check-inline cursor-pointer">-->
-<!--                                                  <input class="form-check-input" id="scheduledEnable" type="checkbox">-->
-<!--                                                  <span class="form-check-label">启用</span>-->
-<!--                                            </label>-->
-<!--                                        </span>-->
-<!--                                    </label>-->
-<!--                                    <input type="datetime-local" class="form-control" disabled id="scheduledInput">-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="mb-3">-->
-<!--                            <div class="row row-sm">-->
-<!--                                <div class="col-5">-->
-<!--                                    <label class="form-label" for="passwordProtect">-->
-<!--                                        密码保护-->
-<!--                                        <span class="form-label-description">-->
-<!--                                            <label class="form-check form-check-inline cursor-pointer">-->
-<!--                                                  <input class="form-check-input" id="passwordProtectEnable" type="checkbox">-->
-<!--                                                  <span class="form-check-label">启用</span>-->
-<!--                                            </label>-->
-<!--                                        </span>-->
-<!--                                    </label>-->
-<!--                                    <input type="text" class="form-control" disabled id="passwordProtect">-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="mb-3">-->
-<!--                            <div class="form-label">评论设置</div>-->
-<!--                            <label class="form-check form-check-inline cursor-pointer">-->
-<!--                                <input class="form-check-input" id="allowComment" checked type="checkbox">-->
-<!--                                <span class="form-check-label">开启评论</span>-->
-<!--                            </label>-->
-<!--                        </div>-->
-<!--                        <div class="mb-3">-->
-<!--                            <label class="form-label">签名档</label>-->
-<!--                            <div class="form-selectgroup">-->
-<!--                                <label class="form-selectgroup-item">-->
-<!--                                    <input type="radio" name="icons" value="home" class="form-selectgroup-input">-->
-<!--                                    <span class="form-selectgroup-label">签名档 1</span>-->
-<!--                                </label>-->
-<!--                                <label class="form-selectgroup-item">-->
-<!--                                    <input type="radio" name="icons" value="user" class="form-selectgroup-input">-->
-<!--                                    <span class="form-selectgroup-label">签名档 2</span>-->
-<!--                                </label>-->
-<!--                                <label class="form-selectgroup-item">-->
-<!--                                    <input type="radio" name="icons" value="circle" class="form-selectgroup-input">-->
-<!--                                    <span class="form-selectgroup-label">签名档 3</span>-->
-<!--                                </label>-->
-<!--                                <label class="form-selectgroup-item">-->
-<!--                                    <input type="radio" name="icons" value="square" class="form-selectgroup-input" checked>-->
-<!--                                    <span class="form-selectgroup-label">不使用</span>-->
-<!--                                </label>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="btn-list mb-3">-->
-<!--                            <a href="javascript:void(0);" id="btn-cancel" class="btn btn-outline-danger mr-auto">取消发布</a>-->
-<!--                            <a href="javascript:void(0);" id="btn-draft" class="btn btn-warning">存为草稿</a>-->
-<!--                            <a href="javascript:void(0);" id="btn-create" class="btn btn-success">立即发布</a>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <footer class="footer footer-transparent">-->
-<!--                <div class="container">-->
-<!--                    <div class="row text-center align-items-center flex-row-reverse">-->
-<!--                        <div class="col-12 justify-content-center">-->
-<!--                            Powered By-->
-<!--                            <a href="." class="link-secondary">Blog8</a>.-->
-<!--                            1.2.0-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </footer>-->
-<!--        </div>-->
-<!--    </div>-->
+        //
+        // Article.tags = tags;
 
-<!--    <script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>-->
-<!--    <script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>-->
-<!--    <script type="text/javascript" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>-->
-<!--    <script type="text/javascript" th:src="@{/static/blog/js/Toast.js}"></script>-->
-<!--    <script type="text/javascript" th:src="@{/static/blog/libs/prism/prism.js}"></script>-->
-<!--    <script type="text/javascript" src="/static/tabler/dist/libs/selectize/dist/js/standalone/selectize.min.js"></script>-->
-<script>
-    // document.body.style.display='block';
-    // window.onload = function(){
-    //     loadCategoryData();
-    //     loadTagData();
-    // }
 
-    // //创建内容
-    // document.getElementById('btn-create').addEventListener('click', function(){
-    //
-    //     let status = 'POSTED';
-    //
-    //     let Article = getArticle(status);
-    //
-    //     if(Article.title == null || Article.title === '' || Article.title.trim().length === 0){
-    //         Swal.fire({
-    //             title: '标题不能为空',
-    //             text: "",
-    //             icon: 'error',
-    //             confirmButtonColor: '#3085d6',
-    //             cancelButtonColor: '#d33',
-    //             confirmButtonText: '确定'
-    //         });
-    //         return;
-    //     }
-    //     if(Article.content == null || Article.content === '' || Article.content.trim().length === 0){
-    //         Swal.fire({
-    //             title: '内容不能为空',
-    //             text: "",
-    //             icon: 'error',
-    //             confirmButtonColor: '#3085d6',
-    //             cancelButtonColor: '#d33',
-    //             confirmButtonText: '确定'
-    //         });
-    //         return;
-    //     }
-    //
-    //     fetch("/console/article/save",{
-    //         body: JSON.stringify(Article),
-    //         headers: new Headers({
-    //             'Content-Type': 'application/json;charset=UTF-8',
-    //         }),
-    //         method: 'POST',
-    //         // mode: 'cors', // no-cors, cors, *same-origin
-    //         // redirect: 'follow', // manual, *follow, error
-    //         // referrer: 'no-referrer', // *client, no-referrer
-    //     }).then(res => res.json())
-    //         .catch(error => console.error('Error:', error))
-    //         .then(response => console.log('Success:', response));
-    //
-    // });
-    //
-    // //存为草稿
-    // document.getElementById('btn-draft').addEventListener('click', function(){
-    //     let status = 'DRAFT';
-    //     let Article = getArticle(status);
-    //
-    //     if(Article.title == null || Article.title === '' || Article.title.trim().length === 0){
-    //         Swal.fire({
-    //             title: '标题不能为空',
-    //             text: "",
-    //             icon: 'error',
-    //             confirmButtonColor: '#3085d6',
-    //             cancelButtonColor: '#d33',
-    //             confirmButtonText: '确定'
-    //         });
-    //         return;
-    //     }
-    //     if(Article.content == null || Article.content === '' || Article.content.trim().length === 0){
-    //         Swal.fire({
-    //             title: '内容不能为空',
-    //             text: "",
-    //             icon: 'error',
-    //             confirmButtonColor: '#3085d6',
-    //             cancelButtonColor: '#d33',
-    //             confirmButtonText: '确定'
-    //         });
-    //         return;
-    //     }
-    //
-    //     fetch('/console/article/save', {
-    //         body: JSON.stringify(Article),
-    //         headers: new Headers({
-    //             'Content-Type': 'application/json; Charset=UTF-8',
-    //         }),
-    //         method: 'POST'
-    //     }).then(res => res.json())
-    //     .catch(error => console.error('Error:', error))
-    //     .then(response => console.log('Success:', response));
-    // })
-    //
-    //
-    // function getArticle(status){
-    //
-    //     let Article = {};
-    //
-    //     Article.title = document.getElementById('title').value;
-    //     Article.content = document.getElementById('content').value;
-    //     Article.digest = document.getElementById('digest').value;
-    //     Article.urlName = document.getElementById('urlName').value;
-    //
-    //     if(document.getElementById('scheduledEnable').checked){
-    //         Article.state = "SCHEDULED";
-    //         const scheduledInput = document.getElementById('scheduledInput').value;
-    //         if(scheduledInput == null || scheduledInput === '' || scheduledInput.trim().length === 0){
-    //             Swal.fire({
-    //                 title: '计划发布时间必填',
-    //                 text: "",
-    //                 icon: 'error',
-    //                 confirmButtonColor: '#3085d6',
-    //                 cancelButtonColor: '#d33',
-    //                 confirmButtonText: '确定'
-    //             });
-    //             return;
-    //         }
-    //         Article.postAt = document.getElementById('scheduledInput').value;
-    //     } else {
-    //         Article.status = status;
-    //     }
-    //
-    //     Article.allowComment = document.getElementById('allowComment').checked;
-    //
-    //     Article.category = {
-    //         "id": document.getElementById('select-categories').value,
-    //     }
-    //
-    //     const tagOptions = document.querySelector('#select-tags').options;
-    //
-    //     const tags = [];
-    //     if(tagOptions != null && tagOptions.length > 0){
-    //         for(let i = 0; i < tagOptions.length; i++){
-    //             if(tagOptions[i].selected){
-    //                 const tag = {};
-    //                 tag.id = tagOptions[i].value;
-    //                 tags[i] = tag;
-    //             }
-    //         }
-    //     }
-    //
-    //     Article.tags = tags;
-    //
-    //
-    //
-    //     return Article;
-    // }
-    //
-    // //返回
-    // document.getElementById('btn-cancel').addEventListener('click', function(){
-    //     Swal.fire({
-    //         title: '确定要返回吗?',
-    //         text: '返回将不会保存您的任何数据，您的数据将会被丢失',
-    //         icon: 'warning',
-    //         confirmButtonColor: '#3085d6',
-    //         cancelButtonColor: '#d33',
-    //         confirmButtonText: '确定',
-    //         showCancelButton: true,
-    //         cancelButtonText: '取消'
-    //     }).then(function(result){
-    //         if(result){
-    //             window.location.href = '/console/articles';
-    //         }
-    //     });
-    // });
-    //
-    //
-    // document.getElementById('scheduledEnable').addEventListener('click', function(){
-    //     if(this.checked){
-    //         document.getElementById('scheduledInput').disabled = '';
-    //
-    //         // interval = setInterval(function(){
-    //         //     document.getElementById('scheduledInput').value = new Date().format("yyyy-MM-dd hh:mm:ss");
-    //         // }, 1000);
-    //     } else {
-    //         document.getElementById('scheduledInput').disabled = 'disabled';
-    //         document.getElementById('scheduledInput').value = '';
-    //         // clearInterval(interval);
-    //     }
-    // });
-    //
-    //
-    // document.getElementById('passwordProtectEnable').addEventListener('click', function(){
-    //     if(this.checked){
-    //         document.getElementById('passwordProtect').disabled='';
-    //     } else {
-    //         document.getElementById('passwordProtect').disabled = 'disabled';
-    //         document.getElementById('passwordProtect').value = '';
-    //     }
-    //
-    // });
-    //
-    //
-    // function loadCategoryData(){
-    //     fetch('/console/categories/list')
-    //     .then(function(response) {
-    //         return response.json();
-    //     })
-    //     .then(function(data) {
-    //         console.log(JSON.stringify(data));
-    //         let categories = data.data;
-    //         let html = '';
-    //         for(let i = 0; i < categories.length; i++){
-    //             html += '<option value="'+ categories[i].id +'">' + categories[i].name + '</option>';
-    //         }
-    //         document.getElementById('select-categories').innerHTML = html;
-    //         $('#select-categories').selectize({});
-    //     });
-    // }
-    //
-    // function loadTagData(){
-    //     fetch('/console/tags/list')
-    //     .then(function(response){
-    //         return response.json();
-    //     })
-    //     .then(function(data) {
-    //         console.log(JSON.stringify(data));
-    //         let tags = data;
-    //         let html = '';
-    //         for(let i = 0; i < tags.length; i++){
-    //             html += '<option value="'+ tags[i].id+'">' + tags[i].tagName+ '</option>';
-    //         }
-    //
-    //         document.getElementById('select-tags').innerHTML = html;
-    //         $('#select-tags').selectize({
-    //             "maxItems": 5,
-    //             'plugins':['remove_button']
-    //         });
-    //     });
-    //
-    // }
-    //
-    // Date.prototype.format = function(fmt){
-    //     const o = {
-    //         "M+" : this.getMonth()+1,                 //月份
-    //         "d+" : this.getDate(),                    //日
-    //         "h+" : this.getHours(),                   //小时
-    //         "m+" : this.getMinutes(),                 //分
-    //         "s+" : this.getSeconds(),                 //秒
-    //         "q+" : Math.floor((this.getMonth()+3)/3), //季度
-    //         "S"  : this.getMilliseconds()             //毫秒
-    //     };
-    //
-    //     if(/(y+)/.test(fmt)){
-    //         fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
-    //     }
-    //
-    //     for(var k in o){
-    //         if(new RegExp("("+ k +")").test(fmt)){
-    //             fmt = fmt.replace(
-    //                 RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
-    //         }
-    //     }
-    //
-    //     return fmt;
-    // }
+        return Article;
+    }
+
 </script>
 
 </body>
