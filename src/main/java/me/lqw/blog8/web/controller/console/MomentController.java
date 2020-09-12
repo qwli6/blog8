@@ -66,8 +66,8 @@ public class MomentController extends AbstractBaseController {
      */
     @GetMapping("moment/{id}/edit")
     public String edit(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("moment", momentService.getMomentForEdit(id).orElseThrow(()
-                -> new ResourceNotFoundException("momentService.edit.notExists", "待编辑的动态不存在")));
+        Moment moment = momentService.getMomentForEdit(id);
+        model.addAttribute("moment", moment);
         return "console/moment/edit";
     }
 

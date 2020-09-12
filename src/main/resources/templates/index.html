@@ -18,20 +18,9 @@
             background-color: transparent;
         }
 
-        .blog-footer {
-            padding: 2.5rem 0;
-            margin-top: 32px;
-            color: #999999;
-            text-align: center;
-            background-color: #f9f9f9;
-            border-top: .05rem solid #e5e5e5;
-        }
-        .blog-footer p:last-child {
-            margin-bottom: 0;
-        }
     </style>
 </head>
-<body>
+<body class="bg-light">
     <div th:replace="header::head('index')"></div>
 
     <main role="main">
@@ -47,7 +36,7 @@
                             <div class="col">
                                 <div class="card-body">
                                     <!-- 标题 -->
-                                    <div class="title-article title-article-index">
+                                    <div class="title-article title-article-index text-truncate">
                                         <a th:href="${#strings.isEmpty(article.urlName) ? '/article/' + article.id : '/article/' + article.urlName}" th:text="${article.title}"></a>
                                     </div>
                                     <!-- 摘要 -->
@@ -81,8 +70,10 @@
                         </div>
                     </div>
                     <ul class="pagination justify-content-center" th:if="${articlePage.totalPage > 1}">
-                        <li class="page-item" th:classappend="${articlePage.currentPage == item ? 'disabled' : ''}" th:each="item: ${#numbers.sequence(1, articlePage.totalPage)}">
-                            <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${item} + ');'" th:text="${item}">1</a>
+                        <li class="page-item" th:classappend="${articlePage.currentPage == item ? 'disabled' : ''}"
+                            th:each="item: ${#numbers.sequence(1, articlePage.totalPage)}">
+                            <a class="page-link" href="javascript:void(0);"
+                               th:onclick="'toPage(' + ${item} + ');'" th:text="${item}">1</a>
                         </li>
                     </ul>
                 </div>
@@ -112,14 +103,6 @@
         </div>
     </main>
 
-
-
-    <footer class="blog-footer">
-        <p>Blog template built for <a href="https://getbootstrap.com/">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
-        <p>
-            <a href="#">Back to top</a>
-        </p>
-    </footer>
     <script type="text/javascript" src="/static/blog/libs/jquery/jquery-3.5.1.js" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
     <script type="text/javascript" src="/static/blog/libs/bootstrap/js/bootstrap.bundle.js" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
 

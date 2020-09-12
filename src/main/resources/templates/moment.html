@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title th:text="动态详情">动态详情</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="shortcut icon" th:href="@{/static/blog/images/logoH.png}" >
     <link rel="stylesheet" th:href="@{/static/blog/css/front.css}">
     <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/static/blog/libs/prism/prism.css}" href="/static/blog/libs/prism/prism.css">
@@ -38,14 +37,35 @@
                 <div class="markdown-body" th:utext="${moment.content}"></div>
             </div>
         </div>
+        <div class="row mt-3">
+            <div class="col-xs-12 col-sm-12 col-md-8">
+                <div role="alert" class="alert alert-danger" th:if="${!moment.allowComment}">
+                    该动态已设置禁止评论
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3" th:if="${momentNavDto.prev != null}">
+            <div class="col-xs-12 col-sm-12 col-md-8">
+                <div class="card" style="cursor: pointer;" th:data-momentid="${momentNavDto.prev.id}">
+                    <div class="card-body">
+                        <div class="font-weight-bold">上一条</div>
+                        <div th:utext="${momentNavDto.prev.content}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3" th:if="${momentNavDto.next != null}">
+            <div class="col-xs-12 col-sm-12 col-md-8">
+                <div class="card" style="cursor: pointer;" th:data-momentid="${momentNavDto.next.id}">
+                    <div class="card-body">
+                        <div class="font-weight-bold">下一条</div>
+                        <div th:utext="${momentNavDto.next.content}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- 底部标注 -->
-    <footer class="blog-footer">
-        <div class="container">
-            <p>京ICP备15031610号-30</p>
-        </div>
-    </footer>
 
     <script type="text/javascript" src="/static/blog/libs/jquery/jquery-3.5.1.js" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
     <script type="text/javascript" src="/static/blog/libs/bootstrap/js/bootstrap.bundle.js" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
@@ -54,7 +74,7 @@
     <script type="text/javascript" src="/static/blog/libs/prism/prism.js" th:src="@{/static/blog/libs/prism/prism.js}"></script>
     <script>
         const rootPath = '[[@{/}]]';
-        const momentId = '[[${moment.id}]]'
+        const momentId = '[[${moment.id}]]';
         window.onload = function(){
             if(sessionStorage.getItem("moment." + momentId) == null) {
                 setTimeout(function(){
@@ -68,6 +88,12 @@
                 }, 2000);
                 sessionStorage.setItem("moment." + momentId, momentId);
             }
+        }
+
+        for(elem of document.querySelectorAll('[data-momentid]')){
+            elem.addEventListener('click', function(){
+                window.location.href = rootPath + 'moment/' + this.dataset.momentid;
+            });
         }
     </script>
 </body>

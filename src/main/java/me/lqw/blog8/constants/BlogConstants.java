@@ -32,26 +32,12 @@ public class BlogConstants implements Serializable {
     public static final String CONSOLE_URI = "/console";
     public static final String INDEX_URI = "/";
 
-    /**
-     * 系统错误
-     */
-    public static final Message SYSTEM_ERROR = new Message("system.internal.error", "服务器可能无法理解您的请求");
-
-    /**
-     * 授权失败
-     */
-    public static final Message AUTH_FAILED = new Message("auth.failed", "用户认证失败");
-
-    public static final Message AUTH_USER_FIRST = new Message("user.authRequired", "请先认证用户名和密码");
-
-    public static final Message NO_HANDLER_FOUND = new Message("handler.notFound", "您好像来到了没有知识的荒原");
-
-
 
     /**
      * 最大分页大小
      */
     public static final int MAX_PAGE_SIZE = 50;
+    public static final int DEFAULT_MOMENT_PAGE_SIZE = 20;
 
     /**
      * 重定向地址
@@ -82,6 +68,26 @@ public class BlogConstants implements Serializable {
      * 博客配置
      */
     public static final String BLOG_CONFIG = "BlogConfig";
+
+
+
+
+
+
+    /**
+     * 系统错误
+     */
+    public static final Message SYSTEM_ERROR = new Message("system.internal.error", "服务器可能无法理解您的请求");
+
+    /**
+     * 授权失败
+     */
+    public static final Message AUTH_FAILED = new Message("auth.failed", "用户认证失败");
+    public static final Message AUTHORIZATION_REQUIRED = new Message("authorization.required", "您无权限访问此资源, 请先授权");
+    public static final Message AUTH_USER_FIRST = new Message("user.authRequired", "请先认证用户名和密码");
+    public static final Message NO_HANDLER_FOUND = new Message("handler.notFound", "您好像来到了没有知识的荒原");
+    public static final Message MOMENT_NOT_EXISTS = new Message("moment.notExists", "动态不存在");
+    public static final Message ARTICLE_NOT_EXISTS = new Message("article.notExists", "文章不存在");
 
     /**
      * 构造方法

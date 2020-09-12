@@ -2,6 +2,7 @@ package me.lqw.blog8.mapper;
 
 import me.lqw.blog8.model.Moment;
 import me.lqw.blog8.model.MomentArchive;
+import me.lqw.blog8.model.vo.MomentNavQueryParam;
 import me.lqw.blog8.model.vo.MomentPageQueryParam;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -62,14 +63,14 @@ public interface MomentMapper {
      *
      * @return MomentArchive
      */
-    MomentArchive selectLatestMoments();
+    MomentArchive selectLatestMoments(MomentPageQueryParam queryParam);
 
     /**
      * 归档数量
      *
      * @return int
      */
-    int countMomentArchive();
+    int countMomentArchive(MomentPageQueryParam queryParam);
 
     /**
      * 查询归档
@@ -100,4 +101,24 @@ public interface MomentMapper {
      * @param id id
      */
     void increaseComments(@Param("id") Integer id);
+
+    /**
+     * 删除动态
+     * @param id id
+     */
+    void deleteById(@Param("id") Integer id);
+
+    /**
+     * 下一个
+     * @param queryParam queryParam
+     * @return Moment
+     */
+    Optional<Moment> selectNextMoment(MomentNavQueryParam queryParam);
+
+    /**
+     * 上一个
+     * @param queryParam queryParam
+     * @return Moment
+     */
+    Optional<Moment> selectPrevMoment(MomentNavQueryParam queryParam);
 }

@@ -1,6 +1,7 @@
 package me.lqw.blog8.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import me.lqw.blog8.service.ProtectResource;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
  * @version 1.0
  * @since 1.0
  */
-public class Moment implements Serializable {
+public class Moment implements ProtectResource, Serializable {
 
     /**
      * 动态 id
@@ -50,6 +51,11 @@ public class Moment implements Serializable {
     private Boolean allowComment = true;
 
     /**
+     * 是否私人动态
+     */
+    private Boolean privateMoment;
+
+    /**
      * 特征图像
      */
     private String featureImage;
@@ -62,6 +68,15 @@ public class Moment implements Serializable {
     @FutureOrPresent(message = "动态创建时间必须是一个将来的时间")
     private LocalDateTime createAt;
 
+
+    public Boolean getPrivateMoment() {
+        return privateMoment;
+    }
+
+    public void setPrivateMoment(Boolean privateMoment) {
+        this.privateMoment = privateMoment;
+    }
+
     /**
      * 更新时间
      */
@@ -70,6 +85,12 @@ public class Moment implements Serializable {
     @FutureOrPresent(message = "动态修改时间必须是一个将来的时间")
     private LocalDateTime modifyAt;
 
+
+    private String lockId;
+
+    public void setLockId(String lockId) {
+        this.lockId = lockId;
+    }
 
     public String getFeatureImage() {
         return featureImage;
@@ -133,5 +154,15 @@ public class Moment implements Serializable {
 
     public void setModifyAt(LocalDateTime modifyAt) {
         this.modifyAt = modifyAt;
+    }
+
+    @Override
+    public String getResourceId() {
+        return this.getClass().getSimpleName() + "-" + id;
+    }
+
+    @Override
+    public String getLockId() {
+        return this.lockId;
     }
 }

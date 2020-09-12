@@ -16,6 +16,20 @@ public class MomentPageQueryParam extends AbstractQueryParam implements Serializ
      */
     private String query;
 
+    /**
+     * 是否查询私人动态
+     * @since 2.2
+     */
+    private Boolean queryPrivate;
+
+    public Boolean getQueryPrivate() {
+        return queryPrivate;
+    }
+
+    public void setQueryPrivate(Boolean queryPrivate) {
+        this.queryPrivate = queryPrivate;
+    }
+
     public String getQuery() {
         return query;
     }

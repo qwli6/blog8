@@ -1,8 +1,12 @@
 package me.lqw.blog8.service;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import me.lqw.blog8.constants.BlogConstants;
 import me.lqw.blog8.constants.BlogContext;
+import me.lqw.blog8.exception.AbstractBlogException;
 import me.lqw.blog8.exception.LogicException;
 import me.lqw.blog8.exception.ResourceNotFoundException;
+import me.lqw.blog8.exception.UnauthorizedException;
 import me.lqw.blog8.mapper.CommentMapper;
 import me.lqw.blog8.mapper.MomentMapper;
 import me.lqw.blog8.model.Comment;
@@ -11,12 +15,17 @@ import me.lqw.blog8.model.Moment;
 import me.lqw.blog8.model.MomentArchive;
 import me.lqw.blog8.model.dto.CommentDTO;
 import me.lqw.blog8.model.dto.MomentDTO;
+import me.lqw.blog8.model.dto.MomentNavDTO;
 import me.lqw.blog8.model.dto.page.PageResult;
+import me.lqw.blog8.model.vo.MomentNavQueryParam;
 import me.lqw.blog8.model.vo.MomentPageQueryParam;
 import me.lqw.blog8.plugins.md.MarkdownParser;
+import me.lqw.blog8.util.HtmlUtil;
 import me.lqw.blog8.util.JsonUtil;
 import me.lqw.blog8.util.JsoupUtil;
 import me.lqw.blog8.util.StringUtil;
+import me.lqw.blog8.web.security.lock.LockProtect;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Service;
@@ -68,6 +77,7 @@ public class MomentService extends AbstractBaseService<Moment> implements Commen
 
     /**
      * 保存动态
+     * @param moment 保存的动态
      */
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
@@ -81,15 +91,18 @@ public class MomentService extends AbstractBaseService<Moment> implements Commen
 
     /**
      * 删除动态
-     *
-     * @param id id
-     * @throws LogicException
+     * @param id id id
+     * @throws LogicException 逻辑异常
      */
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public void delete(Integer id) throws LogicException {
-        Moment moment = momentMapper.selectById(id).orElseThrow(() -> new LogicException("momentService.delete.notExists", "动态不存在"));
+        Moment moment = momentMapper.selectById(id).orElseThrow(() ->
+                new LogicException("moment.notExists", "动态不存在"));
+        //删除模块评论
         commentMapper.deleteByModule(new CommentModule(moment.getId(), getModuleName()));
+        //删除动态
+        momentMapper.deleteById(moment.getId());
     }
 
     @Override
@@ -112,7 +125,7 @@ public class MomentService extends AbstractBaseService<Moment> implements Commen
 
         // 动态是否存在
         Moment moment = momentMapper.selectById(id).orElseThrow(()
-                -> new LogicException("moment.notExits", "动态不存在"));
+                -> new LogicException(BlogConstants.MOMENT_NOT_EXISTS));
 
         // 是否设置了允许访客评论
         if (!moment.getAllowComment() && !BlogContext.isAuthorized()) {
@@ -126,6 +139,11 @@ public class MomentService extends AbstractBaseService<Moment> implements Commen
 
     }
 
+    /**
+     * 分页查找动态
+     * @param queryParam queryParam
+     * @return PageResult<T>
+     */
     @Transactional(readOnly = true)
     public PageResult<Moment> selectPage(MomentPageQueryParam queryParam) {
         int count = momentMapper.count(queryParam);
@@ -141,6 +159,10 @@ public class MomentService extends AbstractBaseService<Moment> implements Commen
         return pageResult;
     }
 
+    /**
+     * 处理动态内容
+     * @param data data
+     */
     private void processMomentContent(List<Moment> data) {
         if(!CollectionUtils.isEmpty(data)){
             for(Moment moment: data){
@@ -148,68 +170,156 @@ public class MomentService extends AbstractBaseService<Moment> implements Commen
                 if(StringUtil.isBlank(content)){
                     continue;
                 }
-                moment.setContent(markdownParser.parse(content));
+                String parse = markdownParser.parse(content);
+
+                if(StringUtil.isNotBlank(parse)) {
+
+                    JsoupUtil.getFirstImage(parse).ifPresent(moment::setFeatureImage);
+
+                    Optional<String> contentOp = JsoupUtil.cleanAllHtml(parse);
+                    if(contentOp.isPresent()){
+                        content = contentOp.get();
+                        if(content.length() > 20){
+                           content = content.substring(0, 20)+"...";
+                        }
+                    }
+                }
+                moment.setContent(content);
             }
         }
     }
 
+    /**
+     * 更新动态
+     * @param moment moment
+     * @throws LogicException 逻辑异常
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public void update(Moment moment) throws LogicException {
-        Moment old = momentMapper.selectById(moment.getId()).orElseThrow(() -> new LogicException("momentService.update.notExists", "动态不存在"));
-        if (old.getContent().equals(moment.getContent()) && old.getAllowComment().equals(moment.getAllowComment())) {
+    public void update(Moment moment) throws AbstractBlogException {
+        Moment old = momentMapper.selectById(moment.getId()).orElseThrow(()
+                -> new LogicException(BlogConstants.MOMENT_NOT_EXISTS));
+        if (old.getContent().equals(moment.getContent()) && //内容一致
+                old.getAllowComment().equals(moment.getAllowComment()) && //是否允许评论一致
+                old.getPrivateMoment().equals(moment.getPrivateMoment())) { //是否私有内容一致
             logger.info("修改内容一致, 不做处理! 原内容:[{}], 现内容:[{}]", JsonUtil.toJsonString(old), JsonUtil.toJsonString(moment));
             return;
         }
         momentMapper.update(moment);
     }
 
+    /**
+     * 获取动态内容以作修改
+     * @param id id
+     * @return Moment
+     */
     @Transactional(readOnly = true)
-    public Optional<Moment> getMomentForEdit(Integer id) {
-        return momentMapper.selectById(id);
+    public Moment getMomentForEdit(Integer id) throws AbstractBlogException {
+        return momentMapper.selectById(id).orElseThrow(() -> new ResourceNotFoundException(BlogConstants.MOMENT_NOT_EXISTS));
     }
 
-    @Override
-    public String getModuleName() {
-        return Moment.class.getSimpleName().toLowerCase();
-    }
 
+    /**
+     * 获取最近的动态
+     * @return MomentArchive
+     */
     @Transactional(readOnly = true)
     public MomentArchive selectLatestMoments() {
 
-        MomentArchive momentArchive = momentMapper.selectLatestMoments();
+        MomentPageQueryParam queryParam = new MomentPageQueryParam();
+
+        Boolean authorized = BlogContext.isAuthorized();
+        if(!authorized){ //未登录
+            queryParam.setQueryPrivate(false);
+        }
+
+        //
+        MomentArchive momentArchive = momentMapper.selectLatestMoments(queryParam);
 
         List<Moment> moments = momentArchive.getMoments();
 
-        for(Moment moment: moments) {
-            String content = moment.getContent();
-            String htmlContent = markdownParser.parse(content);
-            JsoupUtil.getFirstImage(htmlContent).ifPresent(moment::setFeatureImage);
+        processMomentContent(moments);
 
-            if(StringUtil.isNotBlank(htmlContent)){
-                JsoupUtil.cleanAllHtml(htmlContent).ifPresent(e -> {
-                    if(e.length() > 20){
-                        e = e.substring(0, 20) + "....";
-                    }
-                    moment.setContent(e);
-                });
-            }
-        }
         return momentArchive;
     }
 
-    public Optional<Moment> getMomentForView(int id) throws ResourceNotFoundException {
-        Optional<Moment> momentOp = momentMapper.selectById(id);
-        if (momentOp.isPresent()) {
-            Moment moment = momentOp.get();
-            moment.setContent(markdownParser.parse(moment.getContent()));
-            return Optional.of(moment);
+    /**
+     * 展示动态
+     * @param id id
+     * @return Moment
+     * @throws AbstractBlogException
+     * 资源找不到异常
+     */
+    @Transactional(readOnly = true)
+    public Moment getMomentForView(int id) throws AbstractBlogException {
+        Moment moment = momentMapper.selectById(id).orElseThrow(()
+                -> new ResourceNotFoundException(BlogConstants.MOMENT_NOT_EXISTS));
+
+        Boolean privateMoment = moment.getPrivateMoment();
+        if(privateMoment != null && privateMoment && !BlogContext.isAuthorized()){
+            throw new UnauthorizedException(BlogConstants.AUTHORIZATION_REQUIRED);
         }
-        return Optional.empty();
+        moment.setContent(markdownParser.parse(moment.getContent()));
+        return moment;
     }
 
+
+    /**
+     * 获取动态导航 上一个，下一个
+     * @param id id
+     * @return MomentNavDTO
+     */
+    @Transactional(readOnly = true)
+    public MomentNavDTO selectMomentNav(int id) {
+
+        Optional<Moment> currentMomentOp = momentMapper.selectById(id);
+        if(!currentMomentOp.isPresent()){
+            return new MomentNavDTO(null, null);
+        }
+        Moment currentMoment = currentMomentOp.get();
+
+        MomentNavQueryParam queryParam = new MomentNavQueryParam();
+        queryParam.setCurrentId(currentMoment.getId());
+
+        Boolean queryPrivate = null;
+
+        if(!BlogContext.isAuthorized()){
+            queryPrivate = false;
+        }
+        queryParam.setQueryPrivate(queryPrivate);
+
+        Optional<Moment> nextMomentOp = momentMapper.selectNextMoment(queryParam);
+        Optional<Moment> prevMomentOp = momentMapper.selectPrevMoment(queryParam);
+
+        MomentNavDTO momentNavDto = new MomentNavDTO();
+        if(nextMomentOp.isPresent()){
+            Moment moment = nextMomentOp.get();
+            processMomentContent(Collections.singletonList(moment));
+            momentNavDto.setNext(moment);
+        }
+
+        if(prevMomentOp.isPresent()){
+            Moment moment = prevMomentOp.get();
+            processMomentContent(Collections.singletonList(moment));
+            momentNavDto.setPrev(moment);
+        }
+
+        return momentNavDto;
+    }
+
+
+    /**
+     * 归档动态分页大小
+     * @param queryParam queryParam
+     * @return PageResult<T>
+     */
+    @Transactional(readOnly = true)
     public PageResult<MomentArchive> selectMomentArchivePage(MomentPageQueryParam queryParam) {
-        int count = momentMapper.countMomentArchive();
+        Boolean authorized = BlogContext.isAuthorized();
+        if(!authorized){
+            queryParam.setQueryPrivate(false);
+        }
+        int count = momentMapper.countMomentArchive(queryParam);
         if (count == 0) {
             return new PageResult<>(queryParam, 0, new ArrayList<>());
         }
@@ -217,17 +327,29 @@ public class MomentService extends AbstractBaseService<Moment> implements Commen
         if (momentArchives.isEmpty()) {
             return new PageResult<>(queryParam, 0, new ArrayList<>());
         }
-        momentArchives.forEach(e -> e.getMoments().forEach(y -> y.setContent(markdownParser.parse(y.getContent()))));
+        momentArchives.forEach(e -> processMomentContent(e.getMoments()));
         return new PageResult<>(queryParam, count, momentArchives);
     }
 
+    /**
+     * 动态点击
+     * @param id id
+     * @throws AbstractBlogException 逻辑异常
+     * 动态不存在
+     */
     @Transactional(propagation = Propagation.REQUIRED)
-    public void hit(Integer id) throws LogicException {
+    public void hit(Integer id) throws AbstractBlogException {
         if (BlogContext.isAuthorized()) {
             return;
         }
         momentMapper.selectById(id).orElseThrow(() ->
-                new LogicException("momentService.hit.notExists", "点击动态不存在"));
+                new LogicException(BlogConstants.MOMENT_NOT_EXISTS));
         momentMapper.increaseHits(id, 1);
+    }
+
+
+    @Override
+    public String getModuleName() {
+        return Moment.class.getSimpleName().toLowerCase();
     }
 }

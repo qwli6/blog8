@@ -10,6 +10,7 @@
         <result property="allowComment" column="allow_comment" />
         <result property="createAt" column="create_at" />
         <result property="modifyAt" column="modify_at" />
+        <result property="privateMoment" column="is_private" />
     </resultMap>
 
     <resultMap id="MomentResult" type="Moment">
@@ -19,7 +20,7 @@
         <result property="hits" column="hits" />
         <result property="allowComment" column="allow_comment" />
         <result property="createAt" column="create_at" />
-        <result property="modifyAt" column="modify_at" />
+        <result property="privateMoment" column="is_private" />
     </resultMap>
 
     <resultMap id="MomentArchiveResult" type="MomentArchive">
@@ -30,15 +31,21 @@
             <result property="hits" column="hits" />
             <result property="comments" column="comments" />
             <result property="createAt" column="create_at" />
-            <result property="modifyAt" column="modify_at" />
             <result property="allowComment" column="allow_comment"/>
+            <result property="privateMoment" column="is_private" />
         </collection>
     </resultMap>
 
     <insert id="insert" parameterType="Moment">
-        insert into blog_moment(content, hits, comments, create_at, modify_at, allow_comment)
-            values(#{content,jdbcType=VARCHAR}, #{hits,jdbcType=INTEGER}, #{comments,jdbcType=INTEGER},
-                   now(),now(), #{allowComment,jdbcType=BOOLEAN})
+        insert into blog_moment(content, hits, comments,
+                                create_at, modify_at,
+                                allow_comment, is_private)
+            values(#{content, jdbcType=VARCHAR},
+                   #{hits, jdbcType=INTEGER},
+                   #{comments, jdbcType=INTEGER},
+                   now(), now(),
+                   #{allowComment, jdbcType=BOOLEAN},
+                   #{privateMoment, jdbcType=BOOLEAN})
     </insert>
 
 
@@ -63,11 +70,16 @@
         </where>
 
         order by create_at desc
-        limit #{offset}, #{pageSize}
+
+        <choose>
+            <when test="ignorePaging == false">
+                limit #{offset,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+            </when>
+        </choose>
     </select>
 
     <select id="selectById" parameterType="integer" resultMap="MomentResult">
-        select content, hits, allow_comment, comments from blog_moment where id = #{id,jdbcType=INTEGER}
+        select id, content, hits, allow_comment, is_private, comments from blog_moment where id = #{id,jdbcType=INTEGER}
     </select>
 
     <update id="update" parameterType="Moment">
@@ -77,28 +89,86 @@
                     content = #{content,jdbcType=VARCHAR},
                 </if>
                 <if test="allowComment != null">
-                    allow_comment = #{allowComment,jdbcType=BOOLEAN}
+                    allow_comment = #{allowComment,jdbcType=BOOLEAN},
                 </if>
+                <if test="privateMoment != null">
+                    is_private = #{privateMoment,jdbcType=BOOLEAN},
+                </if>
+                modify_at = now(),
             </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
 
-    <select id="selectLatestMoments" resultMap="MomentArchiveResult">
+    <select id="selectLatestMoments" parameterType="MomentPageQueryParam" resultMap="MomentArchiveResult">
         select bmd.date, bm.id, bm.content, bm.create_at, bm.modify_at, bm.allow_comment, bm.hits, bm.comments
-        from (select date_format(create_at, '%Y-%m-%d') as date from blog_moment group by date order by date desc limit 1) bmd
-                          left join blog_moment bm on bmd.date = date_format(bm.create_at, '%Y-%m-%d')
+        from (
+                 select date_format(create_at, '%Y-%m-%d') as date
+                 from blog_moment
+                 <where>
+                     <if test="queryPrivate != null">
+                         is_private = #{queryPrivate, jdbcType=BOOLEAN}
+                     </if>
+                 </where>
+                 group by date order by date desc limit 1
+             ) bmd
+        left join blog_moment bm on bmd.date = date_format(bm.create_at, '%Y-%m-%d')
+        <where>
+            <if test="queryPrivate != null">
+                bm.is_private = #{queryPrivate, jdbcType=BOOLEAN}
+            </if>
+        </where>
         order by bm.create_at desc
     </select>
 
 
-    <select id="countMomentArchive" resultType="integer">
-        select count(bmd.date) from (select date_format(create_at, '%Y-%m-%d') as date from blog_moment group by date) bmd
+    <select id="countMomentArchive" parameterType="MomentPageQueryParam" resultType="integer">
+        select count(bmd.date) from
+            (select date_format(create_at, '%Y-%m-%d') as date from blog_moment
+                <where>
+                    <if test="query != null and query != ''">
+                        and content like concat('%', #{query,jdbcType=VARCHAR}, '%')
+                    </if>
+                    <if test="queryPrivate != null">
+                        and is_private = #{queryPrivate, jdbcType=BOOLEAN}
+                    </if>
+                </where>
+             group by date) bmd
     </select>
 
     <select id="selectMomentArchivePage" parameterType="MomentPageQueryParam" resultMap="MomentArchiveResult">
         select bmd.date, bm.id, bm.content, bm.create_at, bm.modify_at, bm.allow_comment, bm.hits, bm.comments
-        from (select date_format(create_at, '%Y-%m-%d') as date from blog_moment group by date order by date desc limit #{offset,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}) bmd
-        left join blog_moment bm on bmd.date = date_format(bm.create_at, '%Y-%m-%d') order by bm.create_at desc
+        from (
+
+                select date_format(create_at, '%Y-%m-%d') as date from blog_moment
+
+                <where>
+                    <if test="query != null and query != ''">
+                        and content like concat('%', #{query,jdbcType=VARCHAR}, '%')
+                    </if>
+                    <if test="queryPrivate != null">
+                        and is_private = #{queryPrivate, jdbcType=BOOLEAN}
+                    </if>
+                </where>
+
+                group by date order by date desc
+
+                <choose>
+                    <when test="ignorePaging == false">
+                        limit #{offset,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+                    </when>
+                </choose>
+            )
+        bmd
+        left join blog_moment bm on bmd.date = date_format(bm.create_at, '%Y-%m-%d')
+        <where>
+            <if test="query != null and query != ''">
+                and bm.content like concat('%', #{query,jdbcType=VARCHAR}, '%')
+            </if>
+            <if test="queryPrivate != null">
+                and bm.is_private = #{queryPrivate, jdbcType=BOOLEAN}
+            </if>
+        </where>
+        order by bm.create_at desc
     </select>
 
     <update id="increaseHits">
@@ -112,6 +182,41 @@
     <update id="increaseComments" parameterType="integer">
         update blog_moment set comments = comments + 1 where id = #{id,jdbcType=INTEGER}
     </update>
+
+    <delete id="deleteById" parameterType="integer">
+        delete from blog_moment where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <select id="selectNextMoment" parameterType="MomentNavQueryParam" resultMap="MomentResult">
+        select id, content from blog_moment
+
+        <where>
+            <if test="currentId != null">
+                and id <![CDATA[ < #{currentId, jdbcType=INTEGER} ]]>
+            </if>
+            <if test="queryPrivate != null">
+                and is_private = #{queryPrivate, jdbcType=BOOLEAN}
+            </if>
+        </where>
+
+        order by id desc
+        limit 1
+    </select>
+
+    <select id="selectPrevMoment" parameterType="MomentNavQueryParam" resultMap="MomentResult">
+        select id, content
+        from blog_moment
+        <where>
+            <if test="currentId != null">
+                and id <![CDATA[ > #{currentId, jdbcType=INTEGER} ]]>
+            </if>
+            <if test="queryPrivate != null">
+                and is_private = #{queryPrivate, jdbcType=BOOLEAN}
+            </if>
+        </where>
+        order by id
+        limit 1
+    </select>
 
 
 </mapper>

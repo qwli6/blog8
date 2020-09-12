@@ -18,6 +18,18 @@ a:focus, button:focus{
     border-radius: 2px !important;
 }
 
+form {
+    border-radius: 2px !important;
+}
+
+.form-control-sm {
+    border-radius: 2px !important;
+}
+
+/*.form-control-sm:focus {*/
+/*    box-shadow: none !important;*/
+/*}*/
+
 .title-article {
     color: #222226;
     font-weight: 600;
@@ -35,7 +47,7 @@ a:focus, button:focus{
 
 
 .card {
-    border-radius: 4px !important;
+    border-radius: 2px !important;
 }
 
 .markdown {

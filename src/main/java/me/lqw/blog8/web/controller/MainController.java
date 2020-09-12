@@ -1,10 +1,11 @@
 package me.lqw.blog8.web.controller;
 
+import me.lqw.blog8.constants.BlogConstants;
 import me.lqw.blog8.constants.BlogContext;
 import me.lqw.blog8.exception.ResourceNotFoundException;
-import me.lqw.blog8.model.Comment;
-import me.lqw.blog8.model.CommentModule;
+import me.lqw.blog8.model.*;
 import me.lqw.blog8.model.dto.CommentDTO;
+import me.lqw.blog8.model.dto.MomentNavDTO;
 import me.lqw.blog8.model.dto.common.CR;
 import me.lqw.blog8.model.dto.common.ResultDTO;
 import me.lqw.blog8.model.dto.page.PageResult;
@@ -16,6 +17,7 @@ import me.lqw.blog8.service.CommentService;
 import me.lqw.blog8.service.MomentService;
 import me.lqw.blog8.service.SimpleMailHandler;
 import me.lqw.blog8.web.controller.console.AbstractBaseController;
+import me.lqw.blog8.web.security.lock.LockProtect;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -102,7 +104,12 @@ public class MainController extends AbstractBaseController {
      */
     @GetMapping("moments")
     public String moments(MomentPageQueryParam queryParam, Model model) {
-        model.addAttribute("momentPage", momentService.selectMomentArchivePage(queryParam));
+        queryParam.setIgnorePaging(false);
+        if(!queryParam.hasPageSize()){
+            queryParam.setPageSize(BlogConstants.DEFAULT_MOMENT_PAGE_SIZE);
+        }
+        PageResult<MomentArchive> momentArchivePage = momentService.selectMomentArchivePage(queryParam);
+        model.addAttribute("momentPage", momentArchivePage);
         return "moments";
     }
 
@@ -113,9 +120,12 @@ public class MainController extends AbstractBaseController {
      * @return string
      */
     @GetMapping("moment/{id}")
+    @LockProtect
     public String moment(@PathVariable("id") int id, Model model) {
-        model.addAttribute("moment", momentService.getMomentForView(id).orElseThrow(() ->
-                new ResourceNotFoundException("momentService.get.notExists", "动态不存在")));
+        Moment moment = momentService.getMomentForView(id);
+        model.addAttribute("moment", moment);
+        MomentNavDTO momentNavDto = momentService.selectMomentNav(id);
+        model.addAttribute("momentNavDto", momentNavDto);
         return "moment";
     }
 
@@ -127,7 +137,8 @@ public class MainController extends AbstractBaseController {
      */
     @GetMapping("archives")
     public String archives(Model model, ArticleArchivePageQueryParam queryParam) {
-        model.addAttribute("articlePage", articleService.selectArchivePage(queryParam));
+        PageResult<ArticleArchive> articleArchivePageResult = articleService.selectArchivePage(queryParam);
+        model.addAttribute("articlePage", articleArchivePageResult);
         return "archives";
     }
 

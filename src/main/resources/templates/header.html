@@ -1,5 +1,5 @@
 <!-- 头部导航栏 -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom shadow-sm" th:fragment="head(type)" xmlns:th="http://www.thymeleaf.org">
+<nav class="navbar  navbar-expand-sm navbar-light bg-white border-bottom" th:fragment="head(type)" xmlns:th="http://www.thymeleaf.org">
     <div class="container">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -26,10 +26,11 @@
                     <a class="nav-link" th:href="@{/console/articles}">控制台</a>
                 </li>
             </ul>
-<!--            <form method="get" th:action="@{/}" class="form-inline my-2 my-lg-0">-->
-<!--                <input class="form-control mr-sm-2" type="search" placeholder="关键字" aria-label="Search">-->
-<!--                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">搜索</button>-->
-<!--            </form>-->
+            <form id="queryForm" method="get" th:action="@{/}" class="form-inline my-2 my-lg-0">
+                <input name="query" class="form-control form-control-sm" type="text"
+                       placeholder="关键字" aria-label="搜索">
+                <input type="hidden" name="currentPage" id="currentPage" value="1">
+            </form>
         </div>
     </div>
 </nav>
