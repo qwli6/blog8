@@ -301,7 +301,7 @@
             headers: new Headers({
                 'Content-Type': 'application/json;charset=UTF-8',
             }),
-            method: 'POST',
+            method: 'PUT',
             // mode: 'cors', // no-cors, cors, *same-origin
             // redirect: 'follow', // manual, *follow, error
             // referrer: 'no-referrer', // *client, no-referrer
@@ -330,9 +330,9 @@
         Article.urlName = document.getElementById('urlName').value;
         Article.privateArticle = document.getElementById('isPrivate').checked;
 
-        if (document.getElementById('scheduledEnable').checked) {
+        if (document.getElementById('scheduleInputEnable').checked) {
             Article.state = "SCHEDULED";
-            const scheduledInput = document.getElementById('scheduledInput').value;
+            const scheduledInput = document.getElementById('scheduleInput').value;
             if (scheduledInput == null || scheduledInput === '' || scheduledInput.trim().length === 0) {
                 Swal.fire({
                     title: '计划发布时间必填',
@@ -344,7 +344,7 @@
                 });
                 return;
             }
-            Article.postAt = document.getElementById('scheduledInput').value;
+            Article.postAt = document.getElementById('scheduleInput').value;
         } else {
             Article.status = status;
         }

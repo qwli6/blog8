@@ -680,6 +680,18 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
         }
     }
 
+    public String selectArticleForPreview(Integer id) throws LogicException {
+        Article old = articleMapper.selectById(id).orElseThrow(() ->
+                new LogicException(BlogConstants.ARTICLE_NOT_EXISTS));
+
+        if(!BlogContext.isAuthorized()){
+            throw new UnauthorizedException(BlogConstants.AUTHORIZATION_REQUIRED);
+        }
+
+        String content = old.getContent();
+        return markdownParser.parse(content);
+    }
+
     public static class ArticleScheduledCallable implements Callable<String> {
 
         private final Article article;

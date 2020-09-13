@@ -85,12 +85,19 @@ public class ArticleBackendController extends AbstractBaseController {
      * @param id      id
      * @param article article
      */
-    @GetMapping("article/{id}/update")
+    @PutMapping("article/{id}/update")
     @ResponseBody
     public void update(@PathVariable("id") Integer id, @Valid @RequestBody Article article) {
         article.setId(id);
         articleService.update(article);
     }
+
+    @GetMapping("article/{id}/preview")
+    @ResponseBody
+    public CR<?> preview(@PathVariable("id") Integer id){
+        return ResultDTO.create(articleService.selectArticleForPreview(id));
+    }
+
 
     /**
      * 获取待更新的文章

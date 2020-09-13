@@ -81,10 +81,22 @@
 
             <nav class="mt-3" th:if="${articlePage.totalPage > 1}" aria-label="Page navigation example">
                 <ul class="pagination justify-content-center">
+
+                    <li class="page-item" th:classappend="${articlePage.currentPage == 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${articlePage.currentPage - 1} + ');'" tabindex="-1">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+
                     <li class="page-item" th:classappend="${articlePage.currentPage == item ? 'disabled' : ''}"
                         th:each="item: ${#numbers.sequence(1, articlePage.totalPage)}">
                         <a class="page-link" href="javascript:void(0);"
                            th:onclick="'toPage(' + ${item} + ');'" th:text="${item}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${articlePage.currentPage == articlePage.totalPage ? 'disabled' : ''}">
+                        <a class="page-link" href="javascript:void(0);" th:onclick="'toPage(' + ${articlePage.currentPage + 1} + ');'">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
                     </li>
                 </ul>
             </nav>
@@ -114,6 +126,18 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div id="previewContent" class="modal-body markdown-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 <script type="text/javascript" src="/static/blog/libs/jquery/jquery-3.5.1.js" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
@@ -138,8 +162,31 @@
         elem.addEventListener('click', function(){
             let id = this.dataset.previewid;
 
+            let articleid = this.dataset.previewid;
+            //清空预览内容
+            document.getElementById('previewContent').innerHTML = '';
+            $("#previewModal").modal('show');
+            fetch(rootPath + 'console/article/' + articleid + '/preview', {
+                method: 'GET',
+                headers: new Headers({
+                    'Content-Type': 'application/json; charset=UTF-8'
+                })
+            }).then(res => res.json())
+                .catch(error => {
+                    $('#previewModal').modal('hide');
+                    document.getElementById('previewContent').innerHTML = '';
+                }).then(response => {
+                if(response.code === 200) {
+                    document.getElementById('previewContent').innerHTML = response.data;
+                } else {
+                    $('#previewModal').modal('hide');
+                    document.getElementById('previewContent').innerHTML = '';
+                }
+            });
         });
     }
+
+
     function toPage(i){
         document.getElementById('currentPage').value = i;
         document.getElementById('queryForm').submit();

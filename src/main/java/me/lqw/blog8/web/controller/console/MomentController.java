@@ -71,6 +71,14 @@ public class MomentController extends AbstractBaseController {
         return "console/moment/edit";
     }
 
+
+    @GetMapping("moment/{id}/preview")
+    @ResponseBody
+    public CR<?> preview(@PathVariable("id") Integer id){
+        Moment moment = momentService.getMomentForView(id);
+        return ResultDTO.create(moment.getContent());
+    }
+
     /**
      * 创建动态
      *

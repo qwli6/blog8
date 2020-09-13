@@ -36,6 +36,13 @@
         </collection>
     </resultMap>
 
+    <sql id="fullColumn">
+        select
+            id, content, create_at, modify_at,
+            allow_comment, hits, comments, is_private
+        from blog_moment
+    </sql>
+
     <insert id="insert" parameterType="Moment">
         insert into blog_moment(content, hits, comments,
                                 create_at, modify_at,
@@ -59,10 +66,7 @@
     </select>
 
     <select id="selectPage" resultMap="MomentPageResult" parameterType="MomentPageQueryParam">
-        select
-        id, content, create_at, modify_at,
-        allow_comment, hits, comments
-        from blog_moment
+        <include refid="fullColumn" />
         <where>
             <if test="query != null and query != ''">
                 content like concat('%', #{query}, '%')
@@ -79,7 +83,9 @@
     </select>
 
     <select id="selectById" parameterType="integer" resultMap="MomentResult">
-        select id, content, hits, allow_comment, is_private, comments from blog_moment where id = #{id,jdbcType=INTEGER}
+        <include refid="fullColumn" />
+
+        where id = #{id,jdbcType=INTEGER}
     </select>
 
     <update id="update" parameterType="Moment">
