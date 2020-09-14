@@ -4,65 +4,45 @@
     <meta charset="UTF-8">
     <title th:text="文件管理">文件管理</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/static/blog/libs/bootstrap/css/bootstrap.min.css" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
 </head>
 
-<body>
+<body class="bg-light">
     <div th:replace="/console/common/head-navbar::headnav('file')"></div>
     <div class="container">
 
         <div class="row my-4">
-            <div class="col-9">
-                <input type="file" name="file" multiple>
-                <button type="button" class="btn btn-primary" id="btn-upload-file">上传</button>
-                <button type="button" class="btn btn-primary" id="btn-show-create-modal">创建文件</button>
+            <div class="col-12">
+                <button type="button" class="btn btn-sm btn-primary" id="btn-open-upload-modal">上传</button>
+                <button type="button" class="btn btn-sm btn-primary" id="btn-show-create-modal">创建文件</button>
 
-                <ul class="list-unstyled bg-white rounded shadow-sm mt-4">
-                    <li class="media" style="padding: 15px; border-bottom: 1px solid #eeeeee;">
-                        <img src="/static/blog/images/logoH.png" style="margin-right: 10px" class="rounded align-self-center img-thumbnail" alt="...">
-                        <div class="media-body">
-                            <h5 class="mt-0">封面.png</h5>
-                            <div>
-                                <span class="badge badge-light">1.5MB</span>
-                                <span class="badge badge-light">文件</span>
-                                <span class="badge badge-light">2020-09-04 15:11:44</span>
-                                <span class="badge badge-success">可编辑</span>
-                            </div>
-                            <div class="text-muted">
-                                存储路径: <span>/封面.png</span>
-                                <div class="float-right">
-                                    <a href="">查看</a>
-                                    <a href="">编辑</a>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="media" style="padding: 15px; border-bottom: 1px solid #eeeeee;">
-                        <img src="/static/blog/images/logoH.png" style="margin-right: 10px" class="rounded align-self-center img-thumbnail" alt="...">
-                        <div class="media-body">
-                            <div>封面.png</div>
-                            <div class="text-muted" style="font-size: 12px;">
-                                <span>selfassu</span>
-                                <span style="padding-left: 4px; padding-right: 4px;">•</span>
-                                <span>2020-09-02 15:24:12</span>
-                            </div>
-                            <div class="float-right">
-                                <a href="">查看</a>
-                                <a href="">编辑</a>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
+                <nav aria-label="breadcrumb" class="mt-3">
+                    <ol class="breadcrumb" id="fileDirPath">
+                        <li class="breadcrumb-item"><a href="#">根目录</a></li>
+                        <li class="breadcrumb-item"><a href="#">java</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">document</li>
+                    </ol>
+                </nav>
+                <div id="file-container" class="mt-3" style="border-radius: 4px; !important;"></div>
             </div>
-            <div class="col-3">
-                <div class="card border-0 bg-white shadow-sm">
-                    <div class="card-header bg-white" style="font-weight: 600; color: #222222;">
-                        文件资源统计
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item border-0">文件总数<strong class="ml-2">723</strong></li>
-                        <li class="list-group-item border-0">占用总磁盘空间<strong class="ml-2">182,723</strong></li>
-                    </ul>
+        </div>
+    </div>
+
+
+    <!-- 上传 modal -->
+    <div class="modal" id="uploadFileModal" tabindex="-1" role="dialog" aria-labelledby="createFileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadFileModalLabel">上传文件/文件夹</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="file" id="fileInput" name="file" class="form-control form-control-sm" multiple>
+                    <button type="button" id="choose-file-btn" class="btn btn-sm btn-danger">选择文件</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btn-upload-file" class="btn btn-sm btn-primary">上传</button>
                 </div>
             </div>
         </div>
@@ -70,24 +50,21 @@
 
 
     <!-- 创建目录 -->
-    <div class="modal fade" id="createFileModal" tabindex="-1" role="dialog" aria-labelledby="createFileModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+    <div class="modal" id="createFileModal" tabindex="-1" role="dialog" aria-labelledby="createFileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="createFileModalLabel">创建文件/文件夹</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
                 </div>
                 <div class="modal-body">
                     <form>
                         <div class="form-group">
                             <label for="fileName" class="col-form-label">名称</label>
-                            <input type="text" class="form-control" id="fileName">
+                            <input type="text" class="form-control form-control-sm" id="fileName">
                         </div>
                         <div class="form-group">
                             <label for="fileType" class="col-form-label">类型</label>
-                            <select id="fileType" class="form-control">
+                            <select id="fileType" class="form-control form-control-sm">
                                 <option value="1">文件</option>
                                 <option value="0">文件夹</option>
                             </select>
@@ -95,69 +72,165 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                    <button type="button" id="btn-create-file" class="btn btn-primary">创建</button>
+                    <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btn-create-file" class="btn btn-sm btn-primary">创建</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
-    <script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
-    <script type="text/javascript" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>
-    <script type="text/javascript" th:src="@{/static/blog/js/Toast.js}"></script>
-<!--    <script type="text/javascript" th:src="@{/static/blog/js/file.js}"></script>-->
 
+    <!-- 创建目录 -->
+    <div class="modal" id="previewFileModal" tabindex="-1" role="dialog" aria-labelledby="createFileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+
+                    <img src="" alt="" class="img-fluid" id="previewImage">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script type="text/javascript" src="/static/blog/libs/jquery/jquery-3.5.1.js" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
+    <script type="text/javascript" src="/static/blog/libs/bootstrap/js/bootstrap.bundle.min.js" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script type="text/javascript" src="/static/blog/libs/sweetalert/sweetalert2-2.9.js" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>
+    <script type="text/javascript" src="/static/blog/js/Toast.js" th:src="@{/static/blog/js/Toast.js}"></script>
     <script>
 
         const rootPath = '[[@{/}]]';
         const config = {
             container: 'file-container',
-            url: rootPath + 'console/file/search',
+            url: rootPath + 'console/files/search',
         };
         //
         window.onload = function() {
-            fetch(config.url, {
-                method: 'GET'
-            }).then(response => response.json())
-                .then(response => {
-                    console.log('Success:', JSON.stringify(response));
 
-                    let fileContainer = document.getElementById(config.container);
+            loadFiles();
 
-                    let html = "";
+        }
 
-                    if (response.code === 200) {
 
-                        const fileDataArray = response.data.data;
 
-                        for (let i = 0; i < fileDataArray.length; i++) {
-                            const fileData = fileDataArray[i];
+        function loadFiles() {
+            fetch(rootPath + 'console/files/search?targetPath=/log/performance', {
+                method: 'GET',
+                headers: new Headers({
+                    'Content-Type': 'application/json;charset=utf-8',
+                })
+            }).then(res => res.json())
+            .catch(error => {
+               alert("获取文件数据异常");
+            }).then(response => {
 
-                            html +=
-                                '<tr>' +
-                                '<td>' + fileData.fileName + '</td>' +
-                                '<td>' + fileData.ext + '</td>' +
-                                '<td>' + fileData.size + '</td>' +
-                                '<td>' + fileData.canEdit + '</td>' +
-                                '<td>' + fileData.directory + '</td>' +
-                                '<td><a href="javascript:void(0);" data-edit="'+fileData.fileName+'">编辑</a></td>' +
-                                '</tr>';
+                let html = "";
+                html += "<div class='table-responsive'>";
+                html += "  <table class='table table-bordered rounded'>";
+                html += "       <thead>";
+                html += "           <tr>";
+                html += "               <th style='max-width: 40%'>文件名称(点击可预览)</th>";
+                html += "                <th>时间</th>";
+                html += "                <th>大小</th>";
+                html += "                <th>后缀</th>";
+                html += "               <th>编辑权限</th>";
+                html += "               <th>操作</th>";
+                html += "            </tr>";
+                html += "        </thead>";
+                // html += "    </table>";
+                // html += "</div>";
+
+                if(response.code === 200){
+                    let fileDataArray = response.data.data;
+                    html += "<tbody>";
+                    for(let i = 0; i < fileDataArray.length; i++){
+
+                        let fileData = fileDataArray[i];
+
+                        html += "    <tr>";
+
+                        if(fileData.directory){
+                            html +=         "<td><a  class='text-truncate' href='javascript:void(0);'>" + fileData.fileName+
+                                "<span style='margin-left: 10px;' class='badge badge-pill badge-success'>目录</span></a></td>";
+                        } else {
+                            html +=         "<td><a data-preview='"+fileData.fileName+"' class='text-truncate' href='javascript:void(0);'>" + fileData.fileName+ "</a></td>";
                         }
-                        fileContainer.innerHTML = html;
+
+                        html +=         "<td>无</td>";
+                        html +=         "<td>"+fileData.size+"</td>";
+                        if(fileData.ext === null){
+                            html += "<td></td>";
+                        } else {
+                            html += "<td><span class='badge badge-pill badge-info'>" + fileData.ext + "</span></td>";
+                        }
+
+                        if(fileData.canEdit){
+                            html +=         "<td>✔️️</td>";
+                        } else {
+                            html += "<td>❎</td>"
+                        }
+
+                        if(fileData.canEdit){
+                            html +=         "<td class='small'><a href='javascript:void(0);'>编辑</a><a style='margin-left: 4px;' class='text-danger' href='javascript:void(0);'>删除</a></td>";
+                        } else {
+                            html +=         "<td class='small'><a class='text-danger' href='javascript:void(0);'>删除</a> </td>";
+                        }
+
+                        html += "    </tr>";
                     }
-                }).catch(error => {
-                alert('获取数据错误');
+
+                    html += "</tbody>";
+                    html += "</table>";
+                    html += "</div>";
+
+                    document.getElementById('file-container').innerHTML = html;
+
+                    for(elem of document.querySelectorAll('[data-preview]')){
+                        elem.addEventListener('click', function() {
+                            $("#previewFileModal").modal('show');
+
+                            let fileName = this.dataset.preview;
+                            document.getElementById('previewImage').src = rootPath + fileName;
+
+                        });
+                    }
+
+                    let dirPathHtml = "<li class='breadcrumb-item'><a href='#'>根目录</a></li>";
+                    if(response.data.path.length > 0){
+                        for(let j = 0; j < response.data.path.length; j++){
+                            dirPathHtml += "<li class='breadcrumb-item'><a href='#'>"+response.data.path[j]+"</a></li>";
+                        }
+                    }
+                    document.getElementById('fileDirPath').innerHTML = dirPathHtml;
+
+
+                } else {
+
+                    alert("获取文件数据错误");
+
+                }
             });
         }
 
 
 
 
+
+
         document.getElementById('btn-show-create-modal').addEventListener('click', function(){
             $('#createFileModal').modal('show');
-        })
-
+        });
+        document.getElementById('btn-open-upload-modal').addEventListener('click', function(){
+            $('#uploadFileModal').modal('show');
+        });
+        document.getElementById('choose-file-btn').addEventListener('click', function(){
+            document.getElementById('fileInput').click();
+        });
 
         document.getElementById('btn-create-file').addEventListener('click', function(){
 
@@ -176,35 +249,16 @@
             }).then(res => res.json()).catch(error => {
                 $("#btn-show-create-modal").modal('hide');
                 console.log(error);
-                toast('发布失败');
+                toast('文件创建失败');
             }).then(response => {
                 console.log(JSON.stringify(response));
                 $("#btn-show-create-modal").modal('hide');
-                toast("发布成功");
+                toast("文件创建成功");
                 setTimeout(function(){
                     window.location.href= rootPath + 'console/files';
                 }, 800);
             });
-        })
-
-        // document.getElementById('btn-upload').addEventListener('click', function(){
-        //     fire_ajax_submit();
-        // })
-
-        // $(document).ready(function(){
-        //     $("#btnSubmit").click(function (event) {
-        //
-        //         //stop submit the form, we will post it manually.
-        //         event.preventDefault();
-        //
-        //         fire_ajax_submit();
-        //     });
-        //
-        //     $.get('/console/file/getQueryCriteriaNew', {}, function(data){
-        //         console.log(data);
-        //     });
-        // });
-
+        });
 
         /**
          * 图片上传
@@ -216,12 +270,22 @@
             let files = document.querySelector("input[type='file'][multiple]");
 
             fileUploadFormData.append("extraField", "图片上传测试");
-            fileUploadFormData.append("targetPath", "/Downloads")
+            fileUploadFormData.append("targetPath", document.getElementById('targetPath').value)
+
+
+            if(files.files.length === 0){
+
+                alert("请选择文件");
+
+                return;
+            }
+
 
             // formData 只接受文件、Blob 或字符串，不能直接传递数组，所以必须循环嵌入
             for(let i = 0; i < files.files.length; i++){
                 fileUploadFormData.append("files", files.files[i]);
             }
+
             fetch(rootPath + 'console/file/upload', {
                 method: 'POST',
                 body: fileUploadFormData
@@ -232,7 +296,6 @@
             }).catch(error => {
                 console.error("图片上传失败" + error);
             });
-
         });
     </script>
 </body>

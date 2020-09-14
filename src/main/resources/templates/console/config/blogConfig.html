@@ -1,10 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="/static/blog/libs/bootstrap/css/bootstrap.min.css" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
+
 </head>
-<body>
-    <h1 th:text="${key}">blogConfig</h1>
+<body class="bg-light">
+    <div th:replace="/console/common/head-navbar::headnav('file')"></div>
+
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-2 list-group">
+                <a th:href="@{/console/profile}" class="list-group-item list-group-item-action active">
+                    个人资料
+                </a>
+                <a th:href="@{/console/profile/account}" class="list-group-item list-group-item-action">账号安全</a>
+                <a th:href="@{/console/profile/notification}" class="list-group-item list-group-item-action">通知隐私</a>
+            </div>
+            <div class="col-10">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="font-weight-bold mb-2">个人资料</div>
+                        <div>
+                            <img src="/static/blog/images/logoH.png" class="rounded">
+                            <button type="button" class="btn btn-sm align-bottom btn-danger">更换头像</button>
+                        </div>
+                        <hr>
+                        <div class="font-weight-bold mb-2 mt-3">基本信息</div>
+                        <div class="form-group">
+                            <label for="username">登录名</label>
+                            <input type="text" th:value="${user.username}" readonly class="form-control-sm form-control" id="username" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="nickname">昵称</label>
+                            <input type="text" th:value="${user.name}" class="form-control-sm form-control" id="nickname" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">邮箱</label>
+                            <input type="text" th:value="${user.email}" class="form-control-sm form-control" id="email" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="inputPassword">个人简介</label>
+                            <textarea type="text" class="form-control form-control-sm" rows="3"
+                                      id="inputPassword" placeholder="请输入个人简介"></textarea>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-danger">保存修改</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/static/blog/libs/jquery/jquery-3.5.1.js" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
+    <script type="text/javascript" src="/static/blog/libs/bootstrap/js/bootstrap.bundle.min.js" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

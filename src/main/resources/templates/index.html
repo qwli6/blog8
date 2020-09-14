@@ -6,19 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="/static/blog/css/front.css" th:href="@{/static/blog/css/front.css}">
     <link rel="stylesheet" href="/static/blog/libs/bootstrap/css/bootstrap.min.css" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
-    <style>
-
-        .page-link {
-            border: none !important;
-            font-weight: 500;
-            color: #424242;
-        }
-
-        .page-link:hover {
-            background-color: transparent;
-        }
-
-    </style>
 </head>
 <body class="bg-light">
     <div th:replace="header::head('index')"></div>
@@ -29,34 +16,33 @@
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-8">
                     <div class="card mb-4" th:if="${!#lists.isEmpty(articlePage.data)}" th:each="article : ${articlePage.data}">
-                        <div class="row">
-                            <div class="col-4" th:if="${!#strings.isEmpty(article.featureImage)}">
-                                <img th:src="${article.featureImage}" class="w-100 h-100 object-cover" alt="Card side image">
+                        <div class="row no-gutters">
+                            <div th:classappend="${!#strings.isEmpty(article.featureImage) ? 'col-md-4': ''}" th:if="${!#strings.isEmpty(article.featureImage)}">
+                                <img th:src="${article.featureImage}" class="card-img img-fluid" alt="Card side image">
                             </div>
-                            <div class="col">
+                            <div th:classappend="${!#strings.isEmpty(article.featureImage) ? 'col-md-8': 'col-md-12'}">
                                 <div class="card-body">
                                     <!-- 标题 -->
                                     <div class="title-article title-article-index text-truncate">
-<!--                                        <a th:if="${!#strings.isEmpty(article.urlName)}" th:href="@{/article/${article.urlName}}" th:text="${article.title}"></a>-->
-<!--                                        <a th:if="${#strings.isEmpty(article.urlName)}" th:href="@{/article/${article.id}}" th:text="${article.title}"></a>-->
                                         <a th:href="@{'/article/' + ${article.accessApi}}" th:text="${article.title}"></a>
                                     </div>
                                     <!-- 摘要 -->
                                     <div th:if="${!#strings.isEmpty(article.digest)}" th:utext="${article.digest}"></div>
 
                                     <!--分类 -->
-                                    <div>
-                                        <a th:href="@{/(category=${article.category.name})}" class="badge badge-light"
+                                    <div style="margin-top: 4px;">
+                                        <a th:href="@{/(category=${article.category.name})}" class="badge badge-info"
                                            th:text="${article.category.name}"></a>
                                     </div>
                                     <!-- 标签 -->
-                                    <div>
-                                        <a th:if="${!#sets.isEmpty(article.tags)}" th:href="@{/(tag=${tag.tagName})}" th:each="tag : ${article.tags}">
-                                            <span class="badge badge-dark" th:text="${#strings.concat('# ', tag.tagName)}"></span>
+                                    <div style="margin-top: 4px;">
+                                        <a th:if="${!#sets.isEmpty(article.tags)}" th:href="@{/(tag=${tag.tagName})}"
+                                           th:each="tag : ${article.tags}">
+                                            <span class="badge badge-pill badge-warning" th:text="${#strings.concat('# ', tag.tagName)}"></span>
                                         </a>
                                     </div>
                                     <!-- 阅读量 + 评论量 -->
-                                    <div class="d-flex align-items-center mt-auto">
+                                    <div class="text-muted small" style="margin-top: 16px;">
                                         <span th:text="${#temporals.format(article.createAt, 'yyyy-MM-dd HH:mm:ss')}">2020-07-04 09:21:23</span>
                                         <span style="margin-left: 10px">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-md" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><circle cx="12" cy="12" r="2"></circle><path d="M2 12l1.5 2a11 11 0 0 0 17 0l1.5 -2"></path><path d="M2 12l1.5 -2a11 11 0 0 1 17 0l1.5 2"></path></svg>
@@ -89,13 +75,15 @@
                             </p>
                         </div>
                     </div>
-                    <ul class="pagination justify-content-center" th:if="${articlePage.totalPage > 1}">
-                        <li class="page-item" th:classappend="${articlePage.currentPage == item ? 'disabled' : ''}"
-                            th:each="item: ${#numbers.sequence(1, articlePage.totalPage)}">
-                            <a class="page-link" href="javascript:void(0);"
-                               th:onclick="'toPage(' + ${item} + ');'" th:text="${item}">1</a>
-                        </li>
-                    </ul>
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center" th:if="${articlePage.totalPage > 1}">
+                            <li class="page-item" th:classappend="${articlePage.currentPage == item ? 'disabled' : ''}"
+                                th:each="item: ${#numbers.sequence(1, articlePage.totalPage)}">
+                                <a class="page-link" href="javascript:void(0);"
+                                   th:onclick="'toPage(' + ${item} + ');'" th:text="${item}">1</a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
                 <div class="col-md-4 d-none d-block">
                     <h4 th:text="${#temporals.format(latestMomentPage.date, 'yyyy-MM-dd')}"></h4>
@@ -118,8 +106,7 @@
                         </div>
                     </div>
                     <div class="mt-3 text-muted">
-                        <div>京 ICP 备 13052560 号 - 1</div>
-                        <div>京公网安备 11010802010035 号</div>
+                        <div class="small">鄂 ICP 备 19023602 号 - 2</div>
                     </div>
                 </div>
 

@@ -2,6 +2,7 @@ package me.lqw.blog8.web.configuration;
 
 import me.lqw.blog8.exception.BlogMessageCodeResolver;
 import me.lqw.blog8.exception.resolver.BlogHandlerExceptionResolver;
+import me.lqw.blog8.file.FileProperties;
 import me.lqw.blog8.plugins.template.TemplateService;
 import me.lqw.blog8.plugins.thymeleaf.ExtendSpringResourceTemplateResolver;
 import me.lqw.blog8.service.BlackIpService;
@@ -50,6 +51,8 @@ public class WebAutoConfigurationSupport extends WebMvcConfigurationSupport {
     private final TemplateService templateService;
 
 
+    private final FileProperties fileProperties;
+
     /**
      * 记住我 service
      */
@@ -68,10 +71,13 @@ public class WebAutoConfigurationSupport extends WebMvcConfigurationSupport {
      */
     public WebAutoConfigurationSupport(RememberMeService rememberMeService,
                                        TemplateService templateService,
+                                       FileProperties fileProperties,
                                        BlogHandlerExceptionResolver exceptionResolver) {
         this.handlerExceptionResolver = exceptionResolver;
         this.rememberMeService = rememberMeService;
         this.templateService = templateService;
+        this.fileProperties = fileProperties;
+
     }
 
     @Override
@@ -148,8 +154,7 @@ public class WebAutoConfigurationSupport extends WebMvcConfigurationSupport {
     protected void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
         super.addResourceHandlers(registry);
         registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
-
-//        registry.
+        registry.addResourceHandler("/**").addResourceLocations("file:" + fileProperties.getUploadPath());
     }
 
 

@@ -6,10 +6,13 @@ import me.lqw.blog8.exception.ResourceNotFoundException;
 import me.lqw.blog8.file.exception.FileAlreadyExistsException;
 import me.lqw.blog8.file.exception.FileException;
 import me.lqw.blog8.file.exception.FileNotExistsException;
+import me.lqw.blog8.plugins.md.MarkdownParser;
 import me.lqw.blog8.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,11 +84,16 @@ public class FileService {
     private final FileProperties fileProperties;
 
     /**
+     * Markdown 解析
+     */
+    private final MarkdownParser markdownParser;
+
+    /**
      * 构造方法注入
      * @param fileProperties fileProperties
      * @throws IOException IOException
      */
-    public FileService(FileProperties fileProperties) throws IOException {
+    public FileService(FileProperties fileProperties, ObjectProvider<MarkdownParser> objectProvider) throws IOException {
         this.fileProperties = fileProperties;
         String uploadPath = fileProperties.getUploadPath();
         String fileRootPath = fileProperties.getFileRootPath();
@@ -99,6 +107,7 @@ public class FileService {
             Files.createDirectories(rootPath);
             logger.info("上传文件夹创建成功");
         }
+        this.markdownParser = objectProvider.stream().min(Comparator.comparingInt(Ordered::getOrder)).get();
     }
 
 
@@ -292,6 +301,7 @@ public class FileService {
      * @param path path
      * @return FileInfoDetail
      */
+    @Transactional(readOnly = true)
     public FileInfoDetail getFileInfoDetail(String path) {
         lock.readLock().lock();
         try {
@@ -300,7 +310,6 @@ public class FileService {
         } finally {
             lock.readLock().unlock();
         }
-
     }
 
     /**
@@ -316,7 +325,11 @@ public class FileService {
 
         if (fid.getCanEdit() && Files.isReadable(path)) {
             try {
-                fid.setContent(String.join("", Files.readAllLines(path, Charset.defaultCharset())));
+                String content = String.join("\n", Files.readAllLines(path, Charset.defaultCharset()));
+                if(StringUtil.isNotBlank(content)){
+                    content = markdownParser.parse(content);
+                }
+                fid.setContent(content);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -757,10 +770,10 @@ public class FileService {
         }
 
         LinkedList<String> paths = new LinkedList<>();
-        while (!target.getParent().equals(root)){
+        do {
             paths.addFirst(target.getFileName().toString());
             target = target.getParent();
-        }
+        } while (!target.equals(root));
         return paths;
     }
 

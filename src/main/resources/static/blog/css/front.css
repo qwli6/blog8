@@ -7,14 +7,6 @@ body{
     font-size: 16px !important;
 }
 
-button {
-    outline: none !important;
-}
-a:focus, button:focus{
-    outline: none !important;
-}
-
-
 .card {
     border-radius: 2px !important;
 }

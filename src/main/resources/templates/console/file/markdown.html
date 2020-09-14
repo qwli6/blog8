@@ -2,23 +2,32 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title th:text="${title}">Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <link rel="stylesheet" href="/static/blog/libs/bootstrap/css/bootstrap.min.css" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/static/blog/libs/prism/prism.css" th:href="@{/static/blog/libs/prism/prism.css}">
+    <link rel="stylesheet" href="/static/blog/libs/markdown/github-markdown.css" th:href="@{/static/blog/libs/markdown/github-markdown.css}">
+    <style>
+        .markdown-body a {
+            text-decoration: none !important;
+            color: #222222;
+        }
 
-    <link rel="stylesheet" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
-    <link rel="stylesheet" th:href="@{/static/blog/libs/markdown/github-markdown.css}">
+        .markdown-body a:hover {
+            text-decoration: none !important;
+            color: #222222;
+        }
+    </style>
 </head>
 <body>
     <div class="container-fluid">
-        <div class="row">
-
-        </div>
-        <div class="row">
-            <div class="col-12" th:utext="${content}"></div>
+        <div class="row" style="padding-bottom: 64px;">
+            <div class="col-12 markdown-body" th:utext="${content}"></div>
         </div>
     </div>
 
-    <script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
-    <script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script type="text/javascript" src="/static/blog/libs/jquery/jquery-3.5.1.js" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
+    <script type="text/javascript" src="/static/blog/libs/bootstrap/js/bootstrap.bundle.min.js" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script type="text/javascript" src="/static/blog/libs/prism/prism.js" th:src="@{/static/blog/libs/prism/prism.js}"></script>
 </body>
 </html>

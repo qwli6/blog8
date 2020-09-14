@@ -1,5 +1,7 @@
 package me.lqw.blog8.web.controller.console;
 
+import me.lqw.blog8.constants.BlogConstants;
+import me.lqw.blog8.model.User;
 import me.lqw.blog8.model.config.BlogConfigModel;
 import me.lqw.blog8.model.config.EmailConfigModel;
 import me.lqw.blog8.service.BlogConfigService;
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
 /**
@@ -18,7 +21,7 @@ import java.util.HashMap;
  */
 @RequestMapping("console")
 @Controller
-public class BlogConfigController extends AbstractBaseController {
+public class ConfigBackendController extends AbstractBaseController {
 
     /**
      * 博客系统配置业务实现类
@@ -30,7 +33,7 @@ public class BlogConfigController extends AbstractBaseController {
      *
      * @param blogConfigService blogConfigService
      */
-    public BlogConfigController(BlogConfigService blogConfigService) {
+    public ConfigBackendController(BlogConfigService blogConfigService) {
         this.blogConfigService = blogConfigService;
     }
 
@@ -82,13 +85,17 @@ public class BlogConfigController extends AbstractBaseController {
         blogConfigService.updateConfig(configModel);
     }
 
-
-    @GetMapping("config")
-    public String selectConfig(@RequestParam("key") String key, Model model) {
+    /**
+     * 个人资料
+     * @param model model
+     * @return String
+     */
+    @GetMapping("profile")
+    public String selectConfig(HttpServletRequest request, Model model) {
 //        blogConfigService.
-
+        User user = (User) request.getSession().getAttribute(BlogConstants.AUTH_USER);
 //        return new HashMap<>();
-        model.addAttribute("key", key);
+        model.addAttribute("user", user);
 
         return "console/config/blogConfig";
     }
