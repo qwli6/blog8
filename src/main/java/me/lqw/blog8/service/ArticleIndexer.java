@@ -93,9 +93,9 @@ public class ArticleIndexer {
     /**
      * 索引存放位置
      */
-//    private final Path indexPath = Paths.get(System.getProperty("user.home")).resolve("blog/index");
+    private final Path indexPath = Paths.get(System.getProperty("user.home")).resolve("blog/index");
 
-    private final Path indexPath = Paths.get("/Users/liqiwen/Code/lucene");
+//    private final Path indexPath = Paths.get("/Users/liqiwen/Code/lucene");
 
     /**
      * 索引写入
@@ -287,7 +287,9 @@ public class ArticleIndexer {
         Set<Tag> tags = article.getTags();
         if(!CollectionUtils.isEmpty(tags)){
             for(Tag tag: tags){
-                document.add(new StringField(TAG, tag.getTagName(), Field.Store.NO));
+                if(StringUtil.isNotBlank(tag.getTagName())) {
+                    document.add(new StringField(TAG, tag.getTagName(), Field.Store.NO));
+                }
             }
         }
 

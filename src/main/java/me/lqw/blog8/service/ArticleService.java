@@ -668,9 +668,12 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        logger.info("articleService initial finished，starting rebuild index....");
-        if(articleIndexer != null && blogProperties != null && blogProperties.isRebuildIndexWhenStartup()){
 
+        logger.info("articleService initial finished.");
+
+        if(articleIndexer != null && blogProperties != null && blogProperties.isRebuildIndexWhenStartup()){
+            logger.info("articleService initial finished. rebuild index flag is :[{}]", blogProperties.isRebuildIndexWhenStartup());
+            logger.info("articleService initial finished. starting rebuild index....");
             HandledArticlePageQueryParam handledArticlePageQueryParam = new HandledArticlePageQueryParam();
             handledArticlePageQueryParam.setIgnorePaging(true);
 
