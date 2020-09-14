@@ -640,8 +640,10 @@ public class ArticleService extends AbstractBaseService<Article> implements Comm
                 -> new LogicException("category.notExists", "分类不存在"));
 
         //针对旧的内容状态来设置发布时间
-
-
+        String urlName = article.getUrlName();
+        if(StringUtil.isBlank(urlName)){
+            article.setUrlName("");
+        }
 
 
         article.setModifyAt(LocalDateTime.now());

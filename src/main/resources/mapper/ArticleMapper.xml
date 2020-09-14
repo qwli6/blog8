@@ -230,13 +230,38 @@
             <if test="title != null and title != ''">
                 title = #{title,jdbcType=VARCHAR},
             </if>
+
             <if test="digest != null and digest != ''">
                 digest = #{digest,jdbcType=VARCHAR},
             </if>
+
             <if test="content != null and content != ''">
                 content = #{content,jdbcType=VARCHAR},
             </if>
-                    </set>
+
+            <if test="privateArticle != null">
+                is_private = #{privateArticle,jdbcType=BOOLEAN},
+            </if>
+
+            <if test="allowComment != null">
+                allow_comment = #{allowComment,jdbcType=BOOLEAN},
+            </if>
+
+            <if test="category != null and category.id != null">
+                fk_category_id = #{category.id,jdbcType=INTEGER},
+            </if>
+
+            <if test="status != null">
+                status = #{status, typeHandler=EnumOrdinalTypeHandler},
+            </if>
+
+            <if test="urlName != null">
+                url_name = #{urlName,jdbcType=VARCHAR},
+            </if>
+
+            modify_at = now(),
+
+        </set>
 
         where id = #{id,jdbcType=INTEGER}
     </update>

@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="/static/blog/css/base.css" th:href="@{/static/blog/css/base.css}">
     <link rel="stylesheet" href="/static/blog/css/console.css" th:href="@{/static/blog/css/console.css}">
     <link rel="stylesheet" href="/static/blog/libs/bootstrap/css/bootstrap.min.css" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/static/blog/libs/markdown/github-markdown.css">
+    <link rel="stylesheet" href="/static/blog/libs/prism/prism.css">
 </head>
 <body class="bg-light">
 <div th:replace="/console/common/head-navbar::headnav('article')"></div>
@@ -128,7 +130,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div id="previewContent" class="modal-body markdown-body"></div>
             <div class="modal-footer">
@@ -154,14 +156,39 @@
     for(elem of document.querySelectorAll('[data-trash]')){
         elem.addEventListener('click', function(){
             let id = this.dataset.trash;
-            alert(id);
+            Swal.fire({
+                title: '确定要删除文章吗?',
+                text: '删除后将无法撤销, 关联的数据也会一并删除，例如评论等',
+                icon: 'warning',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '确定',
+                showCancelButton: true,
+                cancelButtonText: '取消'
+            }).then(function (result) {
+                if (result.value) {
+                    fetch(rootPath + 'console/article/' + id + '/delete', {
+                        headers: new Headers({
+                            'Content-Type': 'application/json;charset=UTF-8',
+                        }),
+                        method: 'DELETE',
+                    }).then(res => res.json()).catch(error => {
+                        alert('动态删除失败');
+                    }).then(response => {
+                        if(response.code === 200){
+                            toast('文章删除成功');
+                            setTimeout(function(){
+                                window.location.href = rootPath + 'console/articles';
+                            }, 800)
+                        }
+                    });
+                }
+            });
         })
     }
 
     for(elem of document.querySelectorAll('[data-previewid]')) {
         elem.addEventListener('click', function(){
-            let id = this.dataset.previewid;
-
             let articleid = this.dataset.previewid;
             //清空预览内容
             document.getElementById('previewContent').innerHTML = '';

@@ -45,7 +45,7 @@ public class Article implements Serializable {
     /**
      * 文章别名
      */
-    @Length(max = 16, message = "文章别名长度不能必须在 {min}~{max} 之间")
+    @Length(max = 64, message = "文章别名长度不能必须在 {min}~{max} 之间")
     @UrlName(message = "别名格式错误, 不能包含空格, 斜杠等字符")
     private String urlName;
 

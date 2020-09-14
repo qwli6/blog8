@@ -92,11 +92,30 @@ public class ArticleBackendController extends AbstractBaseController {
         articleService.update(article);
     }
 
+    /**
+     * 预览文章
+     * @param id id
+     * @return CR<?>
+     */
     @GetMapping("article/{id}/preview")
     @ResponseBody
     public CR<?> preview(@PathVariable("id") Integer id){
         return ResultDTO.create(articleService.selectArticleForPreview(id));
     }
+
+
+    /**
+     * 删除文章
+     * @param id id
+     * @return CR<?>
+     */
+    @DeleteMapping("article/{id}/delete")
+    @ResponseBody
+    public CR<?> delete(@PathVariable("id") Integer id) {
+        articleService.delete(id);
+        return ResultDTO.create();
+    }
+
 
 
     /**
