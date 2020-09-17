@@ -3,6 +3,7 @@ package me.lqw.blog8.service;
 import me.lqw.blog8.model.Comment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,10 @@ import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * 邮件处理器
@@ -81,5 +86,42 @@ public class SimpleMailHandler {
 
         javaMailSender.send(mimeMessage);
 
+    }
+
+    /**
+     * 发送带附件的邮件
+     * @param attachFile attachFile 附件
+     */
+    public boolean sendMailAttach(File attachFile) {
+
+        if(attachFile == null){
+            logger.error("attachFile is null, send mail failed");
+            return false;
+        }
+
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
+            messageHelper.setFrom("228794754@qq.com");
+            messageHelper.setTo("liqiwen@lppz.com");
+            messageHelper.setText("博客系统数据库备份", true);
+
+            LocalDateTime now = LocalDateTime.now();
+            String format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(now);
+
+            messageHelper.setSubject("系统【" + format + "】数据库备份");
+
+            FileSystemResource file = new FileSystemResource(attachFile);
+
+            messageHelper.addAttachment("backup.sql", file);
+
+            javaMailSender.send(mimeMessage);
+
+            return true;
+        } catch (MessagingException ex){
+            ex.printStackTrace();
+            logger.error("sendAttach file Exception: [{}]", ex.getMessage(), ex);
+            return false;
+        }
     }
 }

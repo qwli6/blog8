@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 @Configuration
 @EnableAsync
-public class ThreadTaskPoolConfigAdapter {
+public class ThreadPoolConfiguration {
 
     @Bean("blogThreadPoolExecutor")
     public Executor blogThreadPoolExecutor() {
@@ -31,7 +31,7 @@ public class ThreadTaskPoolConfigAdapter {
         //线程保活时间
         blogThreadPoolExecutor.setKeepAliveSeconds(60);
         //线程名称
-        blogThreadPoolExecutor.setThreadNamePrefix("blogThreadPool--");
+        blogThreadPoolExecutor.setThreadNamePrefix("Blog-Thread-");
 
         //拒绝策略
         blogThreadPoolExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
