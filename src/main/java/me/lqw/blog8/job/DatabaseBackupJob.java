@@ -2,8 +2,6 @@ package me.lqw.blog8.job;
 
 import me.lqw.blog8.BlogProperties;
 import me.lqw.blog8.service.SimpleMailHandler;
-import me.lqw.blog8.util.FileZip;
-import me.lqw.blog8.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -11,10 +9,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.mail.MessagingException;
 import java.io.*;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * 数据库数据备份 job
@@ -22,6 +17,7 @@ import java.util.List;
  * @author liqiwen
  * @version 1.2
  * @since 1.2
+ * @since 2.3
  */
 @Component
 public class DatabaseBackupJob implements DisposableBean {
@@ -53,7 +49,9 @@ public class DatabaseBackupJob implements DisposableBean {
 
 
     /**
-     *
+     * 定时备份数据库
+     * 每天晚上 22 点 45 分 3 秒执行一次，备份成功后将备份文件通过邮件发送至指定邮箱
+     * @since 2.3
      */
     @Scheduled(cron = "3 45 22 * * ?")
     @Async("blogThreadPoolExecutor")
@@ -83,14 +81,18 @@ public class DatabaseBackupJob implements DisposableBean {
         try {
             process = processBuilder.start();
             process.waitFor();
-            InputStream inputStream = process.getInputStream();
 
+            //获取线程输入流
+            InputStream inputStream = process.getInputStream();
+            //获取进程错误流
             InputStream errorStream = process.getErrorStream();
+            //获取输出流
             OutputStream outputStream = process.getOutputStream();
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String temp;
             while ((temp = bufferedReader.readLine()) != null){
+                //流中的内容需要读取出来，不然会阻塞 JVM
                 logger.info("temp: [{}]", temp);
             }
 
