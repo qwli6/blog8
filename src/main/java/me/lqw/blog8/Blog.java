@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
  * Blog 启动类
@@ -22,6 +23,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @EnableCaching
 @EnableScheduling
+@EnableWebMvc
 @SpringBootApplication
 public class Blog implements ApplicationListener<ContextRefreshedEvent> {
 
