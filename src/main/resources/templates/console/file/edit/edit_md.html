@@ -2,19 +2,40 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${#strings.concat('编辑', fid.title)}"></title>
+    <title th:text="${#strings.concat('编辑', fid.fileName)}"></title>
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <link rel="stylesheet" th:href="@{/static/css/base1.css}">
-    <link rel="stylesheet" th:href="@{/static/blog/libs/markdown/github-markdown.css}">
+    <link rel="stylesheet" href="/static/blog/libs/bootstrap/css/bootstrap.min.css" th:href="@{/static/blog/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/static/blog/libs/prism/prism.css">
+    <link rel="stylesheet" href="/static/blog/libs/markdown/github-markdown.css">
 </head>
 <body>
 
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <textarea th:text="${fid.content}" name="content" class="form-control" id="content" cols="30" rows="10"></textarea>
+                <div class="form-group">
+                    <input id="fileName" name="fileName" class="form-control-sm form-control" th:value="${fid.fileName}">
+                </div>
+                <div class="form-group">
+                    <textarea th:text="${fid.content}" name="content" class="form-control form-control-sm"
+                              id="content" cols="30" rows="10"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <button class="btn btn-sm btn-danger">保存</button>
             </div>
         </div>
     </div>
+
+    <script type="text/javascript" th:src="@{/static/blog/libs/jquery/jquery-3.5.1.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/libs/bootstrap/js/bootstrap.bundle.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/libs/sweetalert/sweetalert2-2.9.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/js/Toast.js}"></script>
+    <script type="text/javascript" th:src="@{/static/blog/libs/prism/prism.js}" src="/static/blog/libs/prism/prism.js"></script>
+    <script type="text/javascript" th:src="@{/static/blog/libs/markedjs/marked.min.js}" src="/static/blog/libs/markedjs/marked.min.js"></script>
+
 </body>
 </html>
